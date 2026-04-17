@@ -1,0 +1,62 @@
+
+# Overrides para desarrollo
+#
+# Características:
+#   - Hot reload en frontend (ng serve) y backend (spring-boot:run)
+#   - El código se monta desde el host → no hace falta rebuild al cambiar código
+#   - Puerto de debug remoto en el backend (5005)
+#   - pgAdmin para inspeccionar la BD visualmente
+#   - Variables de entorno de desarrollo
+
+services:
+  db:
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development      # stage development
+    ports:
+      - "8080:8080"           
+      - "5005:5005"            
+    volumes:
+      - ./backend:/app         # Monta el código fuente del host
+      - maven_cache:/root/.m2  # Caché de Maven entre reinicios
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DDL_AUTO: create-drop    # Recrea la BD en cada arranque (dev)
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development      # stage development
+    ports:
+      - "4200:4200"           
+    volumes:
+      - ./frontend:/app        # Monta el código fuente del host
+      - node_modules:/app/node_modules  # Evita sobreescribir node_modules con el volumen del host
+    environment:
+      NODE_ENV: development
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@admin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - app-network
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+volumes:
+  maven_cache:
+  node_modules:
+  pgadmin_data:

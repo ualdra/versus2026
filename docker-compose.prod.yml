@@ -1,0 +1,55 @@
+
+# Overrides para producción
+#
+# Características:
+#   - Imágenes buildeadas desde el stage "production" de cada Dockerfile
+#   - Sin volúmenes de código fuente
+#   - Sin puertos de debug ni herramientas de administración
+#   - Reinicio automático
+#   - Límites de recursos
+#   - Variables de entorno sensibles desde .env o secretos externos
+#
+
+services:
+
+  db:
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    # NO exponemos el puerto de la BD al host
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production       
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DDL_AUTO: validate       
+    deploy:
+      resources:
+        limits:
+          memory: 768m
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: production      
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"             # SSL
+    deploy:
+      resources:
+        limits:
+          memory: 128m

@@ -1,0 +1,56 @@
+{
+  "name": "DeerDays - Backend (Spring Boot)",
+
+  "dockerComposeFile": [
+    "../../docker-compose.yml",
+    "../../docker-compose.dev.yml"
+  ],
+
+  "service": "backend",
+  "workspaceFolder": "/app",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // Java (pack oficial de Microsoft — incluye Language Support, Debugger, Test Runner, Maven, Project Manager)
+        "vscjava.vscode-java-pack",
+        // Spring Boot
+        "vmware.vscode-spring-boot",
+        "vscjava.vscode-spring-initializr",
+        "vscjava.vscode-spring-boot-dashboard",
+        // Lombok (necesario para que el IDE no marque errores en clases con @Data, etc.)
+        "GabrielBB.vscode-lombok",
+        // Formato y utilidades
+        "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-docker",
+        "postman.postman-for-vscode"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        // Que Java use el JDK del contenedor y no busque uno local
+        "java.jdt.ls.java.home": "/opt/java/openjdk",
+        // Lombok: apuntar al jar dentro del contenedor
+        "java.jdt.ls.vmargs": "-javaagent:/root/.m2/repository/org/projectlombok/lombok/latest/lombok.jar",
+        "workbench.colorCustomizations": {
+          "titleBar.activeBackground": "#1a3a1a",
+          "titleBar.activeForeground": "#FFFFFF",
+          "titleBar.inactiveBackground": "#0d1f0d99",
+          "titleBar.inactiveForeground": "#FFFFFFCC"
+        }
+      }
+    }
+  },
+
+  // Pre-descarga dependencias Maven al crear el contenedor
+  // Si aún no hay pom.xml (proyecto no inicializado), no falla
+  "postCreateCommand": "[ -f pom.xml ] && mvn dependency:go-offline -B || true",
+
+  "forwardPorts": [
+    8080, // API
+    5005, // Debug remoto
+    5432, // PostgreSQL
+    5050  // pgAdmin
+  ],
+
+  "remoteUser": "root"
+}

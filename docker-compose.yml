@@ -1,0 +1,53 @@
+
+# Configuración base compartida
+# No se usa directamente. Se combina con:
+#   docker-compose.dev.yml  → desarrollo
+#   docker-compose.prod.yml → producción
+#
+
+name: versus
+
+services:
+
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-appdb}
+      POSTGRES_USER: ${POSTGRES_USER:-appuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d   # Scripts SQL iniciales (opcional)
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-appuser} -d ${POSTGRES_DB:-appdb}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-appdb}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-appuser}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${DDL_AUTO:-update}
+    networks:
+      - app-network
+
+  frontend:
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
