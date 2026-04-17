@@ -1,0 +1,120 @@
+name: Discord PR Notifications
+
+on:
+  pull_request:
+    types:
+      - opened
+      - closed
+      - review_requested
+      - ready_for_review
+      - reopened
+    branches:
+      - main
+
+jobs:
+  notify-discord:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+
+    steps:
+      - name: Set PR status variables
+        id: pr_status
+        run: |
+          EVENT="${{ github.event.action }}"
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          BASE_BRANCH="${{ github.event.pull_request.base.ref }}"
+          HEAD_BRANCH="${{ github.event.pull_request.head.ref }}"
+          REPO="${{ github.repository }}"
+
+          # Determine color and emoji based on event
+          if [ "$EVENT" = "opened" ]; then
+            COLOR=3447003   # Blue
+            EMOJI="🔵"
+            TITLE="Nueva Pull Request abierta"
+            DESCRIPTION="Se ha abierto una nueva PR."
+          elif [ "$EVENT" = "closed" ] && [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+            COLOR=5763719   # Green
+            EMOJI="✅"
+            TITLE="Pull Request mergeada"
+            DESCRIPTION="La PR ha sido mergeada en \`$BASE_BRANCH\`."
+          elif [ "$EVENT" = "closed" ] && [ "${{ github.event.pull_request.merged }}" = "false" ]; then
+            COLOR=15548997  # Red
+            EMOJI="❌"
+            TITLE="Pull Request cerrada sin merge"
+            DESCRIPTION="La PR fue cerrada sin ser mergeada."
+          elif [ "$EVENT" = "review_requested" ]; then
+            COLOR=16776960  # Yellow
+            EMOJI="👀"
+            REVIEWER="${{ github.event.requested_reviewer.login }}"
+            TITLE="Review solicitada"
+            DESCRIPTION="Se ha solicitado review a **$REVIEWER**."
+          elif [ "$EVENT" = "ready_for_review" ]; then
+            COLOR=1752220   # Teal
+            EMOJI="🚀"
+            TITLE="PR lista para review"
+            DESCRIPTION="La PR ha salido de borrador y está lista para review."
+          elif [ "$EVENT" = "reopened" ]; then
+            COLOR=10181046  # Purple
+            EMOJI="🔄"
+            TITLE="Pull Request reabierta"
+            DESCRIPTION="La PR ha sido reabierta."
+          else
+            COLOR=8421504   # Gray
+            EMOJI="ℹ️"
+            TITLE="Actualización de Pull Request"
+            DESCRIPTION="La PR ha sido actualizada."
+          fi
+
+          echo "COLOR=$COLOR" >> $GITHUB_OUTPUT
+          echo "EMOJI=$EMOJI" >> $GITHUB_OUTPUT
+          echo "TITLE=$TITLE" >> $GITHUB_OUTPUT
+          echo "DESCRIPTION=$DESCRIPTION" >> $GITHUB_OUTPUT
+
+      - name: Send Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -s -X POST "$DISCORD_WEBHOOK" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "embeds": [{
+                "title": "${{ steps.pr_status.outputs.EMOJI }} ${{ steps.pr_status.outputs.TITLE }}: #${{ github.event.pull_request.number }} — ${{ github.event.pull_request.title }}",
+                "url": "${{ github.event.pull_request.html_url }}",
+                "description": "${{ steps.pr_status.outputs.DESCRIPTION }}",
+                "color": ${{ steps.pr_status.outputs.COLOR }},
+                "fields": [
+                  {
+                    "name": "Repositorio",
+                    "value": "`${{ github.repository }}`",
+                    "inline": true
+                  },
+                  {
+                    "name": "Autor",
+                    "value": "[${{ github.event.pull_request.user.login }}](https://github.com/${{ github.event.pull_request.user.login }})",
+                    "inline": true
+                  },
+                  {
+                    "name": "Rama",
+                    "value": "`${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`",
+                    "inline": false
+                  },
+                  {
+                    "name": "Commits",
+                    "value": "${{ github.event.pull_request.commits }}",
+                    "inline": true
+                  },
+                  {
+                    "name": "Archivos cambiados",
+                    "value": "${{ github.event.pull_request.changed_files }}",
+                    "inline": true
+                  }
+                ],
+                "footer": {
+                  "text": "GitHub Actions • ${{ github.repository }}"
+                },
+                "timestamp": "${{ github.event.pull_request.updated_at }}"
+              }]
+            }'

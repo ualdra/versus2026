@@ -1,0 +1,52 @@
+{
+  "name": "Versus - Frontend (Angular)",
+
+  "dockerComposeFile": [
+    "../../docker-compose.yml",
+    "../../docker-compose.dev.yml"
+  ],
+
+  "service": "frontend",
+  "workspaceFolder": "/app",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // Angular
+        "angular.ng-template",
+        // Linting y formato
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        // Angular Material snippets
+        "santaCodes.angular-material-snippets",
+        // UI
+        "pkief.material-icon-theme",
+        // Utilidades
+        "ms-azuretools.vscode-docker",
+        "postman.postman-for-vscode"
+      ],
+      "settings": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        },
+        // Que el intellisense de Angular funcione apuntando al node_modules del contenedor
+        "typescript.tsdk": "/app/node_modules/typescript/lib",
+        "workbench.colorCustomizations": {
+          "titleBar.activeBackground": "#17424e",
+          "titleBar.activeForeground": "#000000",
+          "titleBar.inactiveBackground": "#06252e99",
+          "titleBar.inactiveForeground": "#000000CC"
+        }
+      }
+    }
+  },
+
+  // Instala dependencias al crear el contenedor si ya hay package.json
+  "postCreateCommand": "[ -f package.json ] && npm install || true",
+
+  "forwardPorts": [4200],
+
+  "remoteUser": "node"
+}
