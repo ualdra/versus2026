@@ -1,0 +1,105 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+  <!-- Usuario -->
+  <div class="form-field">
+    <label class="form-label" for="username">Nombre de usuario</label>
+    <input
+      id="username"
+      type="text"
+      class="vs-input"
+      formControlName="username"
+      placeholder="tu_usuario"
+      autocomplete="username"
+    />
+    @if (isInvalid('username')) {
+      <span class="form-error">{{ getError('username') }}</span>
+    }
+  </div>
+
+  <!-- Correo -->
+  <div class="form-field">
+    <label class="form-label" for="email">Correo electrónico</label>
+    <input
+      id="email"
+      type="email"
+      class="vs-input"
+      formControlName="email"
+      placeholder="correo@ejemplo.com"
+      autocomplete="email"
+    />
+    @if (isInvalid('email')) {
+      <span class="form-error">{{ getError('email') }}</span>
+    }
+  </div>
+
+  <!-- Contraseña -->
+  <div class="form-field">
+    <label class="form-label" for="password">Contraseña</label>
+    <div class="input-group">
+      <input
+        id="password"
+        [type]="showPassword() ? 'text' : 'password'"
+        class="vs-input"
+        formControlName="password"
+        placeholder="Mínimo 8 caracteres"
+        autocomplete="new-password"
+      />
+      <button
+        type="button"
+        class="toggle-visibility"
+        (click)="togglePassword()"
+        [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+      >
+        {{ showPassword() ? '●' : '○' }}
+      </button>
+    </div>
+    @if (isInvalid('password')) {
+      <span class="form-error">{{ getError('password') }}</span>
+    }
+  </div>
+
+  <!-- Confirmar contraseña -->
+  <div class="form-field">
+    <label class="form-label" for="confirmPassword">Confirmar contraseña</label>
+    <div class="input-group">
+      <input
+        id="confirmPassword"
+        [type]="showConfirmPassword() ? 'text' : 'password'"
+        class="vs-input"
+        [class.ng-invalid]="mismatch"
+        [class.ng-touched]="form.get('confirmPassword')?.touched"
+        formControlName="confirmPassword"
+        placeholder="Repite tu contraseña"
+        autocomplete="new-password"
+      />
+      <button
+        type="button"
+        class="toggle-visibility"
+        (click)="toggleConfirmPassword()"
+        [attr.aria-label]="showConfirmPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+      >
+        {{ showConfirmPassword() ? '●' : '○' }}
+      </button>
+    </div>
+    @if (mismatch) {
+      <span class="form-error">Las contraseñas no coinciden</span>
+    }
+  </div>
+
+  <!-- Error global -->
+  @if (errorMessage()) {
+    <div class="form-alert" role="alert">{{ errorMessage() }}</div>
+  }
+
+  <!-- Submit -->
+  <app-vs-button
+    type="submit"
+    variant="primary"
+    [block]="true"
+    [disabled]="loading()"
+    [loading]="loading()"
+  >
+    {{ loading() ? 'Creando cuenta…' : 'Crear cuenta' }}
+  </app-vs-button>
+
+</form>
