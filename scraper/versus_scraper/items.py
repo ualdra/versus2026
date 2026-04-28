@@ -6,7 +6,8 @@
 import scrapy
 
 
-class DeerdaysScraperItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class SocialMediaCreatorItem(scrapy.Item):
+    name = scrapy.Field()
+    image = scrapy.Field()
+    subscribers = scrapy.Field()
+    platform = scrapy.Field()
