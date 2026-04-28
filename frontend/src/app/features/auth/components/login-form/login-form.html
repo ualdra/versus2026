@@ -1,0 +1,62 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+  <!-- Correo o usuario -->
+  <div class="form-field">
+    <label class="form-label" for="identifier">Correo o nombre de usuario</label>
+    <input
+      id="identifier"
+      type="text"
+      class="vs-input"
+      formControlName="identifier"
+      placeholder="correo@ejemplo.com"
+      autocomplete="username"
+    />
+    @if (isInvalid('identifier')) {
+      <span class="form-error">{{ getError('identifier') }}</span>
+    }
+  </div>
+
+  <!-- Contraseña -->
+  <div class="form-field">
+    <label class="form-label" for="password">Contraseña</label>
+    <div class="input-group">
+      <input
+        id="password"
+        [type]="showPassword() ? 'text' : 'password'"
+        class="vs-input"
+        formControlName="password"
+        placeholder="Tu contraseña"
+        autocomplete="current-password"
+      />
+      <button
+        type="button"
+        class="toggle-visibility"
+        (click)="togglePassword()"
+        [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+      >
+        {{ showPassword() ? '●' : '○' }}
+      </button>
+    </div>
+    @if (isInvalid('password')) {
+      <span class="form-error">{{ getError('password') }}</span>
+    }
+  </div>
+
+  <!-- Error global -->
+  @if (errorMessage()) {
+    <div class="form-alert" role="alert">{{ errorMessage() }}</div>
+  }
+
+  <!-- Submit -->
+  <button
+    type="submit"
+    class="btn btn--primary submit-btn"
+    [disabled]="loading()"
+  >
+    @if (loading()) {
+      <span class="btn-spinner"></span>
+    }
+    {{ loading() ? 'Iniciando sesión…' : 'Iniciar sesión' }}
+  </button>
+
+</form>

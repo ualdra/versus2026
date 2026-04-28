@@ -1,0 +1,39 @@
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 40px;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.login-title {
+  font-size: 64px;
+  color: var(--vs-text-primary);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.login-subtitle {
+  font-size: 14px;
+  color: var(--vs-text-secondary);
+}
+
+.register-prompt {
+  text-align: center;
+  font-size: 14px;
+  color: var(--vs-text-secondary);
+}
+
+.register-link {
+  color: var(--vs-accent-blue);
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity var(--vs-transition);
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
