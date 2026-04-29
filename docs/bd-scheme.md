@@ -1,16 +1,27 @@
 # Esquema de Base de Datos
 
-En este documento se presenta el esquema de la base de datos para el sistema de preguntas y respuestas. El esquema está diseñado para soportar funcionalidades como gestión de usuarios, preguntas, partidas, rankings, estadísticas y reportes. A continuación se muestra el diagrama entidad-relación que representa las tablas principales y sus relaciones:
+En este documento se presenta el esquema de la base de datos para el sistema de preguntas y respuestas. El esquema está diseñado para soportar funcionalidades como gestión de usuarios, autenticación con refresh tokens, preguntas, partidas, rankings, estadísticas y reportes. A continuación se muestra el diagrama entidad-relación que representa las tablas principales y sus relaciones:
 
 ```mermaid
 erDiagram
   users {
     uuid id PK
-    string username
-    string email
+    string username UK
+    string email UK
     string password_hash
     string avatar_url
     enum role
+    boolean is_active
+    timestamp created_at
+    timestamp updated_at
+  }
+
+  refresh_tokens {
+    uuid id PK
+    uuid user_id FK
+    string token_hash
+    timestamp expires_at
+    boolean revoked
     timestamp created_at
   }
 
@@ -18,11 +29,13 @@ erDiagram
     uuid id PK
     text text
     enum type
-    string correct_answer
     string category
     string source_url
     timestamp scraped_at
     enum status
+    numeric correct_value
+    string unit
+    numeric tolerance_percent
   }
 
   question_options {
@@ -37,15 +50,19 @@ erDiagram
     enum mode
     enum status
     string room_code
+    uuid owner_user_id
     timestamp created_at
     timestamp finished_at
   }
 
   match_players {
-    uuid match_id FK
-    uuid user_id FK
+    uuid match_id PK,FK
+    uuid user_id PK,FK
     int lives_remaining
     int score
+    int current_streak
+    int best_streak_in_match
+    int rounds_played
     enum result
   }
 
@@ -54,6 +71,7 @@ erDiagram
     uuid match_id FK
     uuid question_id FK
     int round_number
+    timestamp created_at
   }
 
   match_answers {
@@ -63,6 +81,7 @@ erDiagram
     string answer_given
     float deviation
     int life_delta
+    boolean is_correct
     timestamp answered_at
   }
 
@@ -120,6 +139,7 @@ erDiagram
     int errors
   }
 
+  users ||--o{ refresh_tokens : "tiene"
   users ||--o{ match_players : "juega en"
   matches ||--o{ match_players : "tiene"
   matches ||--o{ match_rounds : "contiene"
@@ -136,7 +156,31 @@ erDiagram
   spiders ||--o{ spider_runs : "ejecuta"
 ```
 
-Por si no se visualiza bien, tambien se presentan las imágenes del esquema:
+## Cambios respecto a la versión inicial (Sprint 1)
+
+| Cambio | Motivo |
+|---|---|
+| `users.is_active`, `users.updated_at` | Soft-deactivation de cuentas y auditoría. |
+| `users.email` y `users.username` con UNIQUE | Garantiza unicidad para login y registro. |
+| Nueva tabla `refresh_tokens` | JWT con rotación: hash + expiración + flag de revocado. |
+| `questions.correct_value` (NUMERIC) sustituye a `correct_answer` (string) | Tipado correcto para modo PRECISION. |
+| `questions.unit` (string) | Unidad de la respuesta numérica (ej. "millones", "%", "goles"). |
+| `questions.tolerance_percent` (NUMERIC, default 5) | Margen de error aceptado en PRECISION. |
+| `match_players` con clave compuesta `(match_id, user_id)` | Modelado correcto de la relación N:M. |
+| `match_players.current_streak`, `best_streak_in_match`, `rounds_played` | Estado de partida singleplayer (Survival/Precision). |
+| `match_answers.is_correct` | Permite filtros y stats sin recalcular desviación. |
+| `matches.owner_user_id` | Identifica al dueño/host (singleplayer = único jugador). |
+
+## Índices
+
+- `users(email)` UNIQUE, `users(username)` UNIQUE.
+- `questions(status, type, category)` compuesto (filtro frecuente para `/api/questions/random`).
+- `rankings(mode, score DESC)`.
+- `matchmaking_queue(mode, entered_at)`.
+- `match_rounds(match_id)`, `match_answers(round_id)`, `match_answers(user_id)`.
+- `refresh_tokens(user_id)`, `refresh_tokens(token_hash)`.
+
+Por si no se visualiza bien, también se presentan las imágenes del esquema:
 
 [Esquema de Base de Datos](img/scheme-black.svg)
 
