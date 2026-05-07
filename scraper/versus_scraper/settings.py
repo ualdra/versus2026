@@ -62,9 +62,18 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    "deerdays_scraper.pipelines.DeerdaysScraperPipeline": 300,
-#}
+ITEM_PIPELINES = {
+    "versus_scraper.pipelines.DeerdaysScraperPipeline": 300,
+}
+
+# PostgreSQL connection — override via environment variables in Docker
+import os  # noqa: E402
+
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = int(os.getenv("DB_PORT", "5432"))
+DB_NAME = os.getenv("DB_NAME", "versus")
+DB_USER = os.getenv("DB_USER", "versus")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "versus")
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
