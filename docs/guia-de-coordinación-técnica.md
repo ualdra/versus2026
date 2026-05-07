@@ -353,7 +353,7 @@ GET /api/stats/me?mode=SURVIVAL
 ---
  
 ## 🕷️ Módulo 7 — SCRAPING
-> Issues: #45, #46, #47, #48, #49, #50, #51, #52
+> Issues: #45, #46, #47, #48, #49, #50, #51, #52, #97, #98
  
 Scrapers en Scrapy que extraen datos reales y los insertan en PostgreSQL como preguntas.
  
@@ -361,19 +361,23 @@ Scrapers en Scrapy que extraen datos reales y los insertan en PostgreSQL como pr
  
 | Spider | Fuente | Tipo pregunta | Issue |
 |--------|--------|---------------|-------|
-| Instagram followers | Instagram/web | NUMERIC | #46 |
-| Estadísticas fútbol | FBref / Transfermarkt | NUMERIC + BINARY | #47 |
-| Taquilla de cine | Box Office Mojo | NUMERIC | #48 |
-| Capitales y geografía | Wikipedia | BINARY | #49 |
-| Récords varios | Wikipedia / Guinness | NUMERIC | #50 |
+| RRSS (YouTube/TikTok/Twitch) | SocialBlade | NUMERIC | #97 ✅ |
+| Estadísticas fútbol | FBref / Transfermarkt | NUMERIC + BINARY | #98 |
+| Taquilla de cine | Box Office Mojo | NUMERIC | #98 |
+| Capitales y geografía | Wikipedia | BINARY | #98 |
+| Récords varios | Wikipedia / Guinness | NUMERIC | #98 |
  
 ### Pipeline de datos
  
 ```
 Spider (Scrapy)
-    │
+    │  yield QuestionItem(text, type, category, ...)
     ▼
-Item Pipeline → normalización y validación (#52)
+DeerdaysScraperPipeline (#97 ✅)
+    ├── Validación de calidad mínima
+    ├── Deduplicación por SHA-256(text) → campo text_hash en questions
+    ├── INSERT questions + question_options
+    └── UPDATE spider_runs (questionsInserted, errors, finishedAt)
     │
     ▼
 PostgreSQL → tabla questions (estado: PENDING_REVIEW)
@@ -382,13 +386,17 @@ PostgreSQL → tabla questions (estado: PENDING_REVIEW)
 Moderador revisa → estado: ACTIVE
 ```
  
-### Endpoints de gestión (solo ADMIN)
+> Ver documentación detallada del pipeline en [`docs/scraping-pipeline.md`](scraping-pipeline.md).
  
-| Método | Ruta | Descripción | Issues |
-|--------|------|-------------|--------|
-| `GET` | `/api/admin/spiders` | Lista de spiders y último estado | #51 |
-| `POST` | `/api/admin/spiders/:id/run` | Lanzar spider manualmente | #51 |
-| `GET` | `/api/admin/spiders/:id/runs` | Historial de ejecuciones | #51 |
+### Endpoints de gestión (solo ADMIN)
+
+> Implementados en #97. El identificador de ruta es el **nombre** del spider, no su UUID.
+ 
+| Método | Ruta | Descripción | Issue |
+|--------|------|-------------|-------|
+| `GET` | `/api/admin/spiders` | Lista de spiders con estado actual y último run | #97 ✅ |
+| `POST` | `/api/admin/spiders/{name}/run` | Lanza el spider por nombre. 202 con el `SpiderRun` creado. 404 si no existe, 409 si ya está en ejecución | #97 ✅ |
+| `GET` | `/api/admin/spiders/{name}/runs` | Historial de runs del spider ordenados por fecha descendente | #97 ✅ |
  
 ---
  

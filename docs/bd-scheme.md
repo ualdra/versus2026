@@ -36,6 +36,7 @@ erDiagram
     numeric correct_value
     string unit
     numeric tolerance_percent
+    string text_hash UK
   }
 
   question_options {
@@ -171,10 +172,17 @@ erDiagram
 | `match_answers.is_correct` | Permite filtros y stats sin recalcular desviación. |
 | `matches.owner_user_id` | Identifica al dueño/host (singleplayer = único jugador). |
 
+## Cambios introducidos en issue #97 (Pipeline Scrapy)
+
+| Cambio | Motivo |
+|---|---|
+| `questions.text_hash VARCHAR(64) UNIQUE` | Deduplicación idempotente en el pipeline Scrapy: SHA-256 del texto de la pregunta. Permite ejecutar el mismo spider varias veces sin crear duplicados. |
+
 ## Índices
 
 - `users(email)` UNIQUE, `users(username)` UNIQUE.
 - `questions(status, type, category)` compuesto (filtro frecuente para `/api/questions/random`).
+- `questions(text_hash)` UNIQUE (deduplicación del pipeline Scrapy).
 - `rankings(mode, score DESC)`.
 - `matchmaking_queue(mode, entered_at)`.
 - `match_rounds(match_id)`, `match_answers(round_id)`, `match_answers(user_id)`.
