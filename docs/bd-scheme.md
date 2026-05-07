@@ -176,6 +176,7 @@ erDiagram
 | `match_answers.is_correct` | Permite filtros y stats sin recalcular desviación. |
 | `matches.owner_user_id` | Identifica al dueño/host (singleplayer = único jugador). |
 
+
 ## Cambios introducidos en issue #100 (Moderación)
 
 | Cambio | Motivo |
@@ -186,6 +187,7 @@ erDiagram
 | `question_reports.resolved_at TIMESTAMP` (nuevo) | Cuándo se resolvió. |
 | `question_reports.action enum` (nuevo) | Acción tomada al resolver: `DISMISS`, `EDIT_QUESTION`, `DELETE_QUESTION`. |
 | `questions.status` añade valor `FLAGGED` | Pregunta auto-flaggeada al acumular 5 reportes PENDING. Deja de servirse en partidas. |
+
 
 ## Cambios introducidos en issue #97 (Pipeline Scrapy)
 

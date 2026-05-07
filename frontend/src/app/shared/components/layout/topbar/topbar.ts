@@ -1,5 +1,6 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../../../core/services/auth.service';
 
 export type NavKey = 'home' | 'play' | 'ranking' | 'profile' | 'admin' | 'users' | 'spiders' | 'reports';
 
@@ -10,9 +11,15 @@ export type NavKey = 'home' | 'play' | 'ranking' | 'profile' | 'admin' | 'users'
   templateUrl: './topbar.html',
 })
 export class TopbarComponent {
+  private readonly auth = inject(AuthService);
+
   active = input<NavKey>('home');
   role = input<'player' | 'admin'>('player');
-  user = input<{ name: string; xp: number }>({ name: 'aritzz92', xp: 4280 });
+
+  readonly authUser = computed(() => this.auth.user());
+  readonly username = computed(() => this.authUser()?.username ?? '');
+  readonly avatarUrl = computed(() => this.authUser()?.avatarUrl ?? null);
+  readonly xp = computed<number | null>(() => null);
 
   items = computed<[NavKey, string][]>(() =>
     this.role() === 'admin'
@@ -35,5 +42,5 @@ export class TopbarComponent {
     return this.routes[k];
   }
 
-  initials = computed(() => this.user().name.slice(0, 2).toUpperCase());
+  readonly initials = computed(() => this.username().slice(0, 2).toUpperCase() || '??');
 }

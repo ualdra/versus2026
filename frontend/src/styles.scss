@@ -230,6 +230,10 @@ html, body {
 
   &--lg { width: 56px; height: 56px; font-size: 22px; }
   &--xl { width: 88px; height: 88px; font-size: 32px; }
+  &--image {
+    object-fit: cover;
+    padding: 0;
+  }
 }
 
 // ─── Topbar ───────────────────────────────────────────────────────────────────

@@ -18,11 +18,19 @@
     }
   </nav>
 
-  <div class="vs-topbar__user">
-    <div style="text-align: right">
-      <div style="font-weight: 600; font-size: 13px">{{ user().name }}</div>
-      <div class="vs-mono" style="font-size: 11px; color: var(--vs-text-muted)">{{ user().xp }} XP</div>
+  @if (authUser()) {
+    <div class="vs-topbar__user">
+      <div style="text-align: right">
+        <div style="font-weight: 600; font-size: 13px">{{ username() }}</div>
+        @if (xp() !== null) {
+          <div class="vs-mono" style="font-size: 11px; color: var(--vs-text-muted)">{{ xp() }} XP</div>
+        }
+      </div>
+      @if (avatarUrl(); as avatar) {
+        <img class="vs-avatar vs-avatar--image" [src]="avatar" [alt]="username()" />
+      } @else {
+        <div class="vs-avatar">{{ initials() }}</div>
+      }
     </div>
-    <div class="vs-avatar">{{ initials() }}</div>
-  </div>
+  }
 </div>
