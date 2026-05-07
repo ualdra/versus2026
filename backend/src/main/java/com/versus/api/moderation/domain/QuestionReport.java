@@ -1,6 +1,8 @@
 package com.versus.api.moderation.domain;
 
+import com.versus.api.moderation.ReportReason;
 import com.versus.api.moderation.ReportStatus;
+import com.versus.api.moderation.ResolveAction;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -27,8 +29,12 @@ public class QuestionReport {
     @Column(name = "reported_by", nullable = false)
     private UUID reportedBy;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 32)
+    private ReportReason reason;
+
     @Column(length = 512)
-    private String reason;
+    private String comment;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 16)
@@ -36,6 +42,16 @@ public class QuestionReport {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
+
+    @Column(name = "resolved_by")
+    private UUID resolvedBy;
+
+    @Column(name = "resolved_at")
+    private Instant resolvedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 24)
+    private ResolveAction action;
 
     @PrePersist
     void onCreate() {
