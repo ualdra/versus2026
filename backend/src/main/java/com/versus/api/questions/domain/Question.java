@@ -57,6 +57,9 @@ public class Question {
     @Column(name = "tolerance_percent", precision = 6, scale = 2)
     private BigDecimal tolerancePercent;
 
+    @Column(name = "text_hash", length = 64, unique = true)
+    private String textHash;
+
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<QuestionOption> options = new ArrayList<>();
