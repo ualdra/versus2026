@@ -401,7 +401,7 @@ Moderador revisa → estado: ACTIVE
 ---
  
 ## 🛡️ Módulo 8 — ADMIN & MODERACIÓN
-> Issues: #80, #81, #82
+> Issues: #80, #81, #82, #100
  
 Gestión de preguntas reportadas y administración de la plataforma.
  
@@ -409,9 +409,35 @@ Gestión de preguntas reportadas y administración de la plataforma.
  
 | Método | Ruta | Descripción | Issues |
 |--------|------|-------------|--------|
-| `POST` | `/api/questions/:id/report` | Reportar una pregunta | #80 |
-| `GET` | `/api/mod/reports` | Lista de reportes pendientes (MODERATOR+) | #81 |
-| `PUT` | `/api/mod/reports/:id` | Resolver reporte (DISMISS / DEACTIVATE) | #81 |
+| `POST` | `/api/questions/{id}/report` | Reportar una pregunta (PLAYER autenticado) | #100 ✅ |
+| `GET` | `/api/moderation/reports` | Lista de reportes, filtrable por `?status=` (MODERATOR+) | #100 ✅ |
+| `PUT` | `/api/moderation/reports/{id}/resolve` | Resolver reporte: DISMISS / EDIT_QUESTION / DELETE_QUESTION (MODERATOR+) | #100 ✅ |
+ 
+#### Contrato de reporte (POST `/api/questions/{id}/report`)
+ 
+**Request:**
+```json
+{ "reason": "WRONG_ANSWER", "comment": "Texto opcional" }
+```
+Valores de `reason`: `WRONG_ANSWER`, `OUTDATED`, `OFFENSIVE`, `OTHER`
+ 
+**Response 201:** `ReportResponse` — ver [`docs/moderation.md`](moderation.md)
+ 
+#### Contrato de resolución (PUT `/api/moderation/reports/{id}/resolve`)
+ 
+**Request:**
+```json
+{ "action": "DELETE_QUESTION" }
+```
+Valores de `action`: `DISMISS`, `EDIT_QUESTION`, `DELETE_QUESTION`
+ 
+**Response 200:** `ReportResponse` con `status`, `resolvedBy`, `resolvedAt` y `action` rellenos.
+ 
+#### Auto-flagging
+ 
+Cuando una pregunta acumula **5 reportes PENDING**, su estado cambia automáticamente a `FLAGGED` y deja de servirse en partidas hasta que un moderador la revisa.
+ 
+> Ver documentación completa en [`docs/moderation.md`](moderation.md).
  
 ### Endpoints de administración
  
