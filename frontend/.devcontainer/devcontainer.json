@@ -46,7 +46,5 @@
   // Instala dependencias al crear el contenedor si ya hay package.json
   "postCreateCommand": "[ -f package.json ] && npm install || true",
 
-  "forwardPorts": [4200],
-
-  "remoteUser": "node"
+  "forwardPorts": [4200]
 }

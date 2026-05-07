@@ -47,8 +47,8 @@ services:
       target: production      
     restart: always
     ports:
-      - "80:80"
-      - "443:443"             # SSL
+      - "80:8080"
+      - "443:8080"            # SSL
     deploy:
       resources:
         limits:
