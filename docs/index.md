@@ -17,11 +17,29 @@
 
 <div class="grid cards" markdown>
 
+-   :material-layers: **Arquitectura**
+
+    Visión general del sistema, flujos de petición y guía de despliegue.
+
+    [:octicons-arrow-right-24: Overview](arquitectura/overview.md) · [Despliegue](arquitectura/deployment.md)
+
+-   :material-wrench: **Desarrollo**
+
+    Configuración del entorno, comandos y flujo de trabajo Git.
+
+    [:octicons-arrow-right-24: Setup](desarrollo/setup.md) · [Workflow](desarrollo/workflow.md)
+
 -   :material-server: **Backend**
 
     Módulos, entidades, endpoints y diagramas de clases del API REST.
 
     [:octicons-arrow-right-24: Ver backend](backend/README.md)
+
+-   :material-language-typescript: **Frontend**
+
+    Arquitectura Angular, gestión de estado con signals y guía de testing.
+
+    [:octicons-arrow-right-24: Arquitectura](frontend/arquitectura.md) · [Testing](frontend/testing.md)
 
 -   :material-database: **Base de datos**
 
@@ -40,6 +58,12 @@
     Tokens de diseño, componentes y convenciones de CSS del frontend.
 
     [:octicons-arrow-right-24: Ver style guide](style-guide.md)
+
+-   :material-test-tube: **QA**
+
+    Estrategia de testing y plan de pruebas por módulo.
+
+    [:octicons-arrow-right-24: Estrategia](qa/estrategia.md) · [Plan de pruebas](qa/plan-de-pruebas.md)
 
 </div>
 
