@@ -1,3 +1,5 @@
+import { Achievement } from './achievement.models';
+
 export type QuestionType = 'BINARY' | 'NUMERIC';
 export type GameMode =
   | 'SURVIVAL'
@@ -50,6 +52,7 @@ export interface SurvivalAnswerResponse {
   scoreDelta: number;
   nextQuestion?: Question | null;
   gameOver: boolean;
+  achievementsUnlocked?: Achievement[];
 }
 
 export interface PrecisionAnswerRequest {
@@ -66,6 +69,7 @@ export interface PrecisionAnswerResponse {
   livesRemaining: number;
   nextQuestion?: Question | null;
   gameOver: boolean;
+  achievementsUnlocked?: Achievement[];
 }
 
 export interface PlayerStats {

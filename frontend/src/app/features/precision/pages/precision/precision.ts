@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { GameService } from '../../../../core/services/game.service';
+import { AchievementToastService } from '../../../../core/services/achievement-toast.service';
 import {
   PrecisionAnswerResponse,
   QuestionNumeric,
@@ -20,6 +21,7 @@ type Phase = 'idle' | 'feedback' | 'loading';
 export class Precision implements OnInit {
   private readonly game = inject(GameService);
   private readonly router = inject(Router);
+  private readonly achievementToasts = inject(AchievementToastService);
 
   lives = signal(100);
   rounds = signal(0);
@@ -109,6 +111,7 @@ export class Precision implements OnInit {
     }
 
     if (res.gameOver) {
+      this.achievementToasts.showMany(res.achievementsUnlocked);
       const finalRounds = this.rounds();
       setTimeout(
         () =>

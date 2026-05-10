@@ -1,5 +1,6 @@
 package com.versus.api.game;
 
+import com.versus.api.achievements.AchievementService;
 import com.versus.api.common.exception.ApiException;
 import com.versus.api.common.exception.ErrorCode;
 import com.versus.api.game.dto.PrecisionAnswerRequest;
@@ -55,6 +56,7 @@ class GameServiceTest {
     @Mock MatchAnswerRepository matchAnswers;
     @Mock QuestionService questions;
     @Mock StatsService statsService;
+    @Mock AchievementService achievementService;
 
     @InjectMocks GameService gameService;
 

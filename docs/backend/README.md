@@ -15,6 +15,7 @@
 | WebSocket multijugador | [modules/websocket.md](modules/websocket.md) | ✅ Sprint 3 (PR #89) |
 | Partidas & matchmaking | [modules/match.md](modules/match.md) | 🚧 Sprint 3 |
 | Estadísticas & ranking | [modules/stats.md](modules/stats.md) | ✅ Sprint 1-2 |
+| Logros | [modules/achievements.md](modules/achievements.md) | ✅ Sprint 3 |
 | Moderación | [modules/moderation.md](modules/moderation.md) | 🚧 Sprint 4 |
 | Scraping | [modules/scraping.md](modules/scraping.md) | 🚧 Sprint 4 |
 | Multimedia y almacenamiento | [modules/media.md](modules/media.md) | ✅ Dependencia #121 |

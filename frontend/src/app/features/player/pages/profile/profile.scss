@@ -31,20 +31,94 @@
 
 .vs-achievements-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: 12px;
+}
+
+.vs-section-title--with-count {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.vs-achievements-count {
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--vs-accent-gold);
+  letter-spacing: 0;
 }
 
 .vs-badge-card {
   background: var(--vs-bg-surface);
   border: 1px solid var(--vs-border);
-  border-left: 3px solid var(--mode-color, var(--vs-accent-blue));
+  border-left: 3px solid var(--vs-accent-gold);
   border-radius: var(--vs-radius-md);
   padding: 16px;
+  min-height: 164px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  &--locked {
+    filter: grayscale(1);
+    opacity: 0.56;
+    border-left-color: var(--vs-text-muted);
+  }
+}
+
+.vs-badge-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .vs-badge-card__icon {
-  font-size: 28px;
-  color: var(--mode-color, var(--vs-accent-blue));
-  line-height: 1;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(244, 197, 66, 0.14);
+  color: var(--vs-accent-gold);
+  display: grid;
+  place-items: center;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.vs-badge-card__date {
+  color: var(--vs-text-muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.vs-badge-card__name {
+  color: var(--vs-text-primary);
+  font-weight: 800;
+}
+
+.vs-badge-card__desc {
+  color: var(--vs-text-secondary);
+  font-size: 13px;
+  line-height: 1.45;
+  flex: 1;
+}
+
+.vs-badge-card__category {
+  color: var(--vs-text-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 720px) {
+  .vs-profile {
+    padding: 24px 16px;
+  }
+
+  .vs-profile__head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }

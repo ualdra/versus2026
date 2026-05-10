@@ -1,0 +1,88 @@
+.vs-achievement-toasts {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 80;
+  display: grid;
+  gap: 12px;
+  width: min(360px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+.vs-achievement-toast {
+  display: grid;
+  grid-template-columns: 46px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(244, 197, 66, 0.45);
+  border-radius: var(--vs-radius-md);
+  background:
+    linear-gradient(135deg, rgba(244, 197, 66, 0.14), rgba(67, 97, 238, 0.1)),
+    var(--vs-bg-elevated);
+  box-shadow: var(--vs-shadow-card), var(--vs-shadow-glow-gold);
+  animation: vs-achievement-in 260ms ease forwards;
+  pointer-events: auto;
+}
+
+.vs-achievement-toast__icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--vs-accent-gold);
+  color: var(--vs-bg-base);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.vs-achievement-toast__eyebrow {
+  color: var(--vs-accent-gold);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.vs-achievement-toast__name {
+  margin-top: 2px;
+  color: var(--vs-text-primary);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.vs-achievement-toast__close {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--vs-border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--vs-text-secondary);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--vs-text-primary);
+    border-color: var(--vs-border-focus);
+  }
+}
+
+@keyframes vs-achievement-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .vs-achievement-toasts {
+    right: 16px;
+    bottom: 16px;
+  }
+}

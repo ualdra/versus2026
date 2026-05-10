@@ -1,5 +1,7 @@
 package com.versus.api.game;
 
+import com.versus.api.achievements.AchievementService;
+import com.versus.api.achievements.dto.AchievementResponse;
 import com.versus.api.common.exception.ApiException;
 import com.versus.api.game.dto.PrecisionAnswerRequest;
 import com.versus.api.game.dto.PrecisionAnswerResponse;
@@ -32,6 +34,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -50,6 +53,7 @@ public class GameService {
     private final MatchAnswerRepository matchAnswers;
     private final QuestionService questions;
     private final StatsService statsService;
+    private final AchievementService achievementService;
 
     @Transactional
     public StartGameResponse startSurvival(UUID userId) {
@@ -86,9 +90,11 @@ public class GameService {
 
         boolean gameOver = player.getLivesRemaining() == 0;
         QuestionResponse nextQuestion = null;
+        List<AchievementResponse> achievementsUnlocked = List.of();
         if (gameOver) {
             finishMatch(session.match(), player, player.getRoundsPlayed() >= 5 ? MatchResult.WIN : MatchResult.LOSS);
             statsService.recordFinishedGame(userId, GameMode.SURVIVAL, player, null);
+            achievementsUnlocked = safeAchievements(achievementService.evaluateAfterGame(userId, GameMode.SURVIVAL, player, null));
         } else {
             nextQuestion = questions.toResponse(questions.findRandomActiveQuestion(QuestionType.BINARY, null));
         }
@@ -101,7 +107,8 @@ public class GameService {
                 player.getCurrentStreak(),
                 scoreDelta,
                 nextQuestion,
-                gameOver);
+                gameOver,
+                achievementsUnlocked);
     }
 
     @Transactional
@@ -157,9 +164,16 @@ public class GameService {
 
         boolean gameOver = player.getLivesRemaining() == 0;
         QuestionResponse nextQuestion = null;
+        List<AchievementResponse> achievementsUnlocked = List.of();
         if (gameOver) {
             finishMatch(session.match(), player, MatchResult.LOSS);
-            statsService.recordFinishedGame(userId, GameMode.PRECISION, player, averageDeviation(session.match().getId(), userId));
+            Double avgDeviation = averageDeviation(session.match().getId(), userId);
+            statsService.recordFinishedGame(userId, GameMode.PRECISION, player, avgDeviation);
+            achievementsUnlocked = safeAchievements(achievementService.evaluateAfterGame(
+                    userId,
+                    GameMode.PRECISION,
+                    player,
+                    avgDeviation));
         } else {
             nextQuestion = questions.toResponse(questions.findRandomActiveQuestion(QuestionType.NUMERIC, null));
         }
@@ -173,7 +187,8 @@ public class GameService {
                 lifeDelta,
                 player.getLivesRemaining(),
                 nextQuestion,
-                gameOver);
+                gameOver,
+                achievementsUnlocked);
     }
 
     private StartGameResponse start(UUID userId, GameMode mode, int lives, QuestionType questionType) {
@@ -258,6 +273,10 @@ public class GameService {
                 .mapToDouble(Double::doubleValue)
                 .average()
                 .orElse(0.0);
+    }
+
+    private List<AchievementResponse> safeAchievements(List<AchievementResponse> unlocked) {
+        return unlocked == null ? List.of() : unlocked;
     }
 
     private record Session(Match match, MatchPlayer player) {

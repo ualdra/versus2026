@@ -16,4 +16,22 @@ export class UserService {
   updateMe(payload: { username?: string; avatarUrl?: string }): Observable<UserMe> {
     return this.http.put<UserMe>(`${this.base}/users/me`, payload);
   }
+
+  changePassword(payload: { currentPassword: string; newPassword: string }): Observable<void> {
+    return this.http.put<void>(`${this.base}/users/me/password`, payload);
+  }
+
+  updateAvatarUrl(avatarUrl: string): Observable<UserMe> {
+    return this.http.put<UserMe>(`${this.base}/users/me/avatar`, { avatarUrl });
+  }
+
+  uploadAvatar(file: Blob): Observable<UserMe> {
+    const body = new FormData();
+    body.append('file', file, 'avatar.png');
+    return this.http.put<UserMe>(`${this.base}/users/me/avatar`, body);
+  }
+
+  deleteMe(): Observable<void> {
+    return this.http.delete<void>(`${this.base}/users/me`);
+  }
 }

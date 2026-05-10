@@ -65,6 +65,7 @@
 
     [:octicons-arrow-right-24: Estrategia](qa/estrategia.md) · [Plan de pruebas](qa/plan-de-pruebas.md)
 
+
 -   :material-spider: **Scraping**
 
     Spiders de Scrapy, pipeline de preguntas, deduplicación y guías para añadir nuevas fuentes.
@@ -80,6 +81,14 @@
 | 1-2 | Auth, usuarios, preguntas, juego singleplayer, stats | ✅ |
 | 3 | WebSockets, matchmaking, modos PvP | 🚧 |
 | 4 | Historial, ranking, moderación, admin, scraping | 🚧 |
+
+## Funcionalidades recientes
+
+- `/settings`: pagina centralizada para editar username, password, avatar, notificaciones, audio y eliminar cuenta.
+- Avatar: galeria predefinida con confirmacion, upload PNG/JPEG con crop basico y limite de 2MB.
+- Topbar: muestra username/avatar reales y XP derivado de `player_stats` hasta tener un campo `xp` dedicado.
+- Cuenta: soft delete con `status=DELETED`, `is_active=false` y anonimizacion de datos.
+- Logros: catalogo inicial, desbloqueo al terminar partida, toast global, grid en perfil y emblema reciente en el avatar.
 
 ## Arranque rápido
 

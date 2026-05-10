@@ -20,7 +20,9 @@ classDiagram
         <<RequiresAuth>>
         +GET /api/users/me
         +PUT /api/users/me
+        +PUT /api/users/me/password
         +PUT /api/users/me/avatar
+        +DELETE /api/users/me
         +GET /api/users/{id}
     }
 
@@ -30,6 +32,9 @@ classDiagram
         -MediaService mediaService
         +getMe(UUID userId) UserMeResponse
         +updateMe(UUID userId, UpdateMeRequest) UserMeResponse
+        +changePassword(UUID userId, ChangePasswordRequest) void
+        +updateAvatar(UUID userId, String avatarUrl) UserMeResponse
+        +deleteMe(UUID userId) void
         +updateAvatar(UUID userId, MultipartFile) UserMeResponse
         +getPublic(UUID targetId) UserPublicResponse
     }
@@ -43,6 +48,7 @@ classDiagram
         +String passwordHash
         +String avatarUrl
         +Role role
+        +UserStatus status
         +Instant createdAt
         +Instant updatedAt
         +boolean isActive
@@ -53,6 +59,12 @@ classDiagram
         PLAYER
         MODERATOR
         ADMIN
+    }
+
+    class UserStatus {
+        <<Enumeration>>
+        ACTIVE
+        DELETED
     }
 
     class UserRepository {
@@ -88,10 +100,22 @@ classDiagram
         +String avatarUrl
     }
 
+    class ChangePasswordRequest {
+        <<DTO>>
+        +String currentPassword
+        +String newPassword
+    }
+
+    class UpdateAvatarRequest {
+        <<DTO>>
+        +String avatarUrl
+    }
+
     UserController --> UserService : delega
     UserService --> UserRepository : consulta/persiste
     UserRepository --> User : gestiona
     User --> Role : usa
+    User --> UserStatus : usa
     UserService ..> UserMeResponse : produce
     UserService ..> UserPublicResponse : produce
 ```
@@ -104,6 +128,9 @@ classDiagram
 |---|---|---|---|---|
 | `GET` | `/api/users/me` | Bearer | — | `200` `UserMeResponse` |
 | `PUT` | `/api/users/me` | Bearer | `UpdateMeRequest` | `200` `UserMeResponse` |
+| `PUT` | `/api/users/me/password` | Bearer | `ChangePasswordRequest` | `204` |
+| `PUT` | `/api/users/me/avatar` | Bearer | JSON `UpdateAvatarRequest` | `200` `UserMeResponse` |
+| `DELETE` | `/api/users/me` | Bearer | — | `204` |
 | `PUT` | `/api/users/me/avatar` | Bearer | `multipart/form-data` con `file` | `200` `UserMeResponse` |
 | `GET` | `/api/users/{id}` | Bearer | — | `200` `UserPublicResponse` |
 
@@ -125,6 +152,8 @@ El email es dato privado — nunca se expone en el endpoint público.
 |---|---|---|
 | Usuario no encontrado (`/me` o `/{id}`) | `NOT_FOUND` | 404 |
 | Nuevo username ya en uso | `CONFLICT` | 409 |
+| Password actual incorrecta | `UNAUTHORIZED` | 401 |
+| Avatar vacio, no imagen o mayor de 2MB | `VALIDATION_ERROR` | 400 |
 | Body inválido | `VALIDATION_ERROR` | 400 |
 
 ---
@@ -140,8 +169,9 @@ Tabla: users
 │ username     │ VARCHAR(50), UNIQUE, NOT NULL                 │
 │ email        │ VARCHAR(255), UNIQUE, NOT NULL                │
 │ password_hash│ VARCHAR(255), BCrypt                          │
-│ avatar_url   │ VARCHAR(500), nullable                        │
+│ avatar_url   │ TEXT, nullable                                │
 │ role         │ ENUM(PLAYER, MODERATOR, ADMIN), default PLAYER│
+│ status       │ ENUM(ACTIVE, DELETED), default ACTIVE         │
 │ created_at   │ TIMESTAMPTZ, @PrePersist                      │
 │ updated_at   │ TIMESTAMPTZ, @PreUpdate                       │
 │ is_active    │ BOOLEAN, default true                         │
@@ -151,17 +181,18 @@ Tabla: users
 
 ### Lifecycle hooks JPA
 
-- `@PrePersist`: inicializa `createdAt`, `updatedAt = now()`, `isActive = true`, `role = PLAYER`
+- `@PrePersist`: inicializa `createdAt`, `updatedAt = now()`, `isActive = true`, `role = PLAYER`, `status = ACTIVE`
 - `@PreUpdate`: actualiza `updatedAt = now()`
 
 ---
 
 ## Reglas de negocio
-
-1. **Email inmutable**: no se puede cambiar el email tras el registro (no hay campo en `UpdateMeRequest`).
-2. **Contraseña no editable aquí**: el cambio de contraseña es responsabilidad del módulo `auth` (flujo futuro).
-3. **Avatar por URL o subida**: `PUT /api/users/me` conserva `avatarUrl` para compatibilidad, pero `PUT /api/users/me/avatar` delega en `media` y actualiza la URL tras subir la imagen.
-4. **Soft delete**: `isActive = false` marca al usuario como inactivo sin eliminarlo de la BD. Los endpoints de usuarios no filtran por `isActive` actualmente — tener en cuenta para futuras consultas.
+1. **Email visible pero no editable desde `UpdateMeRequest`**: el cambio real depende del modulo de email.
+2. **Cambio de password seguro**: `PUT /api/users/me/password` exige `currentPassword` y `newPassword` de minimo 8 caracteres.
+3. **Avatar predefinido**: `PUT /api/users/me/avatar` con JSON guarda una URL corta; el frontend pide confirmacion antes de persistir.
+4. **Avatar propio**: `PUT /api/users/me` conserva `avatarUrl` para compatibilidad, pero `PUT /api/users/me/avatar` delega en `media` y actualiza la URL tras subir la imagen.
+5. **Soft delete**: `DELETE /api/users/me` marca `status = DELETED`, `isActive = false`, anonimiza username/email/password/avatar y bloquea login/perfiles futuros.
+6. **Usuarios eliminados/inactivos**: `getMe`, `getPublic`, `updateMe`, password, avatar y delete tratan cuentas `DELETED` o inactivas como `NOT_FOUND`.
 
 ---
 
@@ -182,6 +213,6 @@ El `UUID` viene del claim `sub` del access token, inyectado por `JwtAuthFilter` 
 
 ## Extensión futura
 
-- Endpoint `DELETE /api/users/me` para baja voluntaria (soft delete).
-- Endpoint `PUT /api/users/me/password` para cambio de contraseña (requiere contraseña actual).
-- Selección de avatar desde galería predefinida.
+- Integrar cambio de email y password con modulo de correo para verificacion.
+- Sustituir avatar en base64 por modulo multimedia/almacenamiento (#121).
+- Anadir campo de XP dedicado si el producto deja de derivarlo desde `player_stats`.

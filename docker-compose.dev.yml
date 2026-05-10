@@ -26,6 +26,7 @@ services:
       - maven_cache:/root/.m2  # Caché de Maven entre reinicios
     environment:
       SPRING_PROFILES_ACTIVE: dev
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
       DDL_AUTO: create-drop    # Recrea la BD en cada arranque (dev)
 
   frontend:

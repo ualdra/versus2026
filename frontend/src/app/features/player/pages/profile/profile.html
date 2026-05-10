@@ -5,16 +5,23 @@
 
     <!-- Cabecera del perfil -->
     <div class="vs-profile__head vs-card">
-      <div class="vs-avatar" style="width: 104px; height: 104px; font-size: 38px">{{ initials() }}</div>
+      <div class="vs-avatar" style="width: 104px; height: 104px; font-size: 38px">
+        @if (me()?.avatarUrl) {
+          <img [src]="me()?.avatarUrl" alt="" />
+        } @else {
+          {{ initials() }}
+        }
+      </div>
       <div style="flex: 1">
         <div class="vs-display" style="font-size: 42px; line-height: 1">{{ username() }}</div>
         <div style="color: var(--vs-text-secondary); margin-top: 6px; font-size: 13px">
           Se unió en {{ joined() }} · <strong>{{ totalGames() }}</strong> partidas ·
-          <strong style="color: var(--vs-accent-gold)">mejor racha {{ bestStreakOverall() }}</strong>
+          <strong style="color: var(--vs-accent-gold)">mejor racha {{ bestStreakOverall() }}</strong> Â·
+          <strong>{{ unlockedCount() }}/{{ totalAchievements() }}</strong> logros
         </div>
       </div>
       <div style="display: flex; flex-direction: column; gap: 8px">
-        <button class="btn btn--ghost btn--sm">EDITAR PERFIL</button>
+        <a routerLink="/settings" class="btn btn--ghost btn--sm">EDITAR PERFIL</a>
       </div>
     </div>
 
@@ -51,6 +58,32 @@
               </table>
             }
           </div>
+        </div>
+
+        <div>
+          <div class="vs-section-title vs-section-title--with-count">
+            <span>Logros</span>
+            <span class="vs-achievements-count">{{ unlockedCount() }}/{{ totalAchievements() }}</span>
+          </div>
+          @if (achievements().length === 0) {
+            <div class="vs-card" style="color: var(--vs-text-muted); text-align: center">
+              Aun no hay logros disponibles.
+            </div>
+          } @else {
+            <div class="vs-achievements-grid">
+              @for (achievement of achievements(); track achievement.id) {
+                <article class="vs-badge-card" [class.vs-badge-card--locked]="!achievement.unlocked">
+                  <div class="vs-badge-card__top">
+                    <div class="vs-badge-card__icon">{{ achievementIcon(achievement.iconKey) }}</div>
+                    <div class="vs-badge-card__date">{{ achievementDate(achievement) }}</div>
+                  </div>
+                  <div class="vs-badge-card__name">{{ achievement.name }}</div>
+                  <div class="vs-badge-card__desc">{{ achievement.description }}</div>
+                  <div class="vs-badge-card__category">{{ achievement.category }}</div>
+                </article>
+              }
+            </div>
+          }
         </div>
       </div>
 

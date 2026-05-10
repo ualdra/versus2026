@@ -8,6 +8,7 @@ import com.versus.api.auth.repo.RefreshTokenRepository;
 import com.versus.api.common.exception.ApiException;
 import com.versus.api.common.exception.ErrorCode;
 import com.versus.api.users.Role;
+import com.versus.api.users.UserStatus;
 import com.versus.api.users.domain.User;
 import com.versus.api.users.repo.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -302,6 +303,21 @@ class AuthServiceTest {
 
             assertThatThrownBy(() -> authService.login(validRequest()))
                     .isInstanceOf(ApiException.class);
+
+            verify(passwordEncoder, never()).matches(any(), any());
+        }
+
+        @DisplayName("Usuario con status DELETED lanza UNAUTHORIZED")
+        @Test
+        void usuarioDeleted_lanzaUnauthorized() {
+            User deleted = activeUser();
+            deleted.setStatus(UserStatus.DELETED);
+            when(users.findByEmail(EMAIL)).thenReturn(Optional.of(deleted));
+
+            assertThatThrownBy(() -> authService.login(validRequest()))
+                    .isInstanceOf(ApiException.class)
+                    .satisfies(ex -> assertThat(((ApiException) ex).getCode())
+                            .isEqualTo(ErrorCode.UNAUTHORIZED));
 
             verify(passwordEncoder, never()).matches(any(), any());
         }

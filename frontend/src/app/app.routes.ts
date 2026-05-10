@@ -30,6 +30,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/player/pages/profile/profile').then(m => m.Profile),
   },
   {
+    path: 'settings',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/player/pages/settings/settings').then(m => m.Settings),
+  },
+  {
     path: 'play',
     canActivate: [authGuard],
     children: [

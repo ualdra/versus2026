@@ -1,10 +1,24 @@
 import { TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
+import { By } from '@angular/platform-browser';
+import { provideRouter, RouterOutlet } from '@angular/router';
 import { App } from './app';
+import { AchievementToastService } from './core/services/achievement-toast.service';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [
+        provideRouter([]),
+        {
+          provide: AchievementToastService,
+          useValue: {
+            items: signal([]),
+            dismiss: vi.fn(),
+          },
+        },
+      ],
     }).compileComponents();
   });
 
@@ -16,8 +30,9 @@ describe('App', () => {
 
   it('should render the router outlet', async () => {
     const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
     await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('router-outlet')).toBeTruthy();
+    expect(fixture.debugElement.query(By.directive(RouterOutlet))).toBeTruthy();
+
   });
 });

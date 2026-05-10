@@ -2,6 +2,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { UpperCasePipe } from '@angular/common';
 import { GameService } from '../../../../core/services/game.service';
+import { AchievementToastService } from '../../../../core/services/achievement-toast.service';
 import {
   QuestionBinary,
   SurvivalAnswerResponse,
@@ -19,6 +20,7 @@ type Phase = 'idle' | 'correct' | 'wrong' | 'loading';
 export class Survival implements OnInit {
   private readonly game = inject(GameService);
   private readonly router = inject(Router);
+  private readonly achievementToasts = inject(AchievementToastService);
 
   lives  = signal(3);
   streak = signal(0);
@@ -150,6 +152,7 @@ export class Survival implements OnInit {
     }
 
     if (res.gameOver) {
+      this.achievementToasts.showMany(res.achievementsUnlocked);
       const finalScore = this.score();
       const finalStreak = this.streak();
       const rounds = this.qIdx() + 1;

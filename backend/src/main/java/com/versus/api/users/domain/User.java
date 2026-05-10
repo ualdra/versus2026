@@ -1,6 +1,7 @@
 package com.versus.api.users.domain;
 
 import com.versus.api.users.Role;
+import com.versus.api.users.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -33,8 +34,12 @@ public class User {
     @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
 
-    @Column(name = "avatar_url", length = 512)
+    @Column(name = "avatar_url", columnDefinition = "TEXT")
     private String avatarUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 16)
+    private UserStatus status;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 16)
@@ -54,6 +59,7 @@ public class User {
         if (createdAt == null) createdAt = Instant.now();
         if (isActive == null) isActive = true;
         if (role == null) role = Role.PLAYER;
+        if (status == null) status = UserStatus.ACTIVE;
         updatedAt = createdAt;
     }
 

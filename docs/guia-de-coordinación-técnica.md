@@ -18,14 +18,14 @@ Un juego de preguntas multijugador con **5 modos de juego**. Las preguntas se ex
  
 ## 🗺️ Módulos del sistema
  
-El proyecto se divide en **8 módulos**. Cada issue pertenece a uno.
+El proyecto se divide en **9 módulos**. Cada issue pertenece a uno.
  
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                        VERSUS                           │
 │                                                         │
 │  [AUTH]  [USERS]  [QUESTIONS]  [GAME]  [MATCH]         │
-│  [STATS]  [SCRAPING]  [ADMIN]                          │
+│  [STATS]  [ACHIEVEMENTS]  [SCRAPING]  [ADMIN]          │
 └─────────────────────────────────────────────────────────┘
 ```
  
@@ -95,6 +95,9 @@ Gestión del perfil de usuario.
 |--------|------|-------------|
 | `GET` | `/api/users/me` | Perfil del usuario autenticado |
 | `PUT` | `/api/users/me` | Actualizar username o avatar |
+| `PUT` | `/api/users/me/password` | Cambiar contrasena (requiere contrasena actual) |
+| `PUT` | `/api/users/me/avatar` | Seleccionar avatar por URL o subir imagen multipart |
+| `DELETE` | `/api/users/me` | Eliminar cuenta con soft delete y anonimizacion |
 | `GET` | `/api/users/:id` | Perfil público de cualquier usuario |
  
 ### Contrato de perfil
@@ -111,9 +114,58 @@ GET /api/users/me
   "createdAt": "2025-01-01T00:00:00Z"
 }
 ```
+
+### Contratos de ajustes de cuenta
+
+La pantalla `/settings` centraliza cuenta, avatar, notificaciones, audio y zona de peligro.
+
+**Cambiar password:**
+```json
+PUT /api/users/me/password
+{
+  "currentPassword": "actual123",
+  "newPassword": "nueva1234"
+}
+```
+Respuesta: `204 No Content`. La nueva contrasena debe tener minimo 8 caracteres.
+
+**Seleccionar avatar predefinido:**
+```json
+PUT /api/users/me/avatar
+Content-Type: application/json
+{
+  "avatarUrl": "https://api.dicebear.com/..."
+}
+```
+
+**Subir avatar propio:**
+```http
+PUT /api/users/me/avatar
+Content-Type: multipart/form-data
+
+file=<png|jpeg|max 2MB>
+```
+
+El backend devuelve `UserMeResponse` y el frontend actualiza topbar/perfil inmediatamente. Hasta que exista el modulo de almacenamiento, el upload se guarda como `data:image/...;base64` en `users.avatar_url`.
+
+**Eliminar cuenta:**
+```http
+DELETE /api/users/me
+```
+Respuesta: `204 No Content`. En frontend se exige doble confirmacion escribiendo el username exacto. En backend se aplica soft delete con `status=DELETED`, `is_active=false` y anonimizacion de username/email/avatar/password.
+
+### Pantalla `/settings` (frontend)
+
+- Cuenta: username editable; email visible pero dependiente del modulo de email para cambio real.
+- Password: requiere password actual y confirmacion visual en el formulario.
+- Avatar: galeria de avatares predefinidos con confirmacion `Aceptar/Cancelar`; upload PNG/JPEG con crop basico y boton de subida.
+- Notificaciones: preferencias de solicitudes de amistad, invitaciones y logros guardadas en `localStorage`.
+- Audio: controles `Efectos de sonido`, `Musica de fondo`, silenciar todo y feedback reducido guardados en `localStorage`.
+- Zona de peligro: borrar cuenta exige escribir el username.
+- Topbar: muestra username/avatar reales y XP calculado desde `/api/stats/me` mientras no exista campo `xp` dedicado.
  
 ---
- 
+
 ## ❓ Módulo 3 — QUESTIONS
 > Issues: #41, #42, #43, #44, #52
  
@@ -213,7 +265,8 @@ Frontend                          Backend
   "streak": 4,
   "scoreDelta": 150,
   "nextQuestion": { ... },
-  "gameOver": false
+  "gameOver": false,
+  "achievementsUnlocked": []
 }
 ```
  
@@ -242,7 +295,8 @@ Frontend                          Backend
   "lifeDelta": 5,
   "livesRemaining": 105,
   "nextQuestion": { ... },
-  "gameOver": false
+  "gameOver": false,
+  "achievementsUnlocked": []
 }
 ```
  
@@ -351,9 +405,51 @@ GET /api/stats/me?mode=SURVIVAL
 > `avgDeviation` solo aplica a modos numéricos (PRECISION, PRECISION_DUEL).
  
 ---
+
+## Modulo 7 - ACHIEVEMENTS
+> Sistema de logros y emblemas visibles en perfil/topbar.
+
+Los logros se evaluan al terminar una partida singleplayer desde `GameService`. El catalogo inicial se siembra en arranque y cada logro solo puede desbloquearse una vez por usuario.
+
+### Endpoints
+
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| `GET` | `/api/achievements` | Catalogo completo con estado para el usuario autenticado |
+
+### Contrato de logro
+
+```json
+{
+  "id": "uuid",
+  "key": "first_game",
+  "name": "Primeros pasos",
+  "description": "Juega tu primera partida.",
+  "iconKey": "first",
+  "category": "Primeros pasos",
+  "unlocked": true,
+  "unlockedAt": "2026-05-07T15:00:00Z"
+}
+```
+
+Si un logro esta bloqueado, el backend devuelve `name: "???"`, `description: "???"` e `iconKey: "lock"` para no revelar como desbloquearlo.
+
+### Eventos WebSocket
+
+| Evento | Canal | Payload |
+|--------|-------|---------|
+| `ACHIEVEMENT_UNLOCKED` | `/user/queue/achievements` | `{ "type": "ACHIEVEMENT_UNLOCKED", "achievement": { ... } }` |
+
+### Frontend
+
+- Toast global no bloqueante al desbloquear un logro.
+- Perfil: seccion `Logros` con contador `desbloqueados/total`, grid de catalogo y fecha si esta desbloqueado.
+- Topbar/avatar: muestra como emblema el logro desbloqueado mas reciente.
  
-## 🕷️ Módulo 7 — SCRAPING
-> Issues: #45, #46, #47, #48, #49, #50, #51, #52, #97, #98
+---
+ 
+## 🕷️ Módulo 8 — SCRAPING
+
  
 Scrapers en Scrapy que extraen datos reales y los insertan en PostgreSQL como preguntas.
  
@@ -399,9 +495,10 @@ Moderador revisa → estado: ACTIVE
 | `GET` | `/api/admin/spiders/{name}/runs` | Historial de runs del spider ordenados por fecha descendente | #97 ✅ |
  
 ---
- 
-## 🛡️ Módulo 8 — ADMIN & MODERACIÓN
-> Issues: #80, #81, #82, #100
+
+## 🛡️ Módulo 9 — ADMIN & MODERACIÓN
+> Issues: #80, #81, #82
+
  
 Gestión de preguntas reportadas y administración de la plataforma.
  

@@ -73,6 +73,14 @@ export class AuthService {
     localStorage.setItem(REFRESH_KEY, refresh);
   }
 
+  updateCachedUser(patch: Partial<AuthUser>): void {
+    const current = this._user();
+    if (!current) return;
+    const next = { ...current, ...patch };
+    localStorage.setItem(USER_KEY, JSON.stringify(next));
+    this._user.set(next);
+  }
+
   clear(): void {
     localStorage.removeItem(ACCESS_KEY);
     localStorage.removeItem(REFRESH_KEY);

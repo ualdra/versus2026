@@ -18,19 +18,23 @@
     }
   </nav>
 
-  @if (authUser()) {
-    <div class="vs-topbar__user">
-      <div style="text-align: right">
-        <div style="font-weight: 600; font-size: 13px">{{ username() }}</div>
-        @if (xp() !== null) {
-          <div class="vs-mono" style="font-size: 11px; color: var(--vs-text-muted)">{{ xp() }} XP</div>
-        }
-      </div>
-      @if (avatarUrl(); as avatar) {
-        <img class="vs-avatar vs-avatar--image" [src]="avatar" [alt]="username()" />
+  <a class="vs-topbar__user" routerLink="/settings" title="Ajustes">
+    <div style="text-align: right">
+      <div style="font-weight: 600; font-size: 13px">{{ displayUser().name }}</div>
+      <div class="vs-mono" style="font-size: 11px; color: var(--vs-text-muted)">{{ displayUser().xp }} XP</div>
+    </div>
+    <div class="vs-avatar">
+      @if (displayUser().avatarUrl) {
+        <img [src]="displayUser().avatarUrl" alt="" />
       } @else {
-        <div class="vs-avatar">{{ initials() }}</div>
+        {{ initials() }}
+      }
+      @if (latestAchievement(); as achievement) {
+        <span class="vs-avatar__achievement" [title]="achievement.name">
+          {{ achievementLabel(achievement) }}
+        </span>
       }
     </div>
-  }
+  </a>
+
 </div>

@@ -7,6 +7,7 @@ import com.versus.api.auth.dto.RegisterRequest;
 import com.versus.api.auth.repo.RefreshTokenRepository;
 import com.versus.api.common.exception.ApiException;
 import com.versus.api.users.Role;
+import com.versus.api.users.UserStatus;
 import com.versus.api.users.domain.User;
 import com.versus.api.users.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,7 @@ public class AuthService {
                 .email(req.email())
                 .passwordHash(passwordEncoder.encode(req.password()))
                 .role(Role.PLAYER)
+                .status(UserStatus.ACTIVE)
                 .isActive(true)
                 .build();
         users.save(user);
@@ -49,6 +51,9 @@ public class AuthService {
         User user = users.findByEmail(req.email())
                 .orElseThrow(() -> ApiException.unauthorized("Invalid credentials"));
         if (Boolean.FALSE.equals(user.getIsActive())) {
+            throw ApiException.unauthorized("Account disabled");
+        }
+        if (UserStatus.DELETED.equals(user.getStatus())) {
             throw ApiException.unauthorized("Account disabled");
         }
         if (!passwordEncoder.matches(req.password(), user.getPasswordHash())) {

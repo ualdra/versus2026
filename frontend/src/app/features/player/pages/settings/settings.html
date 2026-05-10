@@ -1,0 +1,140 @@
+<div class="vs-settings-page">
+  <app-topbar active="settings" />
+
+  <main class="vs-settings">
+    <header class="vs-settings__header">
+      <div>
+        <div class="vs-section-title">Centro de control</div>
+        <h1 class="vs-display">Ajustes</h1>
+      </div>
+      <div class="vs-avatar vs-avatar--lg">
+        @if (topbarUser().avatarUrl) {
+          <img [src]="topbarUser().avatarUrl" alt="" />
+        } @else {
+          {{ initials() }}
+        }
+      </div>
+    </header>
+
+    @if (status()) {
+      <div class="vs-alert vs-alert--ok">{{ status() }}</div>
+    }
+    @if (error()) {
+      <div class="vs-alert vs-alert--err">{{ error() }}</div>
+    }
+
+    <section class="vs-settings__grid">
+      <div class="vs-settings__section">
+        <div class="vs-section-title">Cuenta</div>
+        <form class="vs-panel" [formGroup]="accountForm" (ngSubmit)="saveAccount()">
+          <label>
+            Username
+            <input class="vs-input" formControlName="username" autocomplete="username" />
+          </label>
+          <label>
+            Email
+            <input class="vs-input" formControlName="email" autocomplete="email" />
+          </label>
+          <button class="btn btn--primary" type="submit" [disabled]="accountForm.invalid">Guardar cuenta</button>
+        </form>
+
+        <form class="vs-panel" [formGroup]="passwordForm" (ngSubmit)="savePassword()">
+          <label>
+            Contrasena actual
+            <input class="vs-input" type="password" formControlName="currentPassword" autocomplete="current-password" />
+          </label>
+          <label>
+            Nueva contrasena
+            <input class="vs-input" type="password" formControlName="newPassword" autocomplete="new-password" />
+          </label>
+          <label>
+            Confirmar nueva contrasena
+            <input class="vs-input" type="password" formControlName="confirmPassword" autocomplete="new-password" />
+          </label>
+          <button class="btn btn--ghost" type="submit" [disabled]="passwordForm.invalid">Cambiar contrasena</button>
+        </form>
+      </div>
+
+      <div class="vs-settings__section">
+        <div class="vs-section-title">Avatar</div>
+        <div class="vs-panel">
+          <div class="vs-avatar-grid">
+            @for (avatar of predefinedAvatars; track avatar) {
+              <button
+                type="button"
+                class="vs-avatar-choice"
+                [class.is-selected]="selectedPredefinedAvatar() === avatar"
+                (click)="selectAvatar(avatar)"
+              >
+                <img [src]="avatar" alt="" />
+              </button>
+            }
+          </div>
+          @if (selectedPredefinedAvatar()) {
+            <div class="vs-avatar-confirm">
+              <div class="vs-avatar vs-avatar--lg">
+                <img [src]="selectedPredefinedAvatar()" alt="" />
+              </div>
+              <div class="vs-avatar-confirm__actions">
+                <button class="btn btn--primary btn--sm" type="button" (click)="confirmSelectedAvatar()">Aceptar</button>
+                <button class="btn btn--ghost btn--sm" type="button" (click)="cancelSelectedAvatar()">Cancelar</button>
+              </div>
+            </div>
+          }
+          <label>
+            Imagen propia
+            <input class="vs-input" type="file" accept="image/*" (change)="onAvatarFile($event)" />
+          </label>
+          @if (uploadedPreview()) {
+            <div class="vs-cropper">
+              <img
+                [src]="uploadedPreview()"
+                alt=""
+                [style.transform]="'translate(' + cropForm.value.x + '%, ' + cropForm.value.y + '%) scale(' + cropForm.value.zoom + ')'"
+              />
+            </div>
+            <div class="vs-range-row" [formGroup]="cropForm">
+              <label>Zoom <input type="range" min="1" max="2" step="0.05" formControlName="zoom" /></label>
+              <label>X <input type="range" min="-50" max="50" step="1" formControlName="x" /></label>
+              <label>Y <input type="range" min="-50" max="50" step="1" formControlName="y" /></label>
+            </div>
+            <button class="btn btn--primary" type="button" (click)="uploadCroppedAvatar()">Subir avatar</button>
+          }
+        </div>
+      </div>
+
+      <div class="vs-settings__section">
+        <div class="vs-section-title">Notificaciones</div>
+        <form class="vs-panel" [formGroup]="notificationsForm">
+          <label class="vs-toggle"><span>Solicitudes de amistad</span><input type="checkbox" formControlName="friendRequests" /></label>
+          <label class="vs-toggle"><span>Invitaciones a partida</span><input type="checkbox" formControlName="matchInvites" /></label>
+          <label class="vs-toggle"><span>Logros desbloqueados</span><input type="checkbox" formControlName="achievements" /></label>
+        </form>
+      </div>
+
+      <div class="vs-settings__section">
+        <div class="vs-section-title">Audio</div>
+        <form class="vs-panel" [formGroup]="audioForm">
+          <label>Efectos de sonido <input type="range" min="0" max="100" formControlName="sfx" /></label>
+          <label>Musica de fondo <input type="range" min="0" max="100" formControlName="bgm" /></label>
+          <label class="vs-toggle"><span>Silenciar todo</span><input type="checkbox" formControlName="muted" /></label>
+          <label class="vs-toggle"><span>Feedback reducido</span><input type="checkbox" formControlName="reducedFeedback" /></label>
+        </form>
+      </div>
+    </section>
+
+    <section class="vs-danger">
+      <div>
+        <div class="vs-section-title">Zona de peligro</div>
+        <h2>Eliminar cuenta</h2>
+      </div>
+      <form [formGroup]="deleteForm" (ngSubmit)="deleteAccount()">
+        <label>
+          Escribe {{ me()?.username || 'tu username' }}
+          <input class="vs-input" formControlName="username" />
+        </label>
+        <button class="btn btn--danger" type="submit" [disabled]="deleting()">Eliminar cuenta</button>
+      </form>
+    </section>
+  </main>
+</div>

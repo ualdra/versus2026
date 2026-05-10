@@ -1,0 +1,21 @@
+<div class="vs-achievement-toasts" aria-live="polite" aria-atomic="false">
+  @for (toast of toasts.items(); track toast.id) {
+    <article class="vs-achievement-toast">
+      <div class="vs-achievement-toast__icon">
+        {{ iconLabel(toast.achievement.iconKey) }}
+      </div>
+      <div>
+        <div class="vs-achievement-toast__eyebrow">Logro desbloqueado</div>
+        <div class="vs-achievement-toast__name">{{ toast.achievement.name }}</div>
+      </div>
+      <button
+        type="button"
+        class="vs-achievement-toast__close"
+        aria-label="Cerrar"
+        (click)="toasts.dismiss(toast.id)"
+      >
+        x
+      </button>
+    </article>
+  }
+</div>
