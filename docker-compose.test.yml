@@ -15,11 +15,15 @@
 #
 # Uso 2) Solo Postgres en contenedor, tests desde IDE/host:
 #   docker compose -f docker-compose.test.yml --profile test up -d db-test
-#   cd backend && ./mvnw verify -Dsurefire.skip=true
+#   cd backend && ./mvnw verify
 #
-# `application-it.properties` apunta a localhost:5433 (uso 2). Dentro de
-# `backend-test` (uso 1) las env vars SPRING_DATASOURCE_* sobrescriben para
-# apuntar a `db-test:5432`.
+# `application-it.properties` apunta a localhost:5433 por defecto (uso 2).
+# Dentro de `backend-test` (uso 1) las env vars IT_DB_* sobrescriben los
+# placeholders para apuntar a `db-test:5432`. Usamos IT_DB_* en lugar de
+# SPRING_DATASOURCE_* a propósito: estas últimas se aplicarían a todo el
+# contenedor y contaminarían las pruebas unitarias de surefire (perfil
+# `test` con H2), provocando un mismatch driver/URL que rompe
+# ApiApplicationTests.contextLoads.
 
 name: versus
 
@@ -52,21 +56,23 @@ services:
       db-test:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db-test:5432/versus_test
-      SPRING_DATASOURCE_USERNAME: versus_test
-      SPRING_DATASOURCE_PASSWORD: versus_test_pass
+      IT_DB_HOST: db-test
+      IT_DB_PORT: "5432"
+      IT_DB_NAME: versus_test
+      IT_DB_USER: versus_test
+      IT_DB_PASSWORD: versus_test_pass
     volumes:
       - ./backend:/app
       - maven_cache:/root/.m2
     working_dir: /app
     networks:
       - app-network
-    # `verify` invoca compile + test-compile + (surefire saltado) + failsafe.
-    # Llamar a failsafe:integration-test directamente NO compila y rompe el
-    # discovery con NoClassDefFoundError.
+    # `verify` invoca compile + test-compile + surefire + failsafe.
+    # Surefire (perfil `test`, H2 en memoria) y failsafe (perfil `it`,
+    # postgres de db-test vía IT_DB_*) corren con configuraciones aisladas.
     # Hacemos chmod y ejecutamos mvnw en un solo comando de shell.
     command: >
-      sh -c "chmod +x /app/mvnw && ./mvnw verify -Dsurefire.skip=true --batch-mode -Dstyle.color=never"
+      sh -c "chmod +x /app/mvnw && ./mvnw verify --batch-mode -Dstyle.color=never"
 
 networks:
   app-network:
