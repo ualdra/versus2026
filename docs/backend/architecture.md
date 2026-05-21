@@ -45,6 +45,8 @@ graph TD
     root --> stats
     root --> moderation
     root --> scraping
+    root --> media
+    root --> storage
 
     common --> common_exc["common.exception"]
     common --> common_dto["common.dto"]
@@ -75,6 +77,10 @@ graph TD
 
     scraping --> scraping_domain["scraping.domain"]
     scraping --> scraping_repo["scraping.repo"]
+
+    media --> media_domain["media.domain"]
+    media --> media_dto["media.dto"]
+    media --> media_repo["media.repo"]
 ```
 
 ## Flujo de una petición HTTP autenticada
@@ -116,6 +122,8 @@ sequenceDiagram
 | `stats` | Estadísticas acumuladas por modo de juego |
 | `moderation` | Reportes de preguntas por usuarios |
 | `scraping` | Gestión de spiders y sus ejecuciones |
+| `media` | Metadatos, permisos y API de assets multimedia |
+| `storage` | Abstracción de almacenamiento local de archivos |
 
 ## Manejo de errores
 

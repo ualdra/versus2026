@@ -2,11 +2,25 @@ package com.versus.api.users;
 
 import com.versus.api.common.exception.ApiException;
 import com.versus.api.common.exception.ErrorCode;
+import com.versus.api.media.MediaService;
+import com.versus.api.media.MediaKind;
+import com.versus.api.media.MediaVisibility;
+import com.versus.api.media.dto.MediaAssetResponse;
 import com.versus.api.users.domain.User;
 import com.versus.api.users.dto.ChangePasswordRequest;
 import com.versus.api.users.dto.UpdateMeRequest;
 import com.versus.api.users.dto.UserMeResponse;
 import com.versus.api.users.repo.UserRepository;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -32,6 +46,7 @@ class UserServiceTest {
 
     @Mock UserRepository users;
     @Mock PasswordEncoder passwordEncoder;
+    @Mock MediaService mediaService;
     @InjectMocks UserService userService;
 
     private static final UUID USER_ID = UUID.fromString("bbbb0000-0000-0000-0000-000000000001");
@@ -184,15 +199,20 @@ class UserServiceTest {
                             .isEqualTo(ErrorCode.VALIDATION_ERROR));
         }
 
-        @DisplayName("Upload PNG guarda data URL base64")
+        @DisplayName("Upload PNG guarda URL del storage")
         @Test
-        void uploadPng_guardaDataUrl() {
+        void uploadPng_guardaUrlDelStorage() {
             User user = activeUser();
             stubActiveUser(user);
+            MultipartFile file = mock(MultipartFile.class);
+            MediaAssetResponse avatarResponse = new MediaAssetResponse(
+                    "asset-id", MediaKind.IMAGE, "avatar.png", "image/png", 3,
+                    MediaVisibility.PUBLIC, "https://storage/avatar.png", Instant.now());
+            when(mediaService.uploadAvatar(USER_ID, file)).thenReturn(avatarResponse);
 
-            UserMeResponse res = userService.updateAvatarUpload(USER_ID, new byte[] { 1, 2, 3 }, "image/png");
+            UserMeResponse res = userService.updateAvatar(USER_ID, file);
 
-            assertThat(res.avatarUrl()).isEqualTo("data:image/png;base64,AQID");
+            assertThat(res.avatarUrl()).isEqualTo("https://storage/avatar.png");
             verify(users).save(user);
         }
 
@@ -200,9 +220,11 @@ class UserServiceTest {
         @Test
         void uploadMayorDe2Mb_lanzaValidation() {
             stubActiveUser(activeUser());
-            byte[] tooLarge = new byte[(2 * 1024 * 1024) + 1];
+            MultipartFile file = mock(MultipartFile.class);
+            when(mediaService.uploadAvatar(USER_ID, file))
+                    .thenThrow(ApiException.validation("File exceeds maximum size"));
 
-            assertThatThrownBy(() -> userService.updateAvatarUpload(USER_ID, tooLarge, "image/jpeg"))
+            assertThatThrownBy(() -> userService.updateAvatar(USER_ID, file))
                     .isInstanceOf(ApiException.class)
                     .satisfies(ex -> assertThat(((ApiException) ex).getCode())
                             .isEqualTo(ErrorCode.VALIDATION_ERROR));
@@ -212,8 +234,11 @@ class UserServiceTest {
         @Test
         void uploadNoImagen_lanzaValidation() {
             stubActiveUser(activeUser());
+            MultipartFile file = mock(MultipartFile.class);
+            when(mediaService.uploadAvatar(USER_ID, file))
+                    .thenThrow(ApiException.validation("Avatar must be an image"));
 
-            assertThatThrownBy(() -> userService.updateAvatarUpload(USER_ID, new byte[] { 1 }, "text/plain"))
+            assertThatThrownBy(() -> userService.updateAvatar(USER_ID, file))
                     .isInstanceOf(ApiException.class)
                     .satisfies(ex -> assertThat(((ApiException) ex).getCode())
                             .isEqualTo(ErrorCode.VALIDATION_ERROR));
