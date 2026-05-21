@@ -12,6 +12,9 @@ import com.versus.api.users.Role;
 import com.versus.api.users.UserStatus;
 import com.versus.api.users.domain.User;
 import com.versus.api.users.repo.UserRepository;
+
+import jakarta.transaction.Transactional;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,16 +24,19 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Transactional()
 @DisplayName("Capa 0 — Invariantes de esquema")
 class SchemaConstraintsIT extends AbstractIT {
 
-    @Autowired UserRepository userRepo;
-    @Autowired QuestionRepository questionRepo;
-    @Autowired RefreshTokenRepository refreshTokenRepo;
+    @Autowired
+    UserRepository userRepo;
+    @Autowired
+    QuestionRepository questionRepo;
+    @Autowired
+    RefreshTokenRepository refreshTokenRepo;
 
     @Test
     @DisplayName("C1 — users.email es único")
