@@ -14,7 +14,6 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.*;
 
-@Transactional()
 @DisplayName("Capa 1 — Auth")
 class AuthFlowIT extends AbstractIT {
 

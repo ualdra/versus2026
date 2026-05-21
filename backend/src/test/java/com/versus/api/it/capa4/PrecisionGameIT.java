@@ -20,7 +20,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 
-@Transactional()
 @DisplayName("Capa 4 — Precision")
 class PrecisionGameIT extends AbstractIT {
 

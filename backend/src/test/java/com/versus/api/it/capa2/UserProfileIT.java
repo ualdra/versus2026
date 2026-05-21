@@ -16,7 +16,6 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.*;
 
-@Transactional()
 @DisplayName("Capa 2 — Usuarios")
 class UserProfileIT extends AbstractIT {
 

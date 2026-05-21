@@ -21,7 +21,6 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.*;
 
-@Transactional()
 @DisplayName("Capa 3 — Preguntas y Moderación")
 class QuestionsAndModerationIT extends AbstractIT {
 

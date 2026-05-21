@@ -31,7 +31,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-@Transactional()
 @DisplayName("Capa 7 — Journeys E2E")
 class EndToEndJourneyIT extends AbstractIT {
 

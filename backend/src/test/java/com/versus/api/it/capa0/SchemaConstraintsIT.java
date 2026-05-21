@@ -27,7 +27,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Transactional()
 @DisplayName("Capa 0 — Invariantes de esquema")
 class SchemaConstraintsIT extends AbstractIT {
 
