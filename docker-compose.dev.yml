@@ -49,7 +49,6 @@ services:
       MAIL_FROM: ${MAIL_FROM:-noreply@versus-dev.local}
       MAIL_FROM_NAME: ${MAIL_FROM_NAME:-Versus Dev}
       VERSUS_EMAIL_ENABLED: ${VERSUS_EMAIL_ENABLED:-false}
-
       FRONTEND_BASE_URL: ${FRONTEND_BASE_URL:-http://localhost:4200}
 
   frontend:

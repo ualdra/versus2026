@@ -5,6 +5,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
+# scrapy-playwright depends on Playwright wheels, which are not available for
+# Alpine/musl. Debian slim keeps the image reasonably small and compatible.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     libffi-dev \
