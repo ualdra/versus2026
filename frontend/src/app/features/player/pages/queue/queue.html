@@ -1,0 +1,33 @@
+<div class="vs-queue-page">
+  <app-topbar active="play" />
+
+  <div class="vs-queue">
+    <div class="vs-queue__header">
+      <div class="vs-q-label">MATCHMAKING</div>
+      <h1 class="vs-display vs-queue__title">{{ modeLabel() }}</h1>
+    </div>
+
+    @if (status() === 'connecting') {
+      <div class="vs-queue__status">Conectando…</div>
+    }
+
+    @if (status() === 'searching') {
+      <div class="vs-loader vs-queue__loader">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="vs-display vs-queue__bigtext">BUSCANDO RIVAL</div>
+      <div class="vs-mono vs-queue__timer">{{ formatElapsed() }}</div>
+    }
+
+    @if (status() === 'error') {
+      <div class="vs-queue__error">
+        <div class="vs-display" style="color: var(--vs-accent-red); font-size: 28px">ERROR</div>
+        <div style="margin-top: 8px">{{ errorMsg() }}</div>
+      </div>
+    }
+
+    <button class="btn btn--ghost" (click)="cancel()" [disabled]="status() === 'cancelling'">
+      {{ status() === 'cancelling' ? 'CANCELANDO…' : 'CANCELAR' }}
+    </button>
+  </div>
+</div>

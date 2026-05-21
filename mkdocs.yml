@@ -72,10 +72,15 @@ nav:
       - Estadísticas: backend/modules/stats.md
       - Moderación: backend/modules/moderation.md
       - Scraping: backend/modules/scraping.md
+      - WebSocket: backend/modules/websocket.md
+      - Media: backend/modules/media.md
   - Sprints:
     - Sprint 1-2: backend-mvp-sprint-1-2.md
     - Sprint 3: backend-mvp-sprint-3.md
     - Sprint 4: backend-mvp-sprint-4.md
+  - Guías:
+    - Moderación de preguntas: moderation.md
+    - Pipeline de scraping: scraping-pipeline.md
   - Base de datos: bd-scheme.md
   - API — Contratos: guia-de-coordinación-técnica.md
   - Style guide: style-guide.md

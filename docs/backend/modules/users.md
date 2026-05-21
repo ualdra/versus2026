@@ -29,12 +29,13 @@ classDiagram
     class UserService {
         <<Service>>
         -UserRepository userRepo
+        -MediaService mediaService
         +getMe(UUID userId) UserMeResponse
         +updateMe(UUID userId, UpdateMeRequest) UserMeResponse
         +changePassword(UUID userId, ChangePasswordRequest) void
         +updateAvatar(UUID userId, String avatarUrl) UserMeResponse
-        +updateAvatarUpload(UUID userId, byte[] bytes, String contentType) UserMeResponse
         +deleteMe(UUID userId) void
+        +updateAvatar(UUID userId, MultipartFile) UserMeResponse
         +getPublic(UUID targetId) UserPublicResponse
     }
 
@@ -129,8 +130,8 @@ classDiagram
 | `PUT` | `/api/users/me` | Bearer | `UpdateMeRequest` | `200` `UserMeResponse` |
 | `PUT` | `/api/users/me/password` | Bearer | `ChangePasswordRequest` | `204` |
 | `PUT` | `/api/users/me/avatar` | Bearer | JSON `UpdateAvatarRequest` | `200` `UserMeResponse` |
-| `PUT` | `/api/users/me/avatar` | Bearer | multipart `file` | `200` `UserMeResponse` |
 | `DELETE` | `/api/users/me` | Bearer | — | `204` |
+| `PUT` | `/api/users/me/avatar` | Bearer | `multipart/form-data` con `file` | `200` `UserMeResponse` |
 | `GET` | `/api/users/{id}` | Bearer | — | `200` `UserPublicResponse` |
 
 ### Diferencia entre `UserMeResponse` y `UserPublicResponse`
@@ -186,11 +187,10 @@ Tabla: users
 ---
 
 ## Reglas de negocio
-
 1. **Email visible pero no editable desde `UpdateMeRequest`**: el cambio real depende del modulo de email.
 2. **Cambio de password seguro**: `PUT /api/users/me/password` exige `currentPassword` y `newPassword` de minimo 8 caracteres.
 3. **Avatar predefinido**: `PUT /api/users/me/avatar` con JSON guarda una URL corta; el frontend pide confirmacion antes de persistir.
-4. **Avatar propio**: `PUT /api/users/me/avatar` multipart acepta imagenes de hasta 2MB. Temporalmente se guarda como `data:image/...;base64` hasta implementar almacenamiento externo.
+4. **Avatar propio**: `PUT /api/users/me` conserva `avatarUrl` para compatibilidad, pero `PUT /api/users/me/avatar` delega en `media` y actualiza la URL tras subir la imagen.
 5. **Soft delete**: `DELETE /api/users/me` marca `status = DELETED`, `isActive = false`, anonimiza username/email/password/avatar y bloquea login/perfiles futuros.
 6. **Usuarios eliminados/inactivos**: `getMe`, `getPublic`, `updateMe`, password, avatar y delete tratan cuentas `DELETED` o inactivas como `NOT_FOUND`.
 
