@@ -64,8 +64,9 @@ services:
     # `verify` invoca compile + test-compile + (surefire saltado) + failsafe.
     # Llamar a failsafe:integration-test directamente NO compila y rompe el
     # discovery con NoClassDefFoundError.
+    # Hacemos chmod y ejecutamos mvnw en un solo comando de shell.
     command: >
-      ./mvnw verify -Dsurefire.skip=true --batch-mode -Dstyle.color=never
+      sh -c "chmod +x /app/mvnw && ./mvnw verify -Dsurefire.skip=true --batch-mode -Dstyle.color=never"
 
 networks:
   app-network:
