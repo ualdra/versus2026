@@ -18,7 +18,7 @@
 		<jjwt.version>0.12.6</jjwt.version>
 		<springdoc.version>2.7.0</springdoc.version>
 		<aws.sdk.version>2.30.31</aws.sdk.version>
-		<lombok.version>1.18.36</lombok.version>
+		<lombok.version>1.18.42</lombok.version>
 	</properties>
 	<dependencies>
 
