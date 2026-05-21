@@ -2,43 +2,120 @@
   <app-topbar active="play" />
 
   <div class="vs-lobby">
-    <div style="text-align: center">
-      <div class="vs-q-label">SALA · DUELO BINARIO</div>
-      <div class="vs-display" style="font-size: 32px; margin-top: 6px">ESPERANDO RIVAL</div>
-    </div>
-
-    <div class="vs-lobby__code">
-      <div class="vs-stat-label" style="margin-bottom: 8px">Código de sala</div>
-      <div class="vs-mono vs-lobby__code-num">7K2X-94</div>
-      <button class="btn btn--ghost btn--sm" style="margin-top: 10px">COPIAR ENLACE</button>
-    </div>
-
-    <div class="vs-lobby__duel">
-      <div class="vs-lobby__player is-ready">
-        <div class="vs-avatar vs-avatar--xl">AR</div>
-        <div class="vs-display" style="font-size: 24px; margin-top: 10px">aritzz92</div>
-        <div class="vs-mono" style="color: var(--vs-text-muted); font-size: 12px">Nivel 14 · #312</div>
-        <span class="vs-pill vs-pill--ok" style="margin-top: 10px">
-          <span class="vs-pill__dot"></span>LISTO
-        </span>
+    @if (status() === 'loading') {
+      <div class="vs-lobby__loading">
+        <div class="vs-loader"><span></span><span></span><span></span></div>
+        <div class="vs-mono" style="margin-top: 12px; color: var(--vs-text-muted)">Cargando sala…</div>
       </div>
+    }
 
-      <div class="vs-lobby__vs vs-display">VS</div>
+    @if (status() === 'error') {
+      <div class="vs-lobby__error">
+        <div class="vs-display" style="color: var(--vs-accent-red); font-size: 28px">SALA NO DISPONIBLE</div>
+        <div style="margin-top: 8px">{{ errorMsg() }}</div>
+        <a routerLink="/play/select" class="btn btn--primary" style="margin-top: 16px">VOLVER</a>
+      </div>
+    }
 
-      <div class="vs-lobby__player is-waiting">
-        <div class="vs-avatar vs-avatar--xl"
-             style="background: var(--vs-bg-input); border-style: dashed; color: var(--vs-text-muted)">?</div>
-        <div class="vs-display" style="font-size: 24px; margin-top: 10px; color: var(--vs-text-muted)">—</div>
-        <div class="vs-mono" style="color: var(--vs-text-muted); font-size: 12px">Buscando…</div>
-        <div class="vs-loader" style="margin-top: 10px">
-          <span></span><span></span><span></span>
+    @if (status() === 'left') {
+      <div class="vs-lobby__error">
+        <div class="vs-display" style="color: var(--vs-accent-gold); font-size: 28px">EL RIVAL HA ABANDONADO</div>
+        <div style="margin-top: 8px">Volviendo al menú…</div>
+      </div>
+    }
+
+    @if (status() === 'lobby' || status() === 'starting' || status() === 'started') {
+      <div style="text-align: center">
+        <div class="vs-q-label">SALA · {{ modeLabel() }}</div>
+        <div class="vs-display" style="font-size: 32px; margin-top: 6px">
+          @if (status() === 'lobby') { ESPERANDO RIVAL }
+          @if (status() === 'starting') { COMENZANDO… }
+          @if (status() === 'started') { ¡PARTIDA INICIADA! }
         </div>
       </div>
-    </div>
 
-    <div style="display: flex; gap: 12px">
-      <a routerLink="/play/select" class="btn btn--ghost">CANCELAR</a>
-      <button class="btn btn--primary">RETAR A AMIGO</button>
-    </div>
+      @if (lobby()?.roomCode) {
+        <div class="vs-lobby__code">
+          <div class="vs-stat-label" style="margin-bottom: 8px">Código de sala</div>
+          <div class="vs-mono vs-lobby__code-num">{{ lobby()!.roomCode }}</div>
+        </div>
+      }
+
+      <div class="vs-lobby__duel">
+        @if (selfPlayer(); as me) {
+          <div class="vs-lobby__player" [class.is-ready]="me.ready">
+            <div class="vs-avatar vs-avatar--xl">{{ me.username.slice(0, 2).toUpperCase() }}</div>
+            <div class="vs-display" style="font-size: 24px; margin-top: 10px">{{ me.username }}</div>
+            @if (me.ready) {
+              <span class="vs-pill vs-pill--ok" style="margin-top: 10px">
+                <span class="vs-pill__dot"></span>LISTO
+              </span>
+            } @else {
+              <span class="vs-mono" style="margin-top: 10px; color: var(--vs-text-muted); font-size: 12px">
+                Pulsa LISTO cuando estés
+              </span>
+            }
+          </div>
+        }
+
+        <div class="vs-lobby__vs vs-display">VS</div>
+
+        @if (opponentSlot(); as opp) {
+          <div class="vs-lobby__player" [class.is-ready]="opp.ready">
+            <div class="vs-avatar vs-avatar--xl">{{ opp.username.slice(0, 2).toUpperCase() }}</div>
+            <div class="vs-display" style="font-size: 24px; margin-top: 10px">{{ opp.username }}</div>
+            @if (opp.ready) {
+              <span class="vs-pill vs-pill--ok" style="margin-top: 10px">
+                <span class="vs-pill__dot"></span>LISTO
+              </span>
+            } @else {
+              <span class="vs-mono" style="margin-top: 10px; color: var(--vs-text-muted); font-size: 12px">
+                Esperando…
+              </span>
+            }
+          </div>
+        } @else {
+          <div class="vs-lobby__player is-waiting">
+            <div class="vs-avatar vs-avatar--xl"
+                 style="background: var(--vs-bg-input); border-style: dashed; color: var(--vs-text-muted)">?</div>
+            <div class="vs-display" style="font-size: 24px; margin-top: 10px; color: var(--vs-text-muted)">—</div>
+            <div class="vs-mono" style="color: var(--vs-text-muted); font-size: 12px">Buscando…</div>
+            <div class="vs-loader" style="margin-top: 10px">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        }
+      </div>
+
+      @if (status() === 'starting' && countdown() !== null) {
+        <div class="vs-lobby__countdown">
+          <div class="vs-q-label">EMPIEZA EN</div>
+          <div class="vs-display vs-lobby__countdown-num">{{ countdown() }}</div>
+        </div>
+      }
+
+      @if (status() === 'started') {
+        <div class="vs-lobby__started">
+          <div class="vs-mono" style="color: var(--vs-text-muted); text-align: center">
+            La UI del modo de juego está pendiente (PR #91/#92/#93).
+          </div>
+          <a routerLink="/play/select" class="btn btn--ghost" style="margin-top: 12px">VOLVER AL MENÚ</a>
+        </div>
+      }
+
+      @if (status() === 'lobby' || status() === 'starting') {
+        <div style="display: flex; gap: 12px">
+          <button class="btn btn--ghost" (click)="cancel()">CANCELAR</button>
+          <button
+            class="btn"
+            [class.btn--primary]="!selfReady()"
+            [class.btn--ghost]="selfReady()"
+            [disabled]="status() !== 'lobby'"
+            (click)="toggleReady()">
+            {{ selfReady() ? 'QUITAR LISTO' : 'LISTO' }}
+          </button>
+        </div>
+      }
+    }
   </div>
 </div>

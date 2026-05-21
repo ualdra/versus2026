@@ -59,7 +59,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/player/pages/mode-select/mode-select').then(m => m.ModeSelect),
       },
       {
-        path: 'lobby',
+        path: 'queue/:mode',
+        loadComponent: () => import('./features/player/pages/queue/queue').then(m => m.Queue),
+      },
+      {
+        path: 'lobby/:matchId',
         loadComponent: () => import('./features/player/pages/lobby/lobby').then(m => m.Lobby),
       },
       {

@@ -30,21 +30,21 @@ export class ModeSelect {
       color: 'var(--vs-accent-gold)',
       desc: 'Supervivencia, pero con alguien respirándote en la nuca. Gana el último en pie.',
       tag: '2J · Online',
-      route: '/play/lobby',
+      route: '/play/queue/binary',
     },
     {
       key: 'pduel', name: 'DUELO DE PRECISIÓN', icon: '⊕',
       color: 'var(--vs-accent-green)',
       desc: 'Modo Precisión a dos bandas. El primero a cero, fuera.',
       tag: '2J · Online',
-      route: '/play/lobby',
+      route: '/play/queue/pduel',
     },
     {
       key: 'sabotage', name: 'SABOTAJE', icon: '⚡',
       color: 'var(--vs-accent-purple)',
       desc: 'No pierdes vida fallando: se la quitas al rival si aciertas mejor.',
       tag: '2J · Online',
-      route: '/play/lobby',
+      route: '/play/queue/sabotage',
     },
   ];
 }
