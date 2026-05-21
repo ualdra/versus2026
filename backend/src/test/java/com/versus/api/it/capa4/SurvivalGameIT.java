@@ -6,6 +6,8 @@ import com.versus.api.match.repo.MatchRepository;
 import com.versus.api.users.domain.User;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ValidatableResponse;
+import jakarta.transaction.Transactional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -18,16 +20,19 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 
+@Transactional()
 @DisplayName("Capa 4 — Survival")
 class SurvivalGameIT extends AbstractIT {
 
-    @Autowired MatchRepository matchRepo;
+    @Autowired
+    MatchRepository matchRepo;
 
     private User player;
 
     @BeforeEach
     void setupPlayer() {
-        for (int i = 0; i < 8; i++) factories.binaryQuestion();
+        for (int i = 0; i < 8; i++)
+            factories.binaryQuestion();
         player = factories.user();
     }
 
@@ -46,8 +51,7 @@ class SurvivalGameIT extends AbstractIT {
                 .body(Map.of(
                         "sessionId", sessionId.toString(),
                         "questionId", questionId.toString(),
-                        "optionId", optionId.toString()
-                ))
+                        "optionId", optionId.toString()))
                 .post("/api/game/survival/answer")
                 .then();
     }
@@ -169,8 +173,7 @@ class SurvivalGameIT extends AbstractIT {
                     .body(Map.of(
                             "sessionId", sessionId.toString(),
                             "questionId", questionId.toString(),
-                            "optionId", anyOption.toString()
-                    ))
+                            "optionId", anyOption.toString()))
                     .post("/api/game/survival/answer")
                     .then()
                     .statusCode(403)

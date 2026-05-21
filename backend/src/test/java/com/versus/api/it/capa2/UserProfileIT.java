@@ -4,6 +4,9 @@ import com.versus.api.it.support.AbstractIT;
 import com.versus.api.it.support.Factories;
 import com.versus.api.users.UserStatus;
 import com.versus.api.users.domain.User;
+
+import jakarta.transaction.Transactional;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,6 +16,7 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.*;
 
+@Transactional()
 @DisplayName("Capa 2 — Usuarios")
 class UserProfileIT extends AbstractIT {
 

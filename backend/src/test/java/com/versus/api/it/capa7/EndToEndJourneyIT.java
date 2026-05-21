@@ -9,6 +9,8 @@ import com.versus.api.questions.domain.Question;
 import com.versus.api.questions.repo.QuestionRepository;
 import com.versus.api.users.domain.User;
 import io.restassured.path.json.JsonPath;
+import jakarta.transaction.Transactional;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
+@Transactional()
 @DisplayName("Capa 7 — Journeys E2E")
 class EndToEndJourneyIT extends AbstractIT {
 
