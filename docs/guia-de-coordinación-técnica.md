@@ -316,48 +316,65 @@ La comunicación durante la partida es por WebSocket (`STOMP` sobre SockJS es el
 ### Conexión WebSocket
  
 ```
-Frontend conecta a:  ws://localhost:8080/ws
+Frontend conecta a:  ws://localhost:8080/ws  (STOMP sobre SockJS)
+Auth: header CONNECT  Authorization: Bearer <jwt>
  
 Suscripciones del cliente:
-  /user/queue/match          → eventos de la partida (respuestas, vidas, resultado)
-  /topic/match/{matchId}     → estado compartido de la sala
+  /user/queue/match          → notificaciones privadas (MATCH_FOUND)
+  /topic/match/{matchId}     → estado compartido del lobby/partida
  
 Envíos del cliente:
-  /app/match/answer          → enviar respuesta
-  /app/match/ready           → confirmar que está listo para empezar
+  /app/match/ready           → marcar listo en el lobby       (PR #90)
+  /app/match/unready         → quitar listo                    (PR #90)
+  /app/match/abandon         → abandonar la sala vía WS        (PR #90)
+  /app/match/answer          → enviar respuesta a una ronda    (PR #91+)
+  /app/match/sabotage        → activar sabotaje                (PR #93)
+```
+
+Detalles de la capa de transport (envelope, autenticación, reconexión) en [`docs/backend/modules/websocket.md`](backend/modules/websocket.md).
+ 
+### Flujo de sala de espera → partida (PR #90, ya implementado)
+ 
+```
+1. POST /api/matchmaking/queue {mode}   → Entrar en cola
+2. Scheduler empareja N jugadores       → emite MATCH_FOUND a cada uno
+3. Frontend redirige a /play/lobby/:matchId
+4. SUBSCRIBE /topic/match/{id}; GET /api/matches/{id}/lobby para snapshot
+5. Cada jugador envía /app/match/ready  → emite PLAYER_READY
+6. Cuando todos están listos            → emite MATCH_STARTING { countdownSeconds }
+7. Tras el countdown                    → emite MATCH_START { matchId, mode }
+8. (PR #91+) lógica de juego: QUESTION / ROUND_RESULT / MATCH_END
 ```
  
-### Flujo de sala de espera → partida
- 
-```
-1. POST /api/match/queue        → Entrar en cola de matchmaking
-2. Backend empareja dos jugadores → emite evento "MATCH_FOUND"
-3. Frontend redirige a /sala/:matchId
-4. Cada jugador envía /app/match/ready
-5. Cuando ambos están listos → emite "MATCH_START" con 1ª pregunta
-6. Cada pregunta → jugadores responden → backend procesa → emite resultado
-7. Al terminar → emite "MATCH_END" con ganador y stats
-```
- 
-### Endpoints REST de sala (previos a la partida)
+### Endpoints REST de sala (PR #90)
  
 | Método | Ruta | Descripción | Issues |
 |--------|------|-------------|--------|
-| `POST` | `/api/match/queue` | Entrar en cola de matchmaking | #66 |
-| `DELETE` | `/api/match/queue` | Salir de la cola | #66 |
-| `POST` | `/api/match/room` | Crear sala privada con código | #65 |
-| `POST` | `/api/match/room/join` | Unirse a sala privada por código | #65 |
-| `GET` | `/api/match/:matchId` | Estado actual de una sala | #65 |
+| `POST` | `/api/matches` | Crear sala privada (devuelve `roomCode`) | #90 |
+| `POST` | `/api/matches/{id}/join` | Unirse a sala existente | #90 |
+| `DELETE` | `/api/matches/{id}/abandon` | Abandonar la sala | #90 |
+| `GET` | `/api/matches/{id}/lobby` | Snapshot del estado del lobby | #90 |
+| `POST` | `/api/matchmaking/queue` | Entrar en cola de matchmaking | #90 |
+| `DELETE` | `/api/matchmaking/queue` | Salir de la cola | #90 |
  
 ### Eventos WebSocket (backend → frontend)
- 
-| Evento | Canal | Payload |
-|--------|-------|---------|
-| `MATCH_FOUND` | `/user/queue/match` | `{ matchId, opponent }` |
-| `MATCH_START` | `/topic/match/{id}` | `{ question, mode }` |
-| `QUESTION` | `/topic/match/{id}` | `{ question, timeLimit }` |
-| `ROUND_RESULT` | `/topic/match/{id}` | `{ player1Lives, player2Lives, correct }` |
-| `MATCH_END` | `/topic/match/{id}` | `{ winner, stats }` |
+
+Todos los eventos van envueltos en `{ type, matchId, payload }`.
+
+| Evento | PR | Canal | Payload |
+|--------|----|-------|---------|
+| `MATCH_FOUND` | #90 | `/user/queue/match` | `{ matchId, mode, opponents: PlayerInLobby[] }` |
+| `PLAYER_JOINED` | #90 | `/topic/match/{id}` | `{ player: PlayerInLobby }` |
+| `PLAYER_LEFT` | #90 | `/topic/match/{id}` | `{ userId }` |
+| `PLAYER_READY` | #90 | `/topic/match/{id}` | `{ userId, ready }` |
+| `MATCH_STARTING` | #90 | `/topic/match/{id}` | `{ countdownSeconds }` |
+| `MATCH_START` | #90 | `/topic/match/{id}` | `{ matchId, mode }` |
+| `QUESTION` | #91+ | `/topic/match/{id}` | `{ question, timeLimit, roundNumber }` |
+| `ROUND_RESULT` | #91+ | `/topic/match/{id}` | `{ player1Lives, player2Lives, correct, deltas }` |
+| `MATCH_END` | #91+ | `/topic/match/{id}` | `{ winnerId, stats }` |
+| `SABOTAGE_ACTIVATED` | #93 | `/topic/match/{id}` | `{ byUserId, type }` |
+
+`PlayerInLobby = { userId, username, avatarUrl, ready }`.
  
 ### Lógica de daño por modo
  

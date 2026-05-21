@@ -59,3 +59,31 @@
   color: var(--vs-accent-red);
   text-shadow: 0 0 18px rgba(230,57,70,0.4);
 }
+
+.vs-lobby__loading,
+.vs-lobby__error,
+.vs-lobby__started {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 24px;
+  max-width: 480px;
+}
+
+.vs-lobby__error {
+  background: var(--vs-bg-surface);
+  border: 1px solid var(--vs-border);
+  border-radius: var(--vs-radius-md);
+}
+
+.vs-lobby__countdown {
+  text-align: center;
+}
+
+.vs-lobby__countdown-num {
+  font-size: 96px;
+  color: var(--vs-accent-blue);
+  text-shadow: 0 0 24px rgba(38, 132, 255, 0.45);
+  line-height: 1;
+}

@@ -13,7 +13,7 @@
 | Preguntas | [modules/questions.md](modules/questions.md) | ✅ Sprint 1-2 |
 | Juego singleplayer | [modules/game.md](modules/game.md) | ✅ Sprint 1-2 |
 | WebSocket multijugador | [modules/websocket.md](modules/websocket.md) | ✅ Sprint 3 (PR #89) |
-| Partidas & matchmaking | [modules/match.md](modules/match.md) | 🚧 Sprint 3 |
+| Partidas & matchmaking | [modules/match.md](modules/match.md) | ✅ Lobby + matchmaking (PR #90) · 🚧 modos PvP (PR #91-93) |
 | Estadísticas & ranking | [modules/stats.md](modules/stats.md) | ✅ Sprint 1-2 |
 | Logros | [modules/achievements.md](modules/achievements.md) | ✅ Sprint 3 |
 | Moderación | [modules/moderation.md](modules/moderation.md) | 🚧 Sprint 4 |
