@@ -19,7 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -74,18 +73,6 @@ public class UserController {
         return userService.updateAvatar(userId, req.avatarUrl());
     }
 
-    @Operation(summary = "Upload a custom avatar image",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Avatar uploaded"),
-                    @ApiResponse(responseCode = "400", description = "Avatar max 2MB or invalid file",
-                            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-            })
-    @PutMapping(value = "/me/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public UserMeResponse updateAvatar(@AuthenticationPrincipal UUID userId,
-                                       @RequestPart("file") MultipartFile file) {
-        return userService.updateAvatar(userId, file);
-    }
-
     @Operation(summary = "Soft delete the authenticated user's account",
             responses = @ApiResponse(responseCode = "204", description = "Account deleted"))
     @DeleteMapping("/me")
@@ -94,7 +81,6 @@ public class UserController {
         userService.deleteMe(userId);
     }
 
-  
     @Operation(summary = "Upload and set the authenticated user's avatar",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Avatar updated"),

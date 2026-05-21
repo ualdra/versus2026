@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.UUID;
 
 @Service
@@ -77,21 +76,11 @@ public class UserService {
 
     @Transactional
     public UserMeResponse updateAvatar(UUID userId, MultipartFile file) {
-        User u = users.findById(userId)
-                .orElseThrow(() -> ApiException.notFound("User not found"));
+        User u = activeUser(userId);
         MediaAssetResponse avatar = mediaService.uploadAvatar(userId, file);
         u.setAvatarUrl(avatar.url());
         users.save(u);
         return toMe(u);
-    }
-
-    @Transactional
-    public UserMeResponse updateAvatar(UUID userId, MultipartFile file) {
-        try {
-            return updateAvatarUpload(userId, file.getBytes(), file.getContentType());
-        } catch (IOException ex) {
-            throw ApiException.validation("Avatar file could not be read");
-        }
     }
 
     @Transactional
