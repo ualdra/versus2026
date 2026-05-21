@@ -38,3 +38,16 @@ export interface ApiError {
   message: string;
   status: number;
 }
+
+export interface MessageResponse {
+  message: string;
+}
+
+export interface PasswordResetRequest {
+  email: string;
+}
+
+export interface PasswordResetConfirmRequest {
+  token: string;
+  newPassword: string;
+}

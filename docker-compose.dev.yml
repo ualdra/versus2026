@@ -13,21 +13,43 @@ services:
     ports:
       - "5432:5432"
 
+  mailhog:
+    image: mailhog/mailhog:latest
+    restart: unless-stopped
+    ports:
+      - "1025:1025"   # SMTP (recibe todos los correos del backend)
+      - "8025:8025"   # Web UI — abre http://localhost:8025 para ver los emails
+    networks:
+      - app-network
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
       target: development      # stage development
     ports:
-      - "8080:8080"           
-      - "5005:5005"            
+      - "8080:8080"
+      - "5005:5005"
     volumes:
       - ./backend:/app         # Monta el código fuente del host
       - maven_cache:/root/.m2  # Caché de Maven entre reinicios
+    depends_on:
+      - mailhog
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
       DDL_AUTO: create-drop    # Recrea la BD en cada arranque (dev)
+      # ── Mail (leído del .env — MailHog por defecto, Gmail si se configura) ──
+      SMTP_HOST: ${SMTP_HOST:-mailhog}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_AUTH: ${SMTP_AUTH:-false}
+      SMTP_STARTTLS: ${SMTP_STARTTLS:-false}
+      MAIL_FROM: ${MAIL_FROM:-noreply@versus-dev.local}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-Versus Dev}
+      VERSUS_EMAIL_ENABLED: ${VERSUS_EMAIL_ENABLED:-false}
+      FRONTEND_BASE_URL: ${FRONTEND_BASE_URL:-http://localhost:4200}
 
   frontend:
     build:

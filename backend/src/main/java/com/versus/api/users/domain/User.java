@@ -54,10 +54,27 @@ public class User {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
+    /** false hasta que el usuario verifique su correo */
+    @Column(name = "enabled", nullable = false)
+    private Boolean enabled;
+
+    @Column(name = "verification_token", length = 64)
+    private String verificationToken;
+
+    @Column(name = "verification_token_expiry")
+    private Instant verificationTokenExpiry;
+
+    @Column(name = "password_reset_token", length = 64)
+    private String passwordResetToken;
+
+    @Column(name = "password_reset_token_expiry")
+    private Instant passwordResetTokenExpiry;
+
     @PrePersist
     void onCreate() {
         if (createdAt == null) createdAt = Instant.now();
         if (isActive == null) isActive = true;
+        if (enabled == null) enabled = false;
         if (role == null) role = Role.PLAYER;
         if (status == null) status = UserStatus.ACTIVE;
         updatedAt = createdAt;

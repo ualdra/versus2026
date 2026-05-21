@@ -45,6 +45,22 @@
   color: var(--vs-accent-red);
 }
 
+.forgot-link-wrap {
+  text-align: right;
+  margin-bottom: 16px;
+}
+
+.forgot-link {
+  font-size: 13px;
+  color: var(--vs-text-muted);
+  text-decoration: none;
+  transition: color var(--vs-transition);
+
+  &:hover {
+    color: var(--vs-accent-blue);
+  }
+}
+
 .form-alert {
   background: rgba(230, 57, 70, 0.08);
   border: 1px solid var(--vs-accent-red);

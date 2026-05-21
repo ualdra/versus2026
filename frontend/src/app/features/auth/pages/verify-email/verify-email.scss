@@ -1,0 +1,62 @@
+.verify-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 48px 40px;
+  text-align: center;
+}
+
+.icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+  line-height: 1;
+
+  &.spin {
+    display: inline-block;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+.verify-title {
+  font-size: 32px;
+  color: var(--vs-text-primary);
+  margin: 0 0 20px;
+
+  &.success { color: var(--vs-accent-green); }
+  &.error   { color: var(--vs-accent-red); }
+}
+
+.verify-msg {
+  font-size: 15px;
+  color: var(--vs-text-secondary);
+  line-height: 1.7;
+  margin: 0 0 28px;
+}
+
+.vs-btn {
+  display: inline-block;
+  padding: 13px 28px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: opacity var(--vs-transition);
+
+  &:hover { opacity: 0.85; }
+
+  &.btn-primary {
+    background: var(--vs-accent-blue);
+    color: #fff;
+  }
+
+  &.btn-secondary {
+    background: transparent;
+    color: var(--vs-text-secondary);
+    border: 1px solid var(--vs-text-muted);
+  }
+}

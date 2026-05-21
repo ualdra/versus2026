@@ -28,7 +28,7 @@ export class RegisterForm {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
-  constructor(private fb: FormBuilder) {
+  constructor(private readonly fb: FormBuilder) {
     this.form = this.fb.group(
       {
         username: [
@@ -37,7 +37,7 @@ export class RegisterForm {
             Validators.required,
             Validators.minLength(3),
             Validators.maxLength(20),
-            Validators.pattern(/^[a-zA-Z0-9_]+$/),
+            Validators.pattern(/^\w+$/),
           ],
         ],
         email: ['', [Validators.required, Validators.email]],
@@ -91,7 +91,7 @@ export class RegisterForm {
     this.auth.register({ username, email, password }).subscribe({
       next: () => {
         this.loading.set(false);
-        this.router.navigateByUrl('/dashboard');
+        this.router.navigateByUrl('/check-email');
       },
       error: (err: HttpErrorResponse) => {
         this.loading.set(false);

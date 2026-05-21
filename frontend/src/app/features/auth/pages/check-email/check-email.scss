@@ -1,0 +1,48 @@
+.check-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 48px 40px;
+  text-align: center;
+}
+
+.icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+  line-height: 1;
+}
+
+.check-title {
+  font-size: 36px;
+  color: var(--vs-text-primary);
+  margin: 0 0 20px;
+}
+
+.check-msg {
+  font-size: 15px;
+  color: var(--vs-text-secondary);
+  line-height: 1.7;
+  margin: 0 0 12px;
+}
+
+.check-note {
+  font-size: 13px;
+  color: var(--vs-text-muted);
+  margin: 0 0 24px;
+}
+
+.login-prompt {
+  font-size: 14px;
+  color: var(--vs-text-secondary);
+  margin: 0;
+}
+
+.login-link {
+  color: var(--vs-accent-blue);
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity var(--vs-transition);
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
