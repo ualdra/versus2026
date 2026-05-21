@@ -2,8 +2,6 @@ import { Component, HostListener, OnDestroy, OnInit, inject } from '@angular/cor
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { audioService } from './core/services/AudioService';
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
 import { AchievementToastsComponent } from './shared/components/achievement-toasts/achievement-toasts';
 
 @Component({
