@@ -7,7 +7,8 @@ export type SoundKey =
   | 'game_over'
   | 'sabotage_sent'
   | 'sabotage_received'
-  | 'tick';
+  | 'tick'
+  | 'ui_click';
 
 export type BgmKey = 'bgm_menu' | 'bgm_game';
 
@@ -58,6 +59,9 @@ export class AudioService {
       this.activeBgm.volume = this.settings.bgmVolume;
       this.activeBgm.loop = loop;
       if (this.activeBgm.paused) {
+        if (this.activeBgm.ended) {
+          this.resetCurrentTime(this.activeBgm);
+        }
         this.safePlay(this.activeBgm, true);
       }
       return;
@@ -71,6 +75,11 @@ export class AudioService {
     this.activeBgm = audio;
     this.activeBgmKey = track;
     this.safePlay(audio, true);
+  }
+
+  resumeBgm(): void {
+    if (!this.desiredBgm || !this.settings.bgmEnabled || !this.canUseAudio()) return;
+    this.playBgm(this.desiredBgm.track, this.desiredBgm.loop);
   }
 
   stopBgm(): void {

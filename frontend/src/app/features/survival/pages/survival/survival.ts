@@ -131,7 +131,6 @@ export class Survival implements OnInit, OnDestroy {
         this.score.set(0);
         this.qIdx.set(0);
         this.phase.set('idle');
-        audioService.play('game_start');
         audioService.playBgm('bgm_game');
       },
       error: () => {

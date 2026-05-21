@@ -18,6 +18,7 @@ Expected files in `public/audio/sfx/`:
 - `sabotage_sent.wav`
 - `sabotage_received.wav`
 - `tick.wav`
+- `ui_click.wav`
 
 ## BGM
 

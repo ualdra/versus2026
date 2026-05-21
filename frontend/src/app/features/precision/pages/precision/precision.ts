@@ -93,7 +93,6 @@ export class Precision implements OnInit, OnDestroy {
         this.rounds.set(0);
         this.inputValue.set('');
         this.phase.set('idle');
-        audioService.play('game_start');
         audioService.playBgm('bgm_game');
       },
       error: () => {
