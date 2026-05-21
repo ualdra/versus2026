@@ -80,9 +80,9 @@ public class UserController {
                             content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
             })
     @PutMapping(value = "/me/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public UserMeResponse uploadAvatar(@AuthenticationPrincipal UUID userId,
-                                       @RequestPart("file") MultipartFile file) throws java.io.IOException {
-        return userService.updateAvatarUpload(userId, file.getBytes(), file.getContentType());
+    public UserMeResponse updateAvatar(@AuthenticationPrincipal UUID userId,
+                                       @RequestPart("file") MultipartFile file) {
+        return userService.updateAvatar(userId, file);
     }
 
     @Operation(summary = "Soft delete the authenticated user's account",
