@@ -66,7 +66,6 @@ describe('TopbarComponent', () => {
             mine: () => of(stats),
           },
         },
-<<<<<<< HEAD
         {
           provide: AchievementService,
           useValue: {
@@ -84,9 +83,6 @@ describe('TopbarComponent', () => {
             ]),
           },
         },
-=======
-
->>>>>>> 4f1ef96b4c35b4922860ddf442521693c19495ce
       ],
     }).compileComponents();
 
