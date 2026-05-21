@@ -7,7 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.server.context.WebServerInitializedEvent;
+import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
