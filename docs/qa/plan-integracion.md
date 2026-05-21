@@ -34,7 +34,7 @@ El proyecto ya tiene `src/test/resources/application.properties` apuntando a H2 
 | Enums Postgres con `@Enumerated(STRING)` | Mapea a `VARCHAR` (no enum nativo) | ✅ |
 | Tipos `TIMESTAMPTZ` | Promociona a `TIMESTAMP` | ✅ |
 
-Gangs-league ya tomó esta decisión: levantan `postgres:18.1-alpine` en `docker-compose.test.yml` y corren los integration tests contra ese contenedor. Aquí seguimos el mismo patrón **adaptado a Spring Boot**.
+Se levantan `postgres:18.1-alpine` en `docker-compose.test.yml` y corren los integration tests contra ese contenedor.
 
 ### 1.2 docker compose externo + Failsafe, no Testcontainers in-process
 
@@ -43,14 +43,13 @@ Hay dos opciones razonables para arrancar Postgres en tests Spring Boot:
 | Opción | Pros | Contras |
 |---|---|---|
 | **Testcontainers** (`@Container` en cada test) | Auto-gestiona el ciclo; cero estado entre runs | +1 dependencia pesada; cada `./mvnw verify` paga el arranque de Postgres (3-8 s) |
-| **`docker compose -f docker-compose.test.yml up -d`** (estilo gangs-league) | Mismo contenedor entre runs locales → tests más rápidos; reutilizable por scripts ad-hoc; idéntico al pattern del monorepo hermano | Hay que recordar `down -v` al cambiar el esquema; requiere docker en CI |
+| **`docker compose -f docker-compose.test.yml up -d`** | Mismo contenedor entre runs locales → tests más rápidos; reutilizable por scripts ad-hoc; idéntico al pattern del monorepo hermano | Hay que recordar `down -v` al cambiar el esquema; requiere docker en CI |
 
 **Elegimos compose externo** porque:
 
-1. Mantiene **paridad con gangs-league**, que es la referencia explícita del proyecto.
-2. El proyecto **ya depende de docker compose** (`docker-compose.yml`, `.dev.yml`, `.prod.yml`). Añadir un compose más es coherente.
-3. En desarrollo iterativo el segundo `./mvnw verify` solo paga ~200 ms para conectar al Postgres ya caliente. Con Testcontainers paga el reinicio del contenedor en cada run.
-4. CI (GitHub Actions) puede declarar Postgres como `services:` y reutilizar el mismo `application-test.properties`.
+1. El proyecto **ya depende de docker compose** (`docker-compose.yml`, `.dev.yml`, `.prod.yml`). Añadir un compose más es coherente.
+2. En desarrollo iterativo el segundo `./mvnw verify` solo paga ~200 ms para conectar al Postgres ya caliente. Con Testcontainers paga el reinicio del contenedor en cada run.
+3. CI (GitHub Actions) puede declarar Postgres como `services:` y reutilizar el mismo `application-test.properties`.
 
 > Si más adelante alguien prefiere Testcontainers, la migración es local: solo cambia `DataSource` y el `@DynamicPropertySource`. Los tests no se reescriben.
 
@@ -70,7 +69,7 @@ Spring Boot tradicionalmente recomienda `@Transactional` en tests para rollback 
 - `GameService`, `MatchService`, `AchievementService` usan `@Transactional` propagado — un test que envuelva todo en una transacción ve commits anidados que distorsionan el comportamiento real.
 - `MatchService` mantiene estado **en memoria** (`liveMatches`) que no se "deshace" con rollback.
 
-Igual que gangs-league: helper `TestDatabaseCleaner` que ejecuta `TRUNCATE TABLE … RESTART IDENTITY CASCADE` en `@BeforeEach`. 10-50× más rápido que recrear el esquema y deja la BD en un estado conocido sin tocar transacciones de negocio.
+Helper `TestDatabaseCleaner` que ejecuta `TRUNCATE TABLE … RESTART IDENTITY CASCADE` en `@BeforeEach`. 10-50× más rápido que recrear el esquema y deja la BD en un estado conocido sin tocar transacciones de negocio.
 
 ---
 
@@ -133,7 +132,7 @@ Añadir Failsafe en `<build><plugins>`:
 
 `MockMvc` es síncrono y no arranca servidor real: bien para validar contratos HTTP estáticos, mal para WebSocket (no escucha en un puerto) y para flujos que usan `@AuthenticationPrincipal` con un `JwtAuthFilter` que parsea cabeceras reales.
 
-Usaremos `@SpringBootTest(webEnvironment = RANDOM_PORT)` + RestAssured. Misma API que supertest en gangs-league (`req().post(...).send(...)`), familiar para quien venga del monorepo hermano. Para los tests de capa 6 ("contrato HTTP") un `MockMvc` slice también es válido — se usará puntualmente.
+Usaremos `@SpringBootTest(webEnvironment = RANDOM_PORT)` + RestAssured. Para los tests de capa 6 ("contrato HTTP") un `MockMvc` slice también es válido — se usará puntualmente.
 
 ### Por qué Awaitility
 
@@ -145,32 +144,76 @@ Usaremos `@SpringBootTest(webEnvironment = RANDOM_PORT)` + RestAssured. Misma AP
 
 ### 3.1 `docker-compose.test.yml` (en la raíz del repo)
 
+Override que se **combina** con `docker-compose.yml` — mismo stack `versus`,
+misma `app-network`, mismo volumen `maven_cache` (compartido con el entorno
+de desarrollo). Los servicios están bajo el perfil `test` para no
+contaminar el `up` normal.
+
 ```yaml
-# Base de datos Postgres efímera para los tests de integración del backend.
-# Levantar: docker compose -f docker-compose.test.yml up -d
-# Limpiar:  docker compose -f docker-compose.test.yml down -v
 services:
-  postgres-test:
+
+  db-test:
     image: postgres:18-alpine
-    container_name: versus_test_postgres
+    profiles: ["test"]
     environment:
       POSTGRES_DB: versus_test
       POSTGRES_USER: versus_test
       POSTGRES_PASSWORD: versus_test_pass
     ports:
       - "5433:5432"        # 5433 host → 5432 contenedor (evita choque con dev)
+    networks:
+      - app-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U versus_test -d versus_test"]
       interval: 3s
       timeout: 2s
       retries: 20
 
-volumes: {}
+  backend-test:
+    profiles: ["test"]
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    depends_on:
+      db-test:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-test:5432/versus_test
+      SPRING_DATASOURCE_USERNAME: versus_test
+      SPRING_DATASOURCE_PASSWORD: versus_test_pass
+    volumes:
+      - ./backend:/app
+      - maven_cache:/root/.m2
+    working_dir: /app
+    networks:
+      - app-network
+    command: >
+      ./mvnw verify -Dsurefire.skip=true --batch-mode -Dstyle.color=never
+
+volumes:
+  maven_cache:
 ```
 
-Notas:
+Dos modos de uso:
 
-- Mismo patrón y puerto host (`5433`) que gangs-league.
+```bash
+# 1) Suite completa dentro de contenedores (idéntico a CI)
+docker compose -f docker-compose.test.yml \
+  --profile test up --build --abort-on-container-exit \
+  --exit-code-from backend-test backend-test
+
+# 2) Solo Postgres en contenedor, tests desde IDE/host (rápido para iterar)
+docker compose -f docker-compose.test.yml \
+  --profile test up -d db-test
+cd backend && ./mvnw verify -Dsurefire.skip=true
+```
+
+`application-it.properties` deja `localhost:5433` como default (modo 2). En el
+modo 1, las env vars `SPRING_DATASOURCE_*` del compose sobrescriben para
+apuntar a `db-test:5432`.
+
+Notas:
 - Sin volumen persistente — cada `down -v` limpia.
 - Imagen `postgres:18-alpine` igual que el `docker-compose.yml` de producción/dev.
 
@@ -242,7 +285,8 @@ public class PostgresLifecycle implements BeforeAllCallback {
                  No se puede conectar a Postgres de tests en localhost:5433.
                  Arranca el contenedor desde la raíz del repo:
 
-                   docker compose -f docker-compose.test.yml up -d --wait
+                   docker compose -f docker-compose.test.yml \\
+                     --profile test up -d db-test
 
                 ════════════════════════════════════════════════════════════
                 """, e);
@@ -335,7 +379,7 @@ public class TestDatabaseCleaner {
 
 ### 3.6 `backend/src/test/java/com/versus/api/it/support/HttpTestClient.java`
 
-Equivalente al `createHttpTestApp()` de gangs-league. Provee `req()` (RestAssured), `tokenFor(user)` y `expiredToken(user)`.
+Provee `req()` (RestAssured), `tokenFor(user)` y `expiredToken(user)`.
 
 ```java
 package com.versus.api.it.support;
@@ -407,7 +451,7 @@ public class HttpTestClient {
 
 ### 3.7 `backend/src/test/java/com/versus/api/it/support/Factories.java`
 
-Equivalente al `helpers/factories/` de gangs-league. Crea usuarios/preguntas/partidas en BD con valores por defecto razonables y permite overrides.
+Crea usuarios/preguntas/partidas en BD con valores por defecto razonables y permite overrides.
 
 ```java
 package com.versus.api.it.support;
@@ -530,7 +574,7 @@ public abstract class AbstractIT {
 
 ## 4. Organización de los tests: 7 capas
 
-Reproducimos la estructura de gangs-league. Cada capa es un fichero (o varios) bajo `backend/src/test/java/com/versus/api/it/`:
+Cada capa es un fichero (o varios) bajo `backend/src/test/java/com/versus/api/it/`:
 
 ```
 src/test/java/com/versus/api/it/
@@ -717,7 +761,7 @@ Casos (todos numerados a partir de W*):
 
 ### 4.7 Capa 6 — Contrato HTTP (`HttpContractIT`)
 
-Igual que la capa 6 de gangs-league: validar la **frontera HTTP**, no la lógica.
+Validar la **frontera HTTP**, no la lógica.
 
 - Body mal formado (JSON inválido) en cualquier POST → 400 con shape `{error: "VALIDATION_ERROR", message, status: 400}`.
 - Body válido pero campos requeridos faltantes (`@NotNull`/`@NotBlank`) → 400 + mensaje con el nombre del campo.
@@ -748,7 +792,7 @@ Cada paso debe acabar **verde** antes de pasar al siguiente. No saltar.
 
 | # | Paso | Fichero(s) clave | Comando que debe pasar |
 |---|---|---|---|
-| 1 | Crear `docker-compose.test.yml` y arrancarlo manualmente | `docker-compose.test.yml` | `docker compose -f docker-compose.test.yml up -d --wait` |
+| 1 | Crear `docker-compose.test.yml` (mismo proyecto `versus`) y arrancar `db-test` | `docker-compose.test.yml` | `docker compose -f docker-compose.test.yml --profile test up -d db-test` |
 | 2 | Añadir `application-it.properties` | sección 3.2 | `psql -h localhost -p 5433 -U versus_test versus_test -c '\dt'` (responde tras paso 6) |
 | 3 | Añadir deps al `pom.xml` (RestAssured, Awaitility) y plugin Failsafe | sección 2 | `./mvnw -q dependency:tree | grep -i restassured` |
 | 4 | Añadir `IntegrationTest`, `PostgresLifecycle`, `HttpTestClient`, `TestDatabaseCleaner`, `Factories`, `AbstractIT` | sección 3.3–3.8 | Compila: `./mvnw -q compile test-compile` |
@@ -768,55 +812,58 @@ Cada paso debe acabar **verde** antes de pasar al siguiente. No saltar.
 ### Comandos resumen
 
 ```bash
-# Levantar Postgres de test
-docker compose -f docker-compose.test.yml up -d --wait
+# Suite completa dentro de contenedores (idéntico a CI)
+docker compose -f docker-compose.test.yml \
+  --profile test up --build --abort-on-container-exit \
+  --exit-code-from backend-test backend-test
 
-# Solo unitarios (rápido, no necesita docker)
-./mvnw -pl backend test
+# Modo iterativo: BD en contenedor, tests desde IDE/host
+docker compose -f docker-compose.test.yml \
+  --profile test up -d db-test
+cd backend
+./mvnw test                                # solo unitarios
+./mvnw verify -Dsurefire.skip=true         # solo integración
+./mvnw verify                              # todo
 
-# Integración (necesita Postgres arriba)
-./mvnw -pl backend failsafe:integration-test
-
-# Todo
-./mvnw -pl backend verify
-
-# Limpiar contenedor (al cambiar el esquema JPA)
-docker compose -f docker-compose.test.yml down -v
+# Limpiar al cambiar el esquema JPA
+docker compose -f docker-compose.test.yml \
+  --profile test down -v
 ```
+
+> Nota: invocar `failsafe:integration-test` directamente **no** compila las
+> clases. Usa siempre la fase `verify` (con `-Dsurefire.skip=true` si quieres
+> saltarte unitarios). El compose ya lo hace así dentro de `backend-test`.
 
 ---
 
 ## 6. CI: GitHub Actions
 
-Añadir en `.github/workflows/backend-tests.yml` (o equivalente):
+CI **usa el mismo compose** que en local — paridad total. El job de integración
+en `.github/workflows/ci.yml` se reduce a:
 
 ```yaml
-name: Backend tests
-on: [push, pull_request]
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:18-alpine
-        env:
-          POSTGRES_DB: versus_test
-          POSTGRES_USER: versus_test
-          POSTGRES_PASSWORD: versus_test_pass
-        ports: ["5433:5432"]
-        options: >-
-          --health-cmd "pg_isready -U versus_test -d versus_test"
-          --health-interval 5s --health-timeout 3s --health-retries 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with: { distribution: temurin, java-version: '21', cache: maven }
-      - name: Run backend tests
-        working-directory: backend
-        run: ./mvnw -B verify
+test-integration:
+  name: Tests de integración
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
+    - name: Run integration tests (docker compose)
+      run: |
+        docker compose -f docker-compose.test.yml \
+          --profile test up --build --abort-on-container-exit \
+          --exit-code-from backend-test backend-test
+    - name: Upload Failsafe reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: backend-failsafe-reports
+        path: backend/target/failsafe-reports/
 ```
 
-Mismo patrón que gangs-league: el `services:` de GitHub Actions hace el papel del `docker-compose.test.yml` local. La aplicación se conecta a `localhost:5433` en ambos sitios; no hace falta condicionar nada por entorno.
+No hay `services:` ni `setup-java`: todo corre dentro de `backend-test`, que se
+construye desde `backend/Dockerfile` (stage `development`) — el mismo
+contenedor que ya usa el devcontainer. Los reports aparecen en el host porque
+`backend-test` monta `./backend:/app`.
 
 ---
 
@@ -865,7 +912,7 @@ Recomendación: **(1)** y llamarlo desde `AbstractIT.resetState()` cuando el bea
 El proyecto usa `ddl-auto=create-drop` también en tests, lo cual es válido mientras no haya Flyway/Liquibase. Cuando se introduzcan migraciones:
 
 - Cambiar `application-it.properties` a `ddl-auto=validate`.
-- Aplicar migraciones en el `BeforeAll` (o un `globalSetup` ejecutable) — equivalente al `prisma migrate deploy` que hace gangs-league en su `global-setup.ts`.
+- Aplicar migraciones en el `BeforeAll` (o un `globalSetup` ejecutable).
 
 ---
 
@@ -916,20 +963,3 @@ Antes de declarar una capa "completa":
 
 ---
 
-## 10. Diferencias respecto a gangs-league (referencia)
-
-Por si más adelante alguien compara:
-
-| Aspecto | gangs-league | versus |
-|---|---|---|
-| Stack | NestJS + Prisma + Jest | Spring Boot + JPA + JUnit 5 |
-| Cliente HTTP de test | supertest | RestAssured |
-| Setup global | `globalSetup.ts` ejecuta `docker compose up -d` + `prisma migrate deploy` | `IntegrationTest` + `PostgresLifecycle` asume contenedor arriba; Spring crea el schema con `ddl-auto=create-drop` |
-| Trunque entre tests | `truncateAll()` desde `pg` Pool | `TestDatabaseCleaner.truncateAll()` desde `EntityManager` |
-| Token de test | `jwtService.sign({sub, role})` | `JwtService.generateAccessToken(user)` |
-| Token expirado | `expiresIn: '-1s'` | `Jwts.builder().expiration(past)` |
-| Capas | 0-7 (mismas categorías) | 0-7 (mismas categorías) |
-| Fakes externos | mail/storage/notificaciones via `.overrideProvider()` | storage local via `versus.storage.provider=local`; mail aún no existe |
-| WebSocket | gateway de socket.io tested con cliente real | STOMP sobre `WebSocketStompClient` de Spring |
-
-La intención es que un dev que conozca la suite de gangs-league pueda navegar la de Versus sin sorpresas — mismas capas, misma forma de pensar.

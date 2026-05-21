@@ -42,12 +42,11 @@ public class MatchService {
     private int countdownSeconds;
 
     private final Map<UUID, LiveMatchState> liveMatches = new ConcurrentHashMap<>();
-    private final ScheduledExecutorService scheduler =
-            Executors.newScheduledThreadPool(2, r -> {
-                Thread t = new Thread(r, "match-countdown");
-                t.setDaemon(true);
-                return t;
-            });
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2, r -> {
+        Thread t = new Thread(r, "match-countdown");
+        t.setDaemon(true);
+        return t;
+    });
 
     @Transactional
     public LiveMatchState createMatch(GameMode mode, UUID ownerUserId) {
@@ -110,7 +109,8 @@ public class MatchService {
             if (state.getStatus() != MatchStatus.WAITING) {
                 return;
             }
-            if (player.isReady() == ready) return;
+            if (player.isReady() == ready)
+                return;
             player.setReady(ready);
             broadcast(matchId, "PLAYER_READY", new PlayerReadyEvent(userId, ready));
             if (state.allReady()) {
@@ -121,9 +121,11 @@ public class MatchService {
 
     public void removePlayer(UUID matchId, UUID userId) {
         LiveMatchState state = liveMatches.get(matchId);
-        if (state == null) return;
+        if (state == null)
+            return;
         synchronized (state) {
-            if (state.getPlayers().remove(userId) == null) return;
+            if (state.getPlayers().remove(userId) == null)
+                return;
             broadcast(matchId, "PLAYER_LEFT", new PlayerLeftEvent(userId));
             log.info("User {} left match {} ({} remaining)", userId, matchId, state.getPlayers().size());
             if (state.getPlayers().isEmpty() && state.getStatus() == MatchStatus.WAITING) {
@@ -140,7 +142,8 @@ public class MatchService {
 
     public LiveMatchState requireLive(UUID matchId) {
         LiveMatchState state = liveMatches.get(matchId);
-        if (state == null) throw ApiException.notFound("Match not found or already finished");
+        if (state == null)
+            throw ApiException.notFound("Match not found or already finished");
         return state;
     }
 
@@ -172,10 +175,13 @@ public class MatchService {
 
     void startMatch(UUID matchId) {
         LiveMatchState state = liveMatches.get(matchId);
-        if (state == null) return;
+        if (state == null)
+            return;
         synchronized (state) {
-            if (state.getStatus() != MatchStatus.WAITING) return;
-            if (!state.allReady()) return;
+            if (state.getStatus() != MatchStatus.WAITING)
+                return;
+            if (!state.allReady())
+                return;
             state.setStatus(MatchStatus.IN_PROGRESS);
             matchRepository.findById(matchId).ifPresent(m -> {
                 m.setStatus(MatchStatus.IN_PROGRESS);
@@ -202,14 +208,16 @@ public class MatchService {
     private String generateUniqueRoomCode() {
         for (int attempt = 0; attempt < 16; attempt++) {
             String code = randomCode();
-            if (matchRepository.findByRoomCode(code).isEmpty()) return code;
+            if (matchRepository.findByRoomCode(code).isEmpty())
+                return code;
         }
         throw new IllegalStateException("Could not generate unique room code");
     }
 
     private String randomCode() {
         StringBuilder sb = new StringBuilder(6);
-        for (int i = 0; i < 6; i++) sb.append(CODE_CHARS[RNG.nextInt(CODE_CHARS.length)]);
+        for (int i = 0; i < 6; i++)
+            sb.append(CODE_CHARS[RNG.nextInt(CODE_CHARS.length)]);
         return sb.toString();
     }
 
@@ -220,5 +228,9 @@ public class MatchService {
     void putForTest(LiveMatchState state) {
         Objects.requireNonNull(state, "state");
         liveMatches.put(state.getMatchId(), state);
+    }
+
+    public void clearLiveMatchesForTest() {
+        liveMatches.clear();
     }
 }
