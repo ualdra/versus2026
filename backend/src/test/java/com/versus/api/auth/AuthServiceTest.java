@@ -16,6 +16,7 @@ import com.versus.api.users.domain.User;
 import com.versus.api.users.repo.UserRepository;
 import io.jsonwebtoken.Claims;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -46,6 +48,12 @@ class AuthServiceTest {
     @Mock EmailService emailService;
 
     @InjectMocks AuthService authService;
+
+    @BeforeEach
+    void injectConfigValues() {
+        ReflectionTestUtils.setField(authService, "verificationTokenExpiry", 86400L);
+        ReflectionTestUtils.setField(authService, "resetTokenExpiry", 900L);
+    }
 
     // ═══════════════════════════════════════════════════════════════════════
     // REGISTER
