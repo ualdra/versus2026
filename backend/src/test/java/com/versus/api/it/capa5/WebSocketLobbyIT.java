@@ -243,13 +243,12 @@ class WebSocketLobbyIT extends AbstractIT {
         sessionA.send("/app/match/ready", Map.of("matchId", matchId));
         sessionB.send("/app/match/ready", Map.of("matchId", matchId));
 
+        List<String> typesA = new ArrayList<>();
         await().atMost(5, SECONDS).untilAsserted(() -> {
-            List<Map<?, ?>> collected = new ArrayList<>();
-            eventsA.drainTo(collected);
-            List<String> types = collected.stream()
-                    .map(e -> (String) e.get("type"))
-                    .toList();
-            assertThat(types).contains("MATCH_STARTING", "MATCH_START");
+            List<Map<?, ?>> chunk = new ArrayList<>();
+            eventsA.drainTo(chunk);
+            chunk.stream().map(e -> (String) e.get("type")).forEach(typesA::add);
+            assertThat(typesA).contains("MATCH_STARTING", "MATCH_START");
         });
 
         await().atMost(5, SECONDS).untilAsserted(() -> {
