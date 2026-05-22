@@ -9,6 +9,7 @@ import com.versus.api.auth.dto.PasswordResetRequest;
 import com.versus.api.auth.dto.RegisterRequest;
 import com.versus.api.auth.repo.RefreshTokenRepository;
 import com.versus.api.common.exception.ApiException;
+import com.versus.api.email.config.EmailProperties;
 import com.versus.api.users.Role;
 import com.versus.api.users.UserStatus;
 import com.versus.api.users.domain.User;
@@ -34,6 +35,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwt;
     private final EmailService emailService;
+    private final EmailProperties emailProperties;
 
     @Value("${versus.auth.verification-token-expiry:86400}")
     private long verificationTokenExpiry;
@@ -42,14 +44,15 @@ public class AuthService {
     private long resetTokenExpiry;
 
     @Transactional
-    public MessageResponse register(RegisterRequest req) {
+    public Object register(RegisterRequest req) {
         if (users.existsByEmail(req.email())) {
             throw ApiException.conflict("Email already registered");
         }
         if (users.existsByUsername(req.username())) {
             throw ApiException.conflict("Username already taken");
         }
-        String token = generateSecureToken();
+        boolean requireVerification = emailProperties.enabled();
+        String token = requireVerification ? generateSecureToken() : null;
         User user = User.builder()
                 .username(req.username())
                 .email(req.email())
@@ -57,14 +60,18 @@ public class AuthService {
                 .role(Role.PLAYER)
                 .status(UserStatus.ACTIVE)
                 .isActive(true)
-                .enabled(false)
+                .enabled(!requireVerification)
                 .verificationToken(token)
-                .verificationTokenExpiry(Instant.now().plusSeconds(verificationTokenExpiry))
+                .verificationTokenExpiry(requireVerification
+                        ? Instant.now().plusSeconds(verificationTokenExpiry) : null)
                 .build();
         users.save(user);
-        log.info("Dispatching verification email to {}", user.getEmail());
-        emailService.sendVerificationEmail(user.getEmail(), user.getUsername(), token);
-        return new MessageResponse("Registro completado. Por favor, verifica tu correo electrónico para activar tu cuenta.");
+        if (requireVerification) {
+            log.info("Dispatching verification email to {}", user.getEmail());
+            emailService.sendVerificationEmail(user.getEmail(), user.getUsername(), token);
+            return new MessageResponse("Registro completado. Por favor, verifica tu correo electrónico para activar tu cuenta.");
+        }
+        return issueTokens(user);
     }
 
     @Transactional
@@ -111,7 +118,9 @@ public class AuthService {
             user.setPasswordResetToken(token);
             user.setPasswordResetTokenExpiry(Instant.now().plusSeconds(resetTokenExpiry));
             users.save(user);
-            emailService.sendPasswordResetEmail(user.getEmail(), user.getUsername(), token);
+            if (emailProperties.enabled()) {
+                emailService.sendPasswordResetEmail(user.getEmail(), user.getUsername(), token);
+            }
         });
         // Siempre devuelve el mismo mensaje para no revelar si el email existe
         return new MessageResponse("Si el correo está registrado, recibirás un enlace para restablecer tu contraseña.");

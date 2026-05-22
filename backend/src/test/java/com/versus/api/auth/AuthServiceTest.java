@@ -46,6 +46,7 @@ class AuthServiceTest {
     @Mock PasswordEncoder passwordEncoder;
     @Mock JwtService jwt;
     @Mock EmailService emailService;
+    @Mock com.versus.api.email.config.EmailProperties emailProperties;
 
     @InjectMocks AuthService authService;
 
@@ -81,6 +82,7 @@ class AuthServiceTest {
                 u.setId(UUID.randomUUID());
                 return u;
             });
+            when(emailProperties.enabled()).thenReturn(true);
             // EmailService.sendVerificationEmail es void; Mockito lo deja como no-op por defecto
         }
 
@@ -89,7 +91,7 @@ class AuthServiceTest {
         void caminoFeliz_devuelveMensajeConfirmacion() {
             stubHappyPath();
 
-            MessageResponse res = authService.register(validRequest());
+            MessageResponse res = (MessageResponse) authService.register(validRequest());
 
             assertThat(res.message()).isNotBlank();
         }
@@ -521,6 +523,7 @@ class AuthServiceTest {
             User user = existingUser();
             when(users.findByEmail(EMAIL)).thenReturn(Optional.of(user));
             when(users.save(any())).thenAnswer(inv -> inv.getArgument(0));
+            when(emailProperties.enabled()).thenReturn(true);
 
             authService.requestPasswordReset(new com.versus.api.auth.dto.PasswordResetRequest(EMAIL));
 
