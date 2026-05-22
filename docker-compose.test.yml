@@ -1,0 +1,23 @@
+name: versus-test
+
+services:
+  backend-test:
+    profiles:
+      - test
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    working_dir: /app
+    command: ["mvn", "test", "--batch-mode", "-Dstyle.color=never"]
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+      JWT_SECRET: test-secret-test-secret-test-secret-test-secret-test-secret-test-secret-aaaa
+      STORAGE_PROVIDER: local
+      STORAGE_LOCAL_ROOT: target/local-storage
+    volumes:
+      - ./backend:/app
+      - maven_cache:/root/.m2
+
+volumes:
+  maven_cache:
