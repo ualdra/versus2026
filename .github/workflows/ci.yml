@@ -17,10 +17,10 @@ concurrency:
 
 jobs:
   # ──────────────────────────────────────────────
-  # Backend — Spring Boot / Maven / JUnit
+  # Job 1: Test unitarios
   # ──────────────────────────────────────────────
   test-backend:
-    name: Backend (Maven / JUnit)
+    name: Test unitarios
     runs-on: ubuntu-latest
 
     steps:
@@ -80,3 +80,48 @@ jobs:
           else
             echo "_No Surefire reports found — build may have failed before tests ran._" >> $GITHUB_STEP_SUMMARY
           fi
+
+
+
+  # ──────────────────────────────────────────────
+  # Job 2: Tests de integración
+  # ──────────────────────────────────────────────
+  test-integration:
+    name: Tests de integración
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
+
+      # Mismos contenedores que en local: db-test + backend-test bajo el perfil
+      # "test" del stack versus. Failsafe corre dentro de backend-test contra
+      # db-test:5432 (env vars SPRING_DATASOURCE_* del compose).
+      - name: Run integration tests (docker compose)
+        run: |
+          docker compose -f docker-compose.test.yml \
+            --profile test up --build --abort-on-container-exit \
+            --exit-code-from backend-test backend-test
+
+      - name: Dump backend-test logs on failure
+        if: failure()
+        run: |
+          docker compose -f docker-compose.test.yml \
+            --profile test logs backend-test db-test || true
+
+      - name: Tear down test stack
+        if: always()
+        run: |
+          docker compose -f docker-compose.test.yml \
+            --profile test down -v || true
+
+      - name: Upload Failsafe reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-failsafe-reports
+          path: backend/target/failsafe-reports/
+          retention-days: 7
+

@@ -3,11 +3,13 @@ package com.versus.api.common.exception;
 import com.versus.api.common.dto.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.stream.Collectors;
 
@@ -27,6 +29,19 @@ public class GlobalExceptionHandler {
         String msg = ex.getBindingResult().getFieldErrors().stream()
                 .map(fe -> fe.getField() + ": " + fe.getDefaultMessage())
                 .collect(Collectors.joining(", "));
+        return ResponseEntity.status(ErrorCode.VALIDATION_ERROR.status()).body(
+                new ErrorResponse(ErrorCode.VALIDATION_ERROR.name(), msg, 400));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleUnreadable(HttpMessageNotReadableException ex) {
+        return ResponseEntity.status(ErrorCode.VALIDATION_ERROR.status()).body(
+                new ErrorResponse(ErrorCode.VALIDATION_ERROR.name(), "Malformed request body", 400));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String msg = "Invalid value for parameter '" + ex.getName() + "'";
         return ResponseEntity.status(ErrorCode.VALIDATION_ERROR.status()).body(
                 new ErrorResponse(ErrorCode.VALIDATION_ERROR.name(), msg, 400));
     }

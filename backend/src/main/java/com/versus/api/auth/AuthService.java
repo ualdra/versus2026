@@ -3,20 +3,29 @@ package com.versus.api.auth;
 import com.versus.api.auth.domain.RefreshToken;
 import com.versus.api.auth.dto.AuthResponse;
 import com.versus.api.auth.dto.LoginRequest;
+import com.versus.api.auth.dto.MessageResponse;
+import com.versus.api.auth.dto.PasswordResetConfirmRequest;
+import com.versus.api.auth.dto.PasswordResetRequest;
 import com.versus.api.auth.dto.RegisterRequest;
 import com.versus.api.auth.repo.RefreshTokenRepository;
 import com.versus.api.common.exception.ApiException;
+import com.versus.api.email.config.EmailProperties;
 import com.versus.api.users.Role;
 import com.versus.api.users.UserStatus;
 import com.versus.api.users.domain.User;
 import com.versus.api.users.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.Base64;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -25,15 +34,25 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokens;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwt;
+    private final EmailService emailService;
+    private final EmailProperties emailProperties;
+
+    @Value("${versus.auth.verification-token-expiry:86400}")
+    private long verificationTokenExpiry;
+
+    @Value("${versus.auth.reset-token-expiry:900}")
+    private long resetTokenExpiry;
 
     @Transactional
-    public AuthResponse register(RegisterRequest req) {
+    public Object register(RegisterRequest req) {
         if (users.existsByEmail(req.email())) {
             throw ApiException.conflict("Email already registered");
         }
         if (users.existsByUsername(req.username())) {
             throw ApiException.conflict("Username already taken");
         }
+        boolean requireVerification = emailProperties.enabled();
+        String token = requireVerification ? generateSecureToken() : null;
         User user = User.builder()
                 .username(req.username())
                 .email(req.email())
@@ -41,8 +60,17 @@ public class AuthService {
                 .role(Role.PLAYER)
                 .status(UserStatus.ACTIVE)
                 .isActive(true)
+                .enabled(!requireVerification)
+                .verificationToken(token)
+                .verificationTokenExpiry(requireVerification
+                        ? Instant.now().plusSeconds(verificationTokenExpiry) : null)
                 .build();
         users.save(user);
+        if (requireVerification) {
+            log.info("Dispatching verification email to {}", user.getEmail());
+            emailService.sendVerificationEmail(user.getEmail(), user.getUsername(), token);
+            return new MessageResponse("Registro completado. Por favor, verifica tu correo electrónico para activar tu cuenta.");
+        }
         return issueTokens(user);
     }
 
@@ -56,10 +84,62 @@ public class AuthService {
         if (UserStatus.DELETED.equals(user.getStatus())) {
             throw ApiException.unauthorized("Account disabled");
         }
+        if (Boolean.FALSE.equals(user.getEnabled())) {
+            throw ApiException.emailNotVerified("Email not verified. Please check your inbox.");
+        }
         if (!passwordEncoder.matches(req.password(), user.getPasswordHash())) {
             throw ApiException.unauthorized("Invalid credentials");
         }
         return issueTokens(user);
+    }
+
+    @Transactional
+    public MessageResponse verifyEmail(String token) {
+        User user = users.findByVerificationToken(token)
+                .orElseThrow(() -> ApiException.tokenInvalid("Verification token not found"));
+        if (Boolean.TRUE.equals(user.getEnabled())) {
+            return new MessageResponse("La cuenta ya estaba verificada.");
+        }
+        if (user.getVerificationTokenExpiry() == null ||
+                user.getVerificationTokenExpiry().isBefore(Instant.now())) {
+            throw ApiException.tokenExpired("Verification token has expired. Please register again or request a new verification email.");
+        }
+        user.setEnabled(true);
+        user.setVerificationToken(null);
+        user.setVerificationTokenExpiry(null);
+        users.save(user);
+        return new MessageResponse("Cuenta verificada correctamente. Ya puedes iniciar sesión.");
+    }
+
+    @Transactional
+    public MessageResponse requestPasswordReset(PasswordResetRequest req) {
+        users.findByEmail(req.email()).ifPresent(user -> {
+            String token = generateSecureToken();
+            user.setPasswordResetToken(token);
+            user.setPasswordResetTokenExpiry(Instant.now().plusSeconds(resetTokenExpiry));
+            users.save(user);
+            if (emailProperties.enabled()) {
+                emailService.sendPasswordResetEmail(user.getEmail(), user.getUsername(), token);
+            }
+        });
+        // Siempre devuelve el mismo mensaje para no revelar si el email existe
+        return new MessageResponse("Si el correo está registrado, recibirás un enlace para restablecer tu contraseña.");
+    }
+
+    @Transactional
+    public MessageResponse confirmPasswordReset(PasswordResetConfirmRequest req) {
+        User user = users.findByPasswordResetToken(req.token())
+                .orElseThrow(() -> ApiException.tokenInvalid("Password reset token not found"));
+        if (user.getPasswordResetTokenExpiry() == null ||
+                user.getPasswordResetTokenExpiry().isBefore(Instant.now())) {
+            throw ApiException.tokenExpired("Password reset token has expired. Please request a new one.");
+        }
+        user.setPasswordHash(passwordEncoder.encode(req.newPassword()));
+        user.setPasswordResetToken(null);
+        user.setPasswordResetTokenExpiry(null);
+        users.save(user);
+        refreshTokens.revokeAllByUserId(user.getId());
+        return new MessageResponse("Contraseña actualizada correctamente. Ya puedes iniciar sesión.");
     }
 
     @Transactional
@@ -107,5 +187,11 @@ public class AuthService {
                         user.getUsername(),
                         user.getRole().name(),
                         user.getAvatarUrl()));
+    }
+
+    private String generateSecureToken() {
+        byte[] bytes = new byte[32];
+        new SecureRandom().nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 }

@@ -78,6 +78,10 @@ nav:
     - Sprint 1-2: backend-mvp-sprint-1-2.md
     - Sprint 3: backend-mvp-sprint-3.md
     - Sprint 4: backend-mvp-sprint-4.md
+  - QA:
+    - Estrategia: qa/estrategia.md
+    - Casos por módulo: qa/plan-de-pruebas.md
+    - Plan de integración: qa/plan-integracion.md
   - Guías:
     - Moderación de preguntas: moderation.md
     - Pipeline de scraping: scraping-pipeline.md

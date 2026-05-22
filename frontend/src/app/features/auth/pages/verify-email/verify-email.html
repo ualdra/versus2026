@@ -1,0 +1,32 @@
+<div class="vs-screen">
+  <div class="verify-card vs-card animate-in">
+
+    @if (state() === 'loading') {
+      <div class="icon spin">⏳</div>
+      <h1 class="vs-display verify-title">VERIFICANDO</h1>
+      <p class="verify-msg">Estamos activando tu cuenta, por favor espera...</p>
+    }
+
+    @if (state() === 'success') {
+      <div class="icon">✅</div>
+      <h1 class="vs-display verify-title success">¡CUENTA ACTIVADA!</h1>
+      <p class="verify-msg">{{ message() }}</p>
+      <a routerLink="/login" class="vs-btn btn-primary">Iniciar sesión</a>
+    }
+
+    @if (state() === 'expired') {
+      <div class="icon">⌛</div>
+      <h1 class="vs-display verify-title error">ENLACE EXPIRADO</h1>
+      <p class="verify-msg">{{ message() }}</p>
+      <a routerLink="/register" class="vs-btn btn-secondary">Volver al registro</a>
+    }
+
+    @if (state() === 'invalid') {
+      <div class="icon">❌</div>
+      <h1 class="vs-display verify-title error">ENLACE INVÁLIDO</h1>
+      <p class="verify-msg">{{ message() }}</p>
+      <a routerLink="/login" class="vs-btn btn-secondary">Ir al login</a>
+    }
+
+  </div>
+</div>

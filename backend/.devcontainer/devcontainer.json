@@ -29,8 +29,9 @@
         "editor.formatOnSave": true,
         // Que Java use el JDK del contenedor y no busque uno local
         "java.jdt.ls.java.home": "/opt/java/openjdk",
-        // Lombok: apuntar al jar dentro del contenedor
-        "java.jdt.ls.vmargs": "-javaagent:/root/.m2/repository/org/projectlombok/lombok/latest/lombok.jar",
+        // Lombok: symlink creado en postCreateCommand apunta al jar real
+        // -Xmx limita el heap de JDT LS para que no mate el contenedor al indexar
+        "java.jdt.ls.vmargs": "-javaagent:/opt/lombok/lombok.jar -Xms256m -Xmx1536m -XX:+UseG1GC",
         "workbench.colorCustomizations": {
           "titleBar.activeBackground": "#1a3a1a",
           "titleBar.activeForeground": "#FFFFFF",
@@ -41,9 +42,8 @@
     }
   },
 
-  // Pre-descarga dependencias Maven al crear el contenedor
-  // Si aún no hay pom.xml (proyecto no inicializado), no falla
-  "postCreateCommand": "[ -f pom.xml ] && mvn dependency:go-offline -B || true",
+  // Pre-descarga dependencias y crea symlink de Lombok en ruta fija para JDT LS
+  "postCreateCommand": "[ -f pom.xml ] && mvn dependency:go-offline -B || true && mkdir -p /opt/lombok && ln -sf $(find /root/.m2/repository/org/projectlombok/lombok -name 'lombok-*.jar' ! -name '*sources*' | sort -V | tail -1) /opt/lombok/lombok.jar",
 
   "forwardPorts": [
     8080, // API

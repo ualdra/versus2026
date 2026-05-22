@@ -17,6 +17,22 @@ export const routes: Routes = [
     path: 'register',
     loadComponent: () => import('./features/auth/pages/register/register').then(m => m.Register),
   },
+  {
+    path: 'check-email',
+    loadComponent: () => import('./features/auth/pages/check-email/check-email').then(m => m.CheckEmail),
+  },
+  {
+    path: 'verify-email',
+    loadComponent: () => import('./features/auth/pages/verify-email/verify-email').then(m => m.VerifyEmail),
+  },
+  {
+    path: 'forgot-password',
+    loadComponent: () => import('./features/auth/pages/forgot-password/forgot-password').then(m => m.ForgotPassword),
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () => import('./features/auth/pages/reset-password/reset-password').then(m => m.ResetPassword),
+  },
 
   // ─── Jugador ──────────────────────────────────────────────────────────────
   {

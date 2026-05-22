@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verifica tu cuenta en Versus</title>
+  <style>
+    body { margin: 0; padding: 0; background: #0d0d0f; font-family: Inter, Arial, sans-serif; }
+    .wrapper { max-width: 560px; margin: 40px auto; background: #1a1a1f; border-radius: 12px; overflow: hidden; }
+    .header { background: #c0392b; padding: 32px; text-align: center; }
+    .header h1 { margin: 0; font-size: 48px; letter-spacing: 4px; color: #ffffff; font-family: 'Bebas Neue', Impact, sans-serif; }
+    .body { padding: 40px 48px; }
+    .body p { color: #b0b0c0; font-size: 15px; line-height: 1.7; margin: 0 0 20px; }
+    .body .name { color: #ffffff; font-weight: 600; }
+    .btn { display: inline-block; margin: 8px 0 24px; padding: 14px 32px; background: #c0392b;
+           color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 15px;
+           font-weight: 600; letter-spacing: 0.5px; }
+    .note { font-size: 13px; color: #606070; }
+    .note a { color: #4a90d9; word-break: break-all; }
+    .footer { border-top: 1px solid #2a2a3f; padding: 20px 48px; text-align: center; }
+    .footer p { margin: 0; font-size: 12px; color: #404050; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header"><h1>VERSUS</h1></div>
+    <div class="body">
+      <p>Hola, <span class="name" th:text="${username}">jugador</span>.</p>
+      <p>Gracias por registrarte. Haz clic en el botón de abajo para verificar tu correo y activar tu cuenta:</p>
+      <p style="text-align:center;">
+        <a class="btn" th:href="${verifyUrl}">Verificar mi cuenta</a>
+      </p>
+      <p class="note">
+        Si el botón no funciona, copia y pega este enlace en tu navegador:<br/>
+        <a th:href="${verifyUrl}" th:text="${verifyUrl}"></a>
+      </p>
+      <p class="note">Este enlace expira en <strong>24 horas</strong>. Si no creaste esta cuenta, puedes ignorar este correo.</p>
+    </div>
+    <div class="footer">
+      <p>&copy; 2025 Versus Game. Todos los derechos reservados.</p>
+    </div>
+  </div>
+</body>
+</html>
