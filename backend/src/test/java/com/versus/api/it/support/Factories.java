@@ -52,7 +52,8 @@ public class Factories {
                 .passwordHash(encoder.encode(DEFAULT_PASSWORD))
                 .role(Role.PLAYER)
                 .status(UserStatus.ACTIVE)
-                .isActive(true);
+                .isActive(true)
+                .enabled(true);
         custom.accept(b);
         return users.save(b.build());
     }
