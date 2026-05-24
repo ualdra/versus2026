@@ -10,6 +10,8 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.io.InputStream;
 import java.net.URI;
 
@@ -20,6 +22,7 @@ public class R2StorageService implements StorageService {
     private final StorageProperties properties;
     private final S3Client s3;
 
+    @Autowired
     public R2StorageService(StorageProperties properties) {
         this(properties, createClient(properties.getR2()));
     }
