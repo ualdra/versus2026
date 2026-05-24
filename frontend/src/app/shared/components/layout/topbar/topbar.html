@@ -18,23 +18,126 @@
     }
   </nav>
 
-  <a class="vs-topbar__user" routerLink="/settings" title="Ajustes">
-    <div style="text-align: right">
-      <div style="font-weight: 600; font-size: 13px">{{ displayUser().name }}</div>
-      <div class="vs-mono" style="font-size: 11px; color: var(--vs-text-muted)">{{ displayUser().xp }} XP</div>
-    </div>
-    <div class="vs-avatar">
-      @if (displayUser().avatarUrl) {
-        <img [src]="displayUser().avatarUrl" alt="" />
-      } @else {
-        {{ initials() }}
+  <div class="vs-topbar__actions">
+    <div class="vs-notification-center" [class.is-open]="notificationsOpen()">
+      <button
+        type="button"
+        class="vs-icon-btn vs-notification-center__trigger"
+        aria-label="Abrir notificaciones"
+        [attr.aria-expanded]="notificationsOpen()"
+        (click)="toggleNotifications($event)"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M18 16v-5a6 6 0 0 0-12 0v5l-2 3h16l-2-3Z" />
+          <path d="M10 21h4" />
+        </svg>
+        @if (unreadCount() > 0) {
+          <span class="vs-notification-center__badge">{{ unreadLabel() }}</span>
+        }
+      </button>
+
+      @if (notificationsOpen()) {
+        <section class="vs-notification-center__panel" aria-label="Centro de notificaciones">
+          <header class="vs-notification-center__head">
+            <div>
+              <div class="vs-section-title">Notificaciones</div>
+              <div class="vs-notification-center__count">{{ unreadCount() }} sin leer</div>
+            </div>
+            <div class="vs-notification-center__tools">
+              <button
+                type="button"
+                class="vs-icon-btn vs-icon-btn--sm"
+                aria-label="Marcar todas como leidas"
+                title="Marcar todas como leidas"
+                (click)="markAllNotificationsRead($event)"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m4 12 5 5L20 6" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="vs-icon-btn vs-icon-btn--sm"
+                aria-label="Vaciar notificaciones"
+                title="Vaciar notificaciones"
+                (click)="clearNotifications($event)"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 7h14" />
+                  <path d="M9 7V5h6v2" />
+                  <path d="m8 10 .5 9h7l.5-9" />
+                </svg>
+              </button>
+            </div>
+          </header>
+
+          @if (notificationItems().length === 0) {
+            <div class="vs-notification-center__empty">Sin notificaciones.</div>
+          } @else {
+            <div class="vs-notification-center__list vs-scroll">
+              @for (notification of notificationItems(); track notification.id) {
+                @if (notification.route) {
+                  <a
+                    class="vs-notification-item"
+                    [class.is-unread]="!notification.read"
+                    [class.tone-info]="notification.tone === 'info'"
+                    [class.tone-success]="notification.tone === 'success'"
+                    [class.tone-warning]="notification.tone === 'warning'"
+                    [class.tone-danger]="notification.tone === 'danger'"
+                    [routerLink]="notification.route"
+                    (click)="selectNotification(notification)"
+                  >
+                    <span class="vs-notification-item__icon">{{ notificationIcon(notification) }}</span>
+                    <span class="vs-notification-item__body">
+                      <span class="vs-notification-item__title">{{ notification.title }}</span>
+                      <span class="vs-notification-item__message">{{ notification.message }}</span>
+                      <span class="vs-notification-item__time">{{ notificationTime(notification) }}</span>
+                    </span>
+                  </a>
+                } @else {
+                  <button
+                    type="button"
+                    class="vs-notification-item"
+                    [class.is-unread]="!notification.read"
+                    [class.tone-info]="notification.tone === 'info'"
+                    [class.tone-success]="notification.tone === 'success'"
+                    [class.tone-warning]="notification.tone === 'warning'"
+                    [class.tone-danger]="notification.tone === 'danger'"
+                    (click)="selectNotification(notification)"
+                  >
+                    <span class="vs-notification-item__icon">{{ notificationIcon(notification) }}</span>
+                    <span class="vs-notification-item__body">
+                      <span class="vs-notification-item__title">{{ notification.title }}</span>
+                      <span class="vs-notification-item__message">{{ notification.message }}</span>
+                      <span class="vs-notification-item__time">{{ notificationTime(notification) }}</span>
+                    </span>
+                  </button>
+                }
+              }
+            </div>
+          }
+        </section>
       }
-      @if (latestAchievement(); as achievement) {
-        <span class="vs-avatar__achievement" [title]="achievement.name">
-          {{ achievementLabel(achievement) }}
-        </span>
-      }
     </div>
-  </a>
+
+    <a class="vs-topbar__user" routerLink="/settings" title="Ajustes">
+      <div style="text-align: right">
+        <div style="font-weight: 600; font-size: 13px">{{ displayUser().name }}</div>
+        <div class="vs-mono" style="font-size: 11px; color: var(--vs-text-muted)">{{ displayUser().xp }} XP</div>
+      </div>
+      <div class="vs-avatar">
+        @if (displayUser().avatarUrl) {
+          <img [src]="displayUser().avatarUrl" alt="" />
+        } @else {
+          {{ initials() }}
+        }
+        @if (latestAchievement(); as achievement) {
+          <span class="vs-avatar__achievement" [title]="achievement.name">
+            {{ achievementLabel(achievement) }}
+          </span>
+        }
+      </div>
+    </a>
+  </div>
 
 </div>

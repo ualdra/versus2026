@@ -46,6 +46,8 @@ services:
       - app-network
 
   scraper:
+    profiles:
+      - scraper
     build:
       context: ./scraper
       dockerfile: Dockerfile

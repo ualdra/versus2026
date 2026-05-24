@@ -7,11 +7,9 @@ FROM node:24 AS development
 
 WORKDIR /app
 
-RUN npm install -g @angular/cli
-
 EXPOSE 4200
 
-CMD sh -c "[ -f package.json ] && npm install && ng serve --host 0.0.0.0 --poll 500 || echo 'No hay proyecto Angular todavía. Entra al contenedor y ejecuta: ng new <nombre-proyecto> --directory .'"
+CMD sh -c "[ -f package.json ] && npm install && npm start -- --host 0.0.0.0 --poll 500 || echo 'No hay proyecto Angular todavia.'"
 
 
 # ─────────────────────────────────────────────

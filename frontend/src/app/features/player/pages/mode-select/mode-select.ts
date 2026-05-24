@@ -47,4 +47,5 @@ export class ModeSelect {
       route: '/play/queue/sabotage',
     },
   ];
+
 }

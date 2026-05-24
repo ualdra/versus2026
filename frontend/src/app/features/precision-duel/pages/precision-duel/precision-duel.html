@@ -1,0 +1,129 @@
+<div class="vs-duel"
+     [class.is-correct]="roundWinner() === 'self'"
+     [class.is-wrong]="roundWinner() === 'opp'">
+
+  <!-- HUD -->
+  <div class="vs-hud">
+    <div class="vs-hud__left">
+      <span class="vs-pill vs-pill--info">
+        <span class="vs-pill__dot"></span>DUELO DE PRECISIÓN
+      </span>
+      <div class="vs-mono vs-hud__round">Ronda {{ roundNumber() || '—' }} / 10</div>
+    </div>
+
+    <div class="vs-hud__center">
+      <div class="vs-timer-big" [class.is-low]="secondsLeft() <= 5">
+        {{ secondsLeft() }}<span class="vs-timer-big__unit">s</span>
+      </div>
+    </div>
+
+    <div class="vs-hud__right">
+      <a routerLink="/play/select" class="btn btn--ghost btn--sm">ABANDONAR</a>
+    </div>
+  </div>
+
+  <!-- Versus bar con lifebars -->
+  <div class="vs-versus-bar">
+    <div class="vs-versus-bar__side vs-versus-bar__side--self">
+      <div class="vs-versus-bar__label">TÚ</div>
+      <div class="vs-pduel__lifebar">
+        <div class="vs-pduel__lifebar-fill vs-pduel__lifebar-fill--self" [style.width.%]="selfLifePct()"></div>
+      </div>
+      <div class="vs-versus-bar__lives vs-mono">{{ selfLives() }}/3</div>
+    </div>
+
+    <div class="vs-versus-bar__center">
+      <span class="vs-versus-bar__vs">VS</span>
+    </div>
+
+    <div class="vs-versus-bar__side vs-versus-bar__side--opp">
+      <div class="vs-versus-bar__label">RIVAL</div>
+      <div class="vs-pduel__lifebar">
+        <div class="vs-pduel__lifebar-fill vs-pduel__lifebar-fill--opp" [style.width.%]="oppLifePct()"></div>
+      </div>
+      <div class="vs-versus-bar__lives vs-mono">{{ oppLives() }}/3</div>
+    </div>
+  </div>
+
+  @if (errorMsg()) {
+    <div class="vs-error">{{ errorMsg() }}</div>
+  }
+
+  @if (currentQuestion(); as q) {
+    <div class="vs-duel-question">
+      <div class="vs-q-label">CATEGORÍA · {{ q.category | uppercase }}</div>
+      <h2 class="vs-q-text vs-display">{{ q.text }}</h2>
+      @if (q.unit) {
+        <div class="vs-q-unit">
+          UNIDAD <strong class="vs-mono">{{ q.unit }}</strong>
+        </div>
+      }
+    </div>
+
+    <div class="vs-pduel__input-wrap">
+      <vs-numeric-input
+        [unit]="q.unit"
+        [disabled]="inputDisabled()"
+        (submitted)="submit($event)" />
+    </div>
+  } @else {
+    <div class="vs-loading">Esperando primera pregunta…</div>
+  }
+
+  <!-- Reveal overlay -->
+  @if (phase() === 'between' && lastRoundOutcomes().length > 0) {
+    @let winner = roundWinner();
+    <div class="vs-feedback-overlay"
+         [class.is-correct]="winner === 'self'"
+         [class.is-wrong]="winner === 'opp'"
+         [class.is-tie]="winner === 'tie'">
+      <div class="vs-feedback-overlay__title">
+        @if (winner === 'self') { ¡GANAS LA RONDA! }
+        @else if (winner === 'opp') { ROUND PARA RIVAL }
+        @else { EMPATE }
+      </div>
+
+      @if (correctValue() !== null) {
+        <div class="vs-feedback-overlay__sub">
+          VALOR REAL · <strong class="vs-mono">{{ correctValue() }}</strong>
+        </div>
+      }
+
+      <div class="vs-feedback-overlay__compare">
+        @if (selfOutcome(); as so) {
+          <div class="vs-feedback-overlay__col" [class.is-winner]="winner === 'self'">
+            <div class="vs-feedback-overlay__col-label">TÚ</div>
+            <div class="vs-feedback-overlay__col-value">{{ so.valueGiven ?? '—' }}</div>
+            <div class="vs-feedback-overlay__sub">
+              @if (so.deviation !== null) {
+                Desv. {{ so.deviation | number:'1.0-2' }}%
+              } @else {
+                Sin respuesta
+              }
+            </div>
+          </div>
+        }
+        <div class="vs-feedback-overlay__vs">VS</div>
+        @if (oppOutcome(); as oo) {
+          <div class="vs-feedback-overlay__col" [class.is-winner]="winner === 'opp'">
+            <div class="vs-feedback-overlay__col-label">RIVAL</div>
+            <div class="vs-feedback-overlay__col-value">{{ oo.valueGiven ?? '—' }}</div>
+            <div class="vs-feedback-overlay__sub">
+              @if (oo.deviation !== null) {
+                Desv. {{ oo.deviation | number:'1.0-2' }}%
+              } @else {
+                Sin respuesta
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      @if (selfOutcome()?.lifeDelta; as ld) {
+        @if (ld < 0) {
+          <div class="vs-feedback-overlay__delta">{{ ld }} vida{{ ld === -1 ? '' : 's' }}</div>
+        }
+      }
+    </div>
+  }
+</div>

@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final PasswordResetRateLimiter rateLimiter;
 
     @Operation(summary = "Register a new player account", responses = {
             @ApiResponse(responseCode = "201", description = "Account created — verification email sent"),
@@ -62,8 +64,19 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Email sent if address is registered")
     })
     @PostMapping("/password-reset/request")
-    public MessageResponse requestPasswordReset(@Valid @RequestBody PasswordResetRequest req) {
+    public MessageResponse requestPasswordReset(
+            @Valid @RequestBody PasswordResetRequest req,
+            HttpServletRequest httpRequest) {
+        rateLimiter.check(resolveClientIp(httpRequest));
         return authService.requestPasswordReset(req);
+    }
+
+    private String resolveClientIp(HttpServletRequest request) {
+        String forwarded = request.getHeader("X-Forwarded-For");
+        if (forwarded != null && !forwarded.isBlank()) {
+            return forwarded.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
     }
 
     @Operation(summary = "Confirm password reset with token and new password", responses = {

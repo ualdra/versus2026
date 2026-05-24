@@ -32,24 +32,10 @@
       }
     </div>
 
-    <div class="vs-precision__form">
-      <input
-        type="number"
-        inputmode="decimal"
-        class="vs-precision__input"
-        [disabled]="phase() !== 'idle'"
-        [ngModel]="inputValue()"
-        (ngModelChange)="inputValue.set($event)"
-        (keydown.enter)="submit()"
-        placeholder="Tu estimación" />
-      <button
-        type="button"
-        class="btn btn--primary btn--lg"
-        [disabled]="phase() !== 'idle' || !inputValue()"
-        (click)="submit()">
-        ENVIAR
-      </button>
-    </div>
+    <vs-numeric-input
+      [unit]="q.unit"
+      [disabled]="inputDisabled()"
+      (submitted)="submit($event)" />
   } @else {
     <div class="vs-loading">Cargando pregunta…</div>
   }

@@ -19,7 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -65,7 +64,7 @@ public class UserController {
                                @Valid @RequestBody ChangePasswordRequest req) {
         userService.changePassword(userId, req);
     }
-  
+
     @Operation(summary = "Select a predefined avatar URL",
             responses = @ApiResponse(responseCode = "200", description = "Avatar updated"))
     @PutMapping(value = "/me/avatar", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -81,7 +80,7 @@ public class UserController {
     public void deleteMe(@AuthenticationPrincipal UUID userId) {
         userService.deleteMe(userId);
     }
-  
+
     @Operation(summary = "Upload and set the authenticated user's avatar",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Avatar updated"),

@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, computed, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AchievementService } from '../../../../core/services/achievement.service';
@@ -6,6 +6,8 @@ import { StatsService } from '../../../../core/services/stats.service';
 import { UserService } from '../../../../core/services/user.service';
 import { Achievement } from '../../../../core/models/achievement.models';
 import { PlayerStats } from '../../../../core/models/game.models';
+import type { NotificationItem } from '../../../../core/models/notification.models';
+import { NotificationCenterService } from '../../../../core/services/notification-center.service';
 
 
 export type NavKey = 'home' | 'play' | 'ranking' | 'profile' | 'settings' | 'admin' | 'users' | 'spiders' | 'reports';
@@ -22,6 +24,8 @@ export class TopbarComponent implements OnInit {
   private readonly users = inject(UserService);
   private readonly statsApi = inject(StatsService);
   private readonly achievementsApi = inject(AchievementService);
+  private readonly notifications = inject(NotificationCenterService);
+  private readonly elementRef = inject(ElementRef<HTMLElement>);
 
   active = input<NavKey>('home');
   role = input<'player' | 'admin'>('player');
@@ -29,6 +33,13 @@ export class TopbarComponent implements OnInit {
 
   private readonly stats = signal<PlayerStats[]>([]);
   private readonly achievements = signal<Achievement[]>([]);
+  readonly notificationItems = this.notifications.items;
+  readonly unreadCount = this.notifications.unreadCount;
+  readonly notificationsOpen = signal(false);
+  readonly unreadLabel = computed(() => {
+    const count = this.unreadCount();
+    return count > 9 ? '9+' : String(count);
+  });
 
 
   items = computed<[NavKey, string][]>(() =>
@@ -77,6 +88,7 @@ export class TopbarComponent implements OnInit {
 
   ngOnInit(): void {
     if (!this.auth.isAuthenticated()) return;
+    this.notifications.start();
     this.users.me().subscribe({
       next: (u) => this.auth.updateCachedUser({ username: u.username, avatarUrl: u.avatarUrl, role: u.role }),
       error: () => {},
@@ -112,6 +124,58 @@ export class TopbarComponent implements OnInit {
       collector: 'C',
     };
     return labels[achievement.iconKey] ?? 'OK';
+  }
+
+  toggleNotifications(event: MouseEvent): void {
+    event.stopPropagation();
+    this.notificationsOpen.update((open) => !open);
+  }
+
+  closeNotifications(): void {
+    this.notificationsOpen.set(false);
+  }
+
+  markAllNotificationsRead(event: MouseEvent): void {
+    event.stopPropagation();
+    this.notifications.markAllRead();
+  }
+
+  clearNotifications(event: MouseEvent): void {
+    event.stopPropagation();
+    this.notifications.clear();
+  }
+
+  selectNotification(notification: NotificationItem): void {
+    this.notifications.markRead(notification.id);
+    this.closeNotifications();
+  }
+
+  notificationIcon(notification: NotificationItem): string {
+    if (notification.type === 'ACHIEVEMENT_UNLOCKED') return 'OK';
+    if (notification.type === 'MATCH_FOUND') return 'VS';
+    if (notification.tone === 'danger') return '!';
+    return 'i';
+  }
+
+  notificationTime(notification: NotificationItem): string {
+    const time = new Date(notification.createdAt).getTime();
+    if (!Number.isFinite(time)) return '';
+
+    const diff = Math.max(0, Date.now() - time);
+    const minute = 60 * 1000;
+    const hour = 60 * minute;
+    if (diff < minute) return 'ahora';
+    if (diff < hour) return `${Math.floor(diff / minute)} min`;
+    if (diff < 24 * hour) return `${Math.floor(diff / hour)} h`;
+    return new Date(time).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.notificationsOpen()) return;
+    if (!this.elementRef.nativeElement.contains(event.target as Node)) {
+      this.closeNotifications();
+    }
   }
 
   private calculateXp(stats: PlayerStats[]): number {

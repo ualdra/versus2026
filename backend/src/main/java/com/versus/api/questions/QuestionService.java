@@ -43,8 +43,10 @@ public class QuestionService {
 
     @Transactional(readOnly = true)
     public Question findRandomActiveQuestion(QuestionType type, String category) {
-        return questions.findRandomActive(type == null ? null : type.name(), normalizeCategory(category))
+        Question question = questions.findRandomActive(type == null ? null : type.name(), normalizeCategory(category))
                 .orElseThrow(() -> ApiException.notFound("No active question found"));
+        initializeLazyAssociations(question);
+        return question;
     }
 
     @Transactional(readOnly = true)
@@ -55,7 +57,19 @@ public class QuestionService {
         if (question.getType() != expectedType) {
             throw ApiException.validation("Question type does not match game mode");
         }
+        initializeLazyAssociations(question);
         return question;
+    }
+
+    /**
+     * Fuerza la carga de colecciones lazy mientras la sesión Hibernate sigue abierta.
+     * Necesario para consumidores que usan la entidad fuera de un contexto transaccional
+     * (p.ej. DuelOrchestrator corre en el scheduler thread con open-in-view=false).
+     */
+    private void initializeLazyAssociations(Question question) {
+        if (question.getType() == QuestionType.BINARY && question.getOptions() != null) {
+            question.getOptions().size();
+        }
     }
 
     public QuestionResponse toResponse(Question question) {

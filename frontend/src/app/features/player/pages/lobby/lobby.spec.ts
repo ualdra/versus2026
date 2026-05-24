@@ -37,7 +37,10 @@ describe('Lobby', () => {
     abandonMatch: ReturnType<typeof vi.fn>;
   };
   let wsSpy: { connect: ReturnType<typeof vi.fn> };
-  let routerSpy: { navigate: ReturnType<typeof vi.fn> };
+  let routerSpy: {
+    navigate: ReturnType<typeof vi.fn>;
+    navigateByUrl: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(async () => {
     events$ = new Subject<MatchEvent<unknown>>();
@@ -49,10 +52,15 @@ describe('Lobby', () => {
       abandonMatch: vi.fn(() => of(void 0)),
     };
     wsSpy = { connect: vi.fn() };
-    routerSpy = { navigate: vi.fn().mockResolvedValue(true) };
+    routerSpy = {
+      navigate: vi.fn().mockResolvedValue(true),
+      navigateByUrl: vi.fn().mockResolvedValue(true),
+    };
 
     const authStub = {
       user: () => ({ id: SELF_ID, username: 'me', role: 'PLAYER', avatarUrl: null }),
+      isAuthenticated: () => false,
+      updateCachedUser: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -92,7 +100,7 @@ describe('Lobby', () => {
       providers: [
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({}) } } },
         { provide: Router, useValue: routerSpy },
-        { provide: AuthService, useValue: { user: () => null } },
+        { provide: AuthService, useValue: { user: () => null, isAuthenticated: () => false, updateCachedUser: vi.fn() } },
         { provide: MatchService, useValue: matchSpy },
         { provide: WebSocketService, useValue: wsSpy },
       ],
@@ -130,6 +138,57 @@ describe('Lobby', () => {
   it('switches to started status on MATCH_START', () => {
     events$.next({ type: 'MATCH_START', matchId: 'match-1', payload: { matchId: 'match-1', mode: 'BINARY_DUEL' } });
     expect(component.status()).toBe('started');
+  });
+
+  it('navigates to /play/binary-duel/:matchId on MATCH_START when mode is BINARY_DUEL', () => {
+    events$.next({ type: 'MATCH_START', matchId: 'match-1', payload: { matchId: 'match-1', mode: 'BINARY_DUEL' } });
+    expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('/play/binary-duel/match-1');
+  });
+
+  it('navigates to /play/precision-duel/:matchId on MATCH_START when mode is PRECISION_DUEL', () => {
+    matchSpy.getLobby = vi.fn(() =>
+      of({ ...structuredClone(initialLobby), mode: 'PRECISION_DUEL' as const }),
+    );
+    TestBed.resetTestingModule();
+    return TestBed.configureTestingModule({
+      imports: [Lobby],
+      providers: [
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ matchId: 'match-1' }) } } },
+        { provide: Router, useValue: routerSpy },
+        { provide: AuthService, useValue: { user: () => null, isAuthenticated: () => false, updateCachedUser: vi.fn() } },
+        { provide: MatchService, useValue: matchSpy },
+        { provide: WebSocketService, useValue: wsSpy },
+      ],
+    }).compileComponents().then(async () => {
+      const f = TestBed.createComponent(Lobby);
+      f.detectChanges();
+      await f.whenStable();
+      events$.next({ type: 'MATCH_START', matchId: 'match-1', payload: { matchId: 'match-1', mode: 'PRECISION_DUEL' } });
+      expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('/play/precision-duel/match-1');
+    });
+  });
+
+  it('navigates to /play/sabotage/:matchId on MATCH_START when mode is SABOTAGE', () => {
+    matchSpy.getLobby = vi.fn(() =>
+      of({ ...structuredClone(initialLobby), mode: 'SABOTAGE' as const }),
+    );
+    TestBed.resetTestingModule();
+    return TestBed.configureTestingModule({
+      imports: [Lobby],
+      providers: [
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ matchId: 'match-1' }) } } },
+        { provide: Router, useValue: routerSpy },
+        { provide: AuthService, useValue: { user: () => null, isAuthenticated: () => false, updateCachedUser: vi.fn() } },
+        { provide: MatchService, useValue: matchSpy },
+        { provide: WebSocketService, useValue: wsSpy },
+      ],
+    }).compileComponents().then(async () => {
+      const f = TestBed.createComponent(Lobby);
+      f.detectChanges();
+      await f.whenStable();
+      events$.next({ type: 'MATCH_START', matchId: 'match-1', payload: { matchId: 'match-1', mode: 'SABOTAGE' } });
+      expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('/play/sabotage/match-1');
+    });
   });
 
   it('sends ready when toggling from unready', () => {

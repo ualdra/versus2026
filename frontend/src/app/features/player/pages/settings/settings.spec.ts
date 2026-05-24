@@ -7,6 +7,8 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { AchievementService } from '../../../../core/services/achievement.service';
 import { UserService } from '../../../../core/services/user.service';
 import { StatsService } from '../../../../core/services/stats.service';
+import { audioService } from '../../../../core/services/AudioService';
+import { NotificationCenterService } from '../../../../core/services/notification-center.service';
 
 describe('Settings', () => {
   let component: Settings;
@@ -38,6 +40,11 @@ describe('Settings', () => {
 
   beforeEach(async () => {
     localStorage.clear();
+    audioService.stopBgm();
+    audioService.setSfxEnabled(true);
+    audioService.setBgmEnabled(true);
+    audioService.setVolume(0.8, 0.4);
+    localStorage.clear();
     userService = {
       me: vi.fn(() => of(me)),
       updateMe: vi.fn(() => of(me)),
@@ -63,6 +70,17 @@ describe('Settings', () => {
         { provide: UserService, useValue: userService },
         { provide: StatsService, useValue: { mine: () => of([]) } },
         { provide: AchievementService, useValue: { list: () => of([]) } },
+        {
+          provide: NotificationCenterService,
+          useValue: {
+            items: signal([]),
+            unreadCount: signal(0),
+            start: vi.fn(),
+            markRead: vi.fn(),
+            markAllRead: vi.fn(),
+            clear: vi.fn(),
+          },
+        },
       ],
     }).compileComponents();
 
@@ -99,13 +117,18 @@ describe('Settings', () => {
   });
 
   it('should persist audio preferences in localStorage', () => {
-    component.audioForm.patchValue({ sfx: 25, bgm: 60, muted: true, reducedFeedback: false });
+    component.audioForm.patchValue({
+      sfxEnabled: false,
+      bgmEnabled: true,
+      sfxVolume: 25,
+      bgmVolume: 60,
+    });
 
-    expect(JSON.parse(localStorage.getItem('vs.audioPrefs') ?? '{}')).toEqual({
-      sfx: 25,
-      bgm: 60,
-      muted: true,
-      reducedFeedback: false,
+    expect(JSON.parse(localStorage.getItem('audio_settings') ?? '{}')).toEqual({
+      sfxEnabled: false,
+      bgmEnabled: true,
+      sfxVolume: 0.25,
+      bgmVolume: 0.6,
     });
   });
 });

@@ -11,7 +11,9 @@ import com.versus.api.users.repo.UserRepository;
 import com.versus.api.websocket.MatchEventEnvelope;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +39,8 @@ public class MatchService {
     private final MatchRepository matchRepository;
     private final UserRepository userRepository;
     private final SimpMessagingTemplate broker;
+    @Autowired(required = false)
+    private ApplicationEventPublisher eventPublisher;
 
     @Value("${versus.match.start-countdown-seconds:3}")
     private int countdownSeconds;
@@ -189,6 +193,9 @@ public class MatchService {
             });
             broadcast(matchId, "MATCH_START", new MatchStartEvent(matchId, state.getMode()));
             log.info("Match {} started (mode={})", matchId, state.getMode());
+            if (eventPublisher != null) {
+                eventPublisher.publishEvent(new com.versus.api.duel.MatchStartedEvent(state));
+            }
         }
     }
 

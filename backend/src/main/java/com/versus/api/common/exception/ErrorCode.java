@@ -11,6 +11,7 @@ public enum ErrorCode {
     TOKEN_INVALID(HttpStatus.BAD_REQUEST),
     TOKEN_EXPIRED(HttpStatus.GONE),
     EMAIL_NOT_VERIFIED(HttpStatus.FORBIDDEN),
+    TOO_MANY_REQUESTS(HttpStatus.TOO_MANY_REQUESTS),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR);
 
     private final HttpStatus status;

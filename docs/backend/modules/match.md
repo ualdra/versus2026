@@ -4,7 +4,7 @@ Paquete raíz: `com.versus.api.match`
 Depende de: `users`, `questions`, `websocket`
 Estado:
 - ✅ **Lobby + matchmaking** (PR #90, Sprint 3) — REST de salas, scheduler de emparejamiento, lobby en tiempo real con countdown.
-- 🚧 **Modos multijugador**: lógica de partida (`BINARY_DUEL`, `PRECISION_DUEL`, `SABOTAGE`) pendiente de PRs #91/#92/#93.
+- ✅ **Modos multijugador**: la lógica de partida (`BINARY_DUEL` #91, `PRECISION_DUEL` #92, `SABOTAGE` #93) vive ahora en el módulo [`duel`](duel.md) (Sprint 4). `MatchService` publica `MatchStartedEvent` y el `DuelOrchestrator` arranca el ciclo de rondas.
 
 ---
 
@@ -484,8 +484,6 @@ Los handlers concretos (`MatchWebSocketController`) se añaden a este módulo en
 
 ## Trabajo pendiente (PRs siguientes)
 
-- **PR #91 (Binary Duel):** lógica de juego — emitir `QUESTION`, recibir respuestas vía `/app/match/answer`, evaluar, emitir `ROUND_RESULT` y al final `MATCH_END`. Persistir `match_rounds`, `match_answers`, `match_players.result` en `endMatch()`.
-- **PR #92 (Precision Duel):** misma estructura adaptada a preguntas numéricas. Extracción previa de la fórmula de Precision a `match.logic.PrecisionDamageCalculator`.
-- **PR #93 (Sabotaje):** handler `/app/match/sabotage`, tokens, efectos `TIME_BOMB` / `OBFUSCATE` / `LIFE_STEAL`, `convertAndSendToUser` para payloads que solo debe ver el receptor del efecto.
-- **Frontend:** páginas `binary-duel`, `precision-duel`, `sabotage` y extensión multiplayer de `result.ts` con vista comparativa head-to-head.
-- **Salas privadas con `roomCode`:** issue #105, fuera del Sprint 3.
+- ✅ **PRs #91/#92/#93** (Sprint 4): la lógica de los 3 modos multijugador vive en el módulo [`duel`](duel.md). `MatchService.startMatch()` publica `MatchStartedEvent` y el `DuelOrchestrator` toma el relevo.
+- **Salas privadas con `roomCode`:** issue #105, fuera del Sprint 4.
+- **Persistencia del runtime para sobrevivir reinicios** (Redis): seguimiento futuro; ver [`duel.md`](duel.md#trabajo-de-follow-up-fuera-del-sprint-4).

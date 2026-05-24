@@ -631,6 +631,19 @@ class AuthServiceTest {
             verify(passwordEncoder).encode(NEW_PASSWORD);
         }
 
+        @DisplayName("Token válido: revoca todas las sesiones activas del usuario")
+        @Test
+        void tokenValido_revocaSesionesActivas() {
+            User user = userWithResetToken();
+            when(users.findByPasswordResetToken(TOKEN)).thenReturn(Optional.of(user));
+            when(passwordEncoder.encode(NEW_PASSWORD)).thenReturn(NEW_HASH);
+            when(users.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+            authService.confirmPasswordReset(new PasswordResetConfirmRequest(TOKEN, NEW_PASSWORD));
+
+            verify(refreshTokens).revokeAllByUserId(user.getId());
+        }
+
         @DisplayName("Token no encontrado lanza TOKEN_INVALID")
         @Test
         void tokenNoExistente_lanzaTokenInvalid() {

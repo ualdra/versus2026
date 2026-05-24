@@ -160,6 +160,7 @@ Respuesta: `204 No Content`. En frontend se exige doble confirmacion escribiendo
 - Password: requiere password actual y confirmacion visual en el formulario.
 - Avatar: galeria de avatares predefinidos con confirmacion `Aceptar/Cancelar`; upload PNG/JPEG con crop basico y boton de subida.
 - Notificaciones: preferencias de solicitudes de amistad, invitaciones y logros guardadas en `localStorage`.
+- Centro de notificaciones: desplegable en el topbar con contador de no leidas, historial local por usuario (`vs.notifications.<userId>`) y acciones de marcar leidas/vaciar.
 - Audio: controles `Efectos de sonido`, `Musica de fondo`, silenciar todo y feedback reducido guardados en `localStorage`.
 - Zona de peligro: borrar cuenta exige escribir el username.
 - Topbar: muestra username/avatar reales y XP calculado desde `/api/stats/me` mientras no exista campo `xp` dedicado.
@@ -320,6 +321,7 @@ Frontend conecta a:  ws://localhost:8080/ws  (STOMP sobre SockJS)
 Auth: header CONNECT  Authorization: Bearer <jwt>
  
 Suscripciones del cliente:
+  /user/queue/achievements   -> logros desbloqueados (ACHIEVEMENT_UNLOCKED)
   /user/queue/match          → notificaciones privadas (MATCH_FOUND)
   /topic/match/{matchId}     → estado compartido del lobby/partida
  
@@ -327,7 +329,7 @@ Envíos del cliente:
   /app/match/ready           → marcar listo en el lobby       (PR #90)
   /app/match/unready         → quitar listo                    (PR #90)
   /app/match/abandon         → abandonar la sala vía WS        (PR #90)
-  /app/match/answer          → enviar respuesta a una ronda    (PR #91+)
+  /app/match/answer          → enviar respuesta a una ronda    (PR #91 #92 #93)
   /app/match/sabotage        → activar sabotaje                (PR #93)
 ```
 
@@ -369,22 +371,36 @@ Todos los eventos van envueltos en `{ type, matchId, payload }`.
 | `PLAYER_READY` | #90 | `/topic/match/{id}` | `{ userId, ready }` |
 | `MATCH_STARTING` | #90 | `/topic/match/{id}` | `{ countdownSeconds }` |
 | `MATCH_START` | #90 | `/topic/match/{id}` | `{ matchId, mode }` |
-| `QUESTION` | #91+ | `/topic/match/{id}` | `{ question, timeLimit, roundNumber }` |
-| `ROUND_RESULT` | #91+ | `/topic/match/{id}` | `{ player1Lives, player2Lives, correct, deltas }` |
-| `MATCH_END` | #91+ | `/topic/match/{id}` | `{ winnerId, stats }` |
-| `SABOTAGE_ACTIVATED` | #93 | `/topic/match/{id}` | `{ byUserId, type }` |
+| `QUESTION` | #91-#93 | `/topic/match/{id}` | `{ roundNumber, question, serverNow, deadline, timerSeconds, effectsApplied }` |
+| `ANSWER_RESULT` | #91-#93 | `/user/queue/match` | `{ accepted, rejectionReason?, isCorrect?, deviation? }` |
+| `ROUND_RESULT` | #91-#93 | `/topic/match/{id}` | `{ roundNumber, questionId, reveal, outcomes[], runtime }` |
+| `MATCH_END` | #91-#93 | `/topic/match/{id}` | `{ winnerUserId?, reason, stats[] }` (`reason: NORMAL\|DISCONNECT\|MAX_ROUNDS_TIE`) |
+| `SABOTAGE_ACTIVATED` | #93 | `/topic/match/{id}` | `{ type, by, target, appliesOnRound }` |
+| `SABOTAGE_REJECTED` | #93 | `/user/queue/match` | `{ reason: NO_TOKENS\|ALREADY_USED\|INVALID_TARGET\|WRONG_PHASE\|UNSUPPORTED_MODE }` |
+| `EFFECT_APPLIED` | #93 | `/topic/match/{id}` | `{ type, target, roundNumber }` |
 
 `PlayerInLobby = { userId, username, avatarUrl, ready }`.
- 
-### Lógica de daño por modo
- 
-| Modo | Quién pierde vida | Cuándo |
-|------|-------------------|--------|
-| Duelo binario | El que falla | Al responder |
-| Duelo de precisión | El que se desvía más | Al responder ambos |
-| Sabotaje | El rival | Cuando el otro acierta mejor |
- 
-> El algoritmo de daño al rival (Sabotaje) se implementa en #74.
+`PlayerRoundOutcome = { userId, answered, isCorrect, deviation, valueGiven, optionGiven, lifeDelta }`.
+`PlayerRuntimeSnapshot = { userId, livesRemaining, score, currentStreak, sabotageTokens, pendingIncomingEffects: SabotageType[] }`.
+`FinalStats = { userId, username, result: WIN|LOSS|DRAW|ABANDONED, livesRemaining, score, bestStreakInMatch, roundsPlayed, avgDeviation, sabotagesUsed }`.
+
+### Mensajes que envía el cliente
+
+| Destination | Payload | Modos |
+|---|---|---|
+| `/app/match/ready` · `/unready` · `/abandon` | `{ matchId }` | Todos (lobby) |
+| `/app/match/answer` | `{ matchId, questionId, optionId? (UUID), value? (BigDecimal) }` | #91 #92 #93 |
+| `/app/match/sabotage` | `{ matchId, type, targetUserId }` | #93 |
+
+### Lógica de daño por modo (Sprint 4 — implementación final)
+
+| Modo | Quién pierde vida | Detalles |
+|------|-------------------|----------|
+| **Binary Duel (#91)** | Quien falla | `-1` vida base. Bonus de racha: si el rival acertó con `streak >= 1` previo, **`-1` adicional**. Sin respuesta = `-1`. |
+| **Precision Duel (#92)** | Quien tiene mayor desviación | `-max(1, ceil(|devLoser − devWinner| × 0.02))`. Empate de desviaciones = 0 daño + racha. Timeout = **-3** vidas. |
+| **Sabotaje (#93)** | Mecánica binaria + efectos | +1 token cada 3 aciertos. Tres efectos: `TIME_BOMB` (-5s al timer del rival), `OBFUSCATION` (oculta opción), `LIFE_STEAL` (si target falla, atacante recupera +1 vida). |
+
+Defaults: **3 vidas iniciales, 15s/pregunta (10s con TIME_BOMB), 10 rondas máximas**. Detalle completo en [`docs/backend/modules/duel.md`](backend/modules/duel.md).
  
 ---
  
@@ -460,6 +476,7 @@ Si un logro esta bloqueado, el backend devuelve `name: "???"`, `description: "??
 ### Frontend
 
 - Toast global no bloqueante al desbloquear un logro.
+- Centro de notificaciones: registra logros desbloqueados en tiempo real, respeta `vs.notificationPrefs.achievements` y enlaza a `/profile`.
 - Perfil: seccion `Logros` con contador `desbloqueados/total`, grid de catalogo y fecha si esta desbloqueado.
 - Topbar/avatar: muestra como emblema el logro desbloqueado mas reciente.
  

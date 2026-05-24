@@ -138,6 +138,7 @@ public class AuthService {
         user.setPasswordResetToken(null);
         user.setPasswordResetTokenExpiry(null);
         users.save(user);
+        refreshTokens.revokeAllByUserId(user.getId());
         return new MessageResponse("Contraseña actualizada correctamente. Ya puedes iniciar sesión.");
     }
 
