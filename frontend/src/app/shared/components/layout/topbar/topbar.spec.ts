@@ -40,6 +40,7 @@ describe('TopbarComponent', () => {
       bestStreak: 3,
       currentStreak: 1,
       avgDeviation: null,
+      avgScore: null
     },
   ];
 
@@ -63,7 +64,7 @@ describe('TopbarComponent', () => {
     await TestBed.configureTestingModule({
       imports: [TopbarComponent],
       providers: [
-        provideRouter([]),
+        provideRouter([{ path: 'login', children: [] }]),
 
         {
           provide: AuthService,
@@ -71,6 +72,7 @@ describe('TopbarComponent', () => {
             user: authUser,
             isAuthenticated: () => true,
             updateCachedUser: vi.fn(),
+            logout: vi.fn(() => of(undefined)),
           },
         },
         {
@@ -144,7 +146,6 @@ describe('TopbarComponent', () => {
     expect(text).toContain('override');
     expect(text).toContain('999 XP');
     expect(img?.getAttribute('src')).toBe('https://avatar.test/a.svg');
-
   });
 
   it('should render notification center and mark selected notification as read', () => {
@@ -173,5 +174,25 @@ describe('TopbarComponent', () => {
     item.click();
 
     expect(notificationService.markRead).toHaveBeenCalledWith('n1');
+  });
+
+  it('should toggle the account menu and call logout', () => {
+    const auth = TestBed.inject(AuthService) as unknown as { logout: ReturnType<typeof vi.fn> };
+    const trigger = fixture.nativeElement.querySelector('.vs-topbar__user') as HTMLButtonElement;
+
+    expect(fixture.nativeElement.querySelector('.vs-user-menu__dropdown')).toBeNull();
+
+    trigger.click();
+    fixture.detectChanges();
+
+    const dropdown = fixture.nativeElement.querySelector('.vs-user-menu__dropdown');
+    expect(dropdown).not.toBeNull();
+
+    const logoutBtn = fixture.nativeElement.querySelector('.vs-user-menu__item--danger') as HTMLButtonElement;
+    logoutBtn.click();
+    fixture.detectChanges();
+
+    expect(auth.logout).toHaveBeenCalled();
+    expect(fixture.nativeElement.querySelector('.vs-user-menu__dropdown')).toBeNull();
   });
 });

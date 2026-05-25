@@ -18,6 +18,26 @@
     }
   </nav>
 
+<div class="vs-topbar">
+  <div class="vs-mark">
+    VER<span class="vs-mark__slash">/</span>SUS
+    @if (role() === 'admin') {
+      <span class="vs-pill vs-pill--err" style="margin-left: 14px">
+        <span class="vs-pill__dot"></span>ADMIN
+      </span>
+    }
+  </div>
+
+  <nav class="vs-topbar__nav">
+    @for (item of items(); track item[0]) {
+      @if (routeFor(item[0]); as route) {
+        <a [routerLink]="route" [class.active]="active() === item[0]">{{ item[1] }}</a>
+      } @else {
+        <a [class.active]="active() === item[0]" style="opacity: 0.5; cursor: not-allowed">{{ item[1] }}</a>
+      }
+    }
+  </nav>
+
   <div class="vs-topbar__actions">
     <div class="vs-notification-center" [class.is-open]="notificationsOpen()">
       <button
@@ -77,7 +97,7 @@
             <div class="vs-notification-center__list vs-scroll">
               @for (notification of notificationItems(); track notification.id) {
                 @if (notification.route) {
-                  <a
+                  
                     class="vs-notification-item"
                     [class.is-unread]="!notification.read"
                     [class.tone-info]="notification.tone === 'info'"
@@ -120,24 +140,54 @@
       }
     </div>
 
-    <a class="vs-topbar__user" routerLink="/settings" title="Ajustes">
-      <div style="text-align: right">
-        <div style="font-weight: 600; font-size: 13px">{{ displayUser().name }}</div>
-        <div class="vs-mono" style="font-size: 11px; color: var(--vs-text-muted)">{{ displayUser().xp }} XP</div>
-      </div>
-      <div class="vs-avatar">
-        @if (displayUser().avatarUrl) {
-          <img [src]="displayUser().avatarUrl" alt="" />
-        } @else {
-          {{ initials() }}
-        }
-        @if (latestAchievement(); as achievement) {
-          <span class="vs-avatar__achievement" [title]="achievement.name">
-            {{ achievementLabel(achievement) }}
-          </span>
-        }
-      </div>
-    </a>
+    <div class="vs-user-menu">
+      <button
+        type="button"
+        class="vs-topbar__user"
+        [class.is-open]="menuOpen()"
+        (click)="toggleMenu()"
+        [attr.aria-expanded]="menuOpen()"
+        aria-haspopup="menu"
+        title="Cuenta"
+      >
+        <div style="text-align: right">
+          <div style="font-weight: 600; font-size: 13px">{{ displayUser().name }}</div>
+          <div class="vs-mono" style="font-size: 11px; color: var(--vs-text-muted)">{{ displayUser().xp }} XP</div>
+        </div>
+        <div class="vs-avatar">
+          @if (displayUser().avatarUrl) {
+            <img [src]="displayUser().avatarUrl" alt="" />
+          } @else {
+            {{ initials() }}
+          }
+          @if (latestAchievement(); as achievement) {
+            <span class="vs-avatar__achievement" [title]="achievement.name">
+              {{ achievementLabel(achievement) }}
+            </span>
+          }
+        </div>
+      </button>
+
+      @if (menuOpen()) {
+        <div class="vs-user-menu__dropdown" role="menu">
+          <div class="vs-user-menu__header">
+            <div class="vs-user-menu__name">{{ displayUser().name }}</div>
+            <div class="vs-mono vs-user-menu__xp">{{ displayUser().xp }} XP</div>
+          </div>
+          <a class="vs-user-menu__item" role="menuitem" routerLink="/profile" (click)="closeMenu()">Perfil</a>
+          <a class="vs-user-menu__item" role="menuitem" routerLink="/settings" (click)="closeMenu()">Ajustes</a>
+          <button
+            type="button"
+            class="vs-user-menu__item vs-user-menu__item--danger"
+            role="menuitem"
+            (click)="logout()"
+            [disabled]="loggingOut()"
+          >
+            {{ loggingOut() ? 'Cerrando sesión…' : 'Cerrar sesión' }}
+          </button>
+        </div>
+      }
+    </div>
   </div>
 
 </div>

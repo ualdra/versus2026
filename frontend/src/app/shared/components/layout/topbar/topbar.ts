@@ -1,5 +1,5 @@
 import { Component, ElementRef, HostListener, OnInit, computed, inject, input, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AchievementService } from '../../../../core/services/achievement.service';
 import { StatsService } from '../../../../core/services/stats.service';
@@ -25,7 +25,11 @@ export class TopbarComponent implements OnInit {
   private readonly statsApi = inject(StatsService);
   private readonly achievementsApi = inject(AchievementService);
   private readonly notifications = inject(NotificationCenterService);
-  private readonly elementRef = inject(ElementRef<HTMLElement>);
+  private readonly router = inject(Router);
+  private readonly host = inject(ElementRef<HTMLElement>);
+
+  readonly menuOpen = signal(false);
+  readonly loggingOut = signal(false);
 
   active = input<NavKey>('home');
   role = input<'player' | 'admin'>('player');
@@ -40,7 +44,6 @@ export class TopbarComponent implements OnInit {
     const count = this.unreadCount();
     return count > 9 ? '9+' : String(count);
   });
-
 
   items = computed<[NavKey, string][]>(() =>
     this.role() === 'admin'
@@ -170,12 +173,38 @@ export class TopbarComponent implements OnInit {
     return new Date(time).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
   }
 
+  toggleMenu(): void {
+    this.menuOpen.update((open) => !open);
+  }
+
+  closeMenu(): void {
+    this.menuOpen.set(false);
+  }
+
+  logout(): void {
+    if (this.loggingOut()) return;
+    this.loggingOut.set(true);
+    this.closeMenu();
+    this.auth.logout().subscribe({
+      next: () => {
+        this.loggingOut.set(false);
+        this.router.navigate(['/login']);
+      },
+    });
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
-    if (!this.notificationsOpen()) return;
-    if (!this.elementRef.nativeElement.contains(event.target as Node)) {
+    if (!this.host.nativeElement.contains(event.target as Node)) {
       this.closeNotifications();
+      this.closeMenu();
     }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.closeNotifications();
+    this.closeMenu();
   }
 
   private calculateXp(stats: PlayerStats[]): number {
@@ -184,5 +213,4 @@ export class TopbarComponent implements OnInit {
     const bestStreak = stats.reduce((best, s) => Math.max(best, s.bestStreak), 0);
     return games * 50 + wins * 150 + bestStreak * 25;
   }
-
 }
