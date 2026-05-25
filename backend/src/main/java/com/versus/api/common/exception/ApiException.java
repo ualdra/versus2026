@@ -42,4 +42,8 @@ public class ApiException extends RuntimeException {
     public static ApiException emailNotVerified(String message) {
         return new ApiException(ErrorCode.EMAIL_NOT_VERIFIED, message);
     }
+
+    public static ApiException tooManyRequests(String message) {
+        return new ApiException(ErrorCode.TOO_MANY_REQUESTS, message);
+    }
 }

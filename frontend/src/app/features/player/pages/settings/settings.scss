@@ -61,6 +61,24 @@ input[type='range'] {
   accent-color: var(--vs-accent-blue);
 }
 
+.vs-range-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.vs-range-value {
+  color: var(--vs-text-primary);
+  font-family: var(--vs-font-mono);
+}
+
+.vs-audio-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .vs-avatar-grid {
   display: grid;
   grid-template-columns: repeat(6, 44px);

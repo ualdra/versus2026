@@ -59,6 +59,9 @@ markdown_extensions:
 
 nav:
   - Inicio: index.md
+  - Arquitectura:
+    - Visión general: arquitectura/overview.md
+    - Despliegue: arquitectura/deployment.md
   - Backend:
     - Índice: backend/README.md
     - Arquitectura: backend/architecture.md

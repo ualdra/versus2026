@@ -174,8 +174,14 @@ export class Lobby implements OnInit, OnDestroy {
   private onMatchStart(): void {
     this.stopCountdown();
     this.status.set('started');
-    // TODO PR #91/#92/#93: navegar a /play/binary-duel/:matchId, /play/precision-duel/:matchId,
-    // o /play/sabotage/:matchId según `lobby()?.mode`.
+    const mode = this.lobby()?.mode;
+    const id = this.matchId();
+    if (!mode || !id) return;
+    const path =
+      mode === 'BINARY_DUEL' ? `/play/binary-duel/${id}` :
+      mode === 'PRECISION_DUEL' ? `/play/precision-duel/${id}` :
+      mode === 'SABOTAGE' ? `/play/sabotage/${id}` : null;
+    if (path) this.router.navigateByUrl(path);
   }
 
   private stopCountdown(): void {

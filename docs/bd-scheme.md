@@ -38,6 +38,7 @@ erDiagram
     string unit
     numeric tolerance_percent
     string text_hash UK
+    text explanation
   }
 
   question_options {
@@ -178,6 +179,12 @@ erDiagram
   users ||--o{ spiders : "gestiona"
   spiders ||--o{ spider_runs : "ejecuta"
 ```
+
+## Cambios — Modo Práctica
+
+| Cambio | Motivo |
+|---|---|
+| `questions.explanation` (TEXT, nullable) | Texto explicativo mostrado al jugador tras responder en Modo Práctica. Lo rellenan los scrapers; hasta entonces es NULL. |
 
 ## Cambios respecto a la versión inicial (Sprint 1)
 

@@ -1,0 +1,168 @@
+// Layout y HUD comparten estructura con binary-duel. El feedback overlay
+// vive en styles.scss.
+
+.vs-duel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 40px 40px;
+  gap: 1.5rem;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  background:
+    radial-gradient(ellipse at 50% 0%,   rgba(67,97,238,0.07),   transparent 60%),
+    radial-gradient(ellipse at 50% 100%, rgba(46,196,182,0.05),  transparent 60%),
+    var(--vs-bg-base);
+  isolation: isolate;
+  overflow: hidden;
+
+  &.is-correct { animation: vs-bg-pulse     600ms ease; }
+  &.is-wrong   { animation: vs-bg-pulse-red 600ms ease; }
+}
+
+// ─── HUD ─────────────────────────────────────────────────────────────────────
+
+.vs-hud {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--vs-border);
+}
+.vs-hud__left   { display: flex; align-items: center; gap: 18px; }
+.vs-hud__center { display: flex; justify-content: center; }
+.vs-hud__right  { display: flex; align-items: center; gap: 18px; justify-content: flex-end; }
+
+.vs-hud__round {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--vs-text-muted);
+  text-transform: uppercase;
+}
+
+.vs-timer-big {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 56px;
+  line-height: 1;
+  color: var(--vs-accent-blue);
+  letter-spacing: 0.04em;
+  transition: color 200ms ease;
+
+  &__unit {
+    font-size: 22px;
+    color: var(--vs-text-muted);
+    margin-left: 4px;
+  }
+
+  &.is-low {
+    color: var(--vs-accent-red);
+    animation: vs-pulse 0.85s ease-in-out infinite;
+  }
+}
+
+// ─── Versus bar con lifebars de barra ────────────────────────────────────────
+
+.vs-versus-bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 18px;
+  align-items: center;
+  padding: 16px 24px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--vs-border);
+  border-radius: var(--vs-radius-lg);
+}
+
+.vs-versus-bar__side {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+
+  &--opp { direction: rtl; }
+  &--opp > * { direction: ltr; }
+}
+
+.vs-versus-bar__label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  color: var(--vs-text-muted);
+}
+
+.vs-versus-bar__lives {
+  font-size: 14px;
+  color: var(--vs-text-secondary);
+  white-space: nowrap;
+}
+
+.vs-versus-bar__center { display: flex; justify-content: center; }
+
+.vs-versus-bar__vs {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  color: var(--vs-accent-blue);
+  text-shadow: 0 0 14px rgba(67,97,238,0.45);
+  letter-spacing: 0.05em;
+}
+
+.vs-pduel__lifebar {
+  position: relative;
+  height: 12px;
+  width: 100%;
+  max-width: 220px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.vs-pduel__lifebar-fill {
+  height: 100%;
+  transition: width 350ms cubic-bezier(.2,.7,.2,1);
+}
+.vs-pduel__lifebar-fill--self {
+  background: linear-gradient(90deg, var(--vs-accent-green), var(--vs-accent-blue));
+  box-shadow: 0 0 12px rgba(46,196,182,0.45);
+}
+.vs-pduel__lifebar-fill--opp {
+  background: linear-gradient(90deg, var(--vs-accent-red), var(--vs-accent-gold));
+  box-shadow: 0 0 12px rgba(230,57,70,0.45);
+}
+
+// ─── Pregunta ────────────────────────────────────────────────────────────────
+
+.vs-duel-question {
+  text-align: center;
+  padding: 24px 0 8px;
+}
+
+.vs-q-text {
+  font-size: 34px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  margin: 8px 0 12px;
+}
+
+.vs-q-unit {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 4px 12px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--vs-text-muted);
+  text-transform: uppercase;
+  border: 1px solid var(--vs-border);
+  border-radius: var(--vs-radius-sm);
+
+  strong { color: var(--vs-accent-gold); font-size: 13px; margin-left: 4px; }
+}
+
+// ─── Input wrap ──────────────────────────────────────────────────────────────
+
+.vs-pduel__input-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}

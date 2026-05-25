@@ -9,6 +9,7 @@ public record PlayerStatsResponse(
         double winRate,
         int bestStreak,
         int currentStreak,
-        Double avgDeviation
+        Double avgDeviation,
+        Integer avgScore
 ) {
 }

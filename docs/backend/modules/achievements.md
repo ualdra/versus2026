@@ -40,5 +40,6 @@ Los logros bloqueados se devuelven con `name`, `description` e `iconKey` ocultos
 ## Frontend asociado
 
 - Toast global al desbloquear un logro.
+- Centro de notificaciones en tiempo real: `NotificationCenterService` escucha `/user/queue/achievements`, registra el evento como notificacion local y respeta `vs.notificationPrefs.achievements`.
 - Grid `Logros` en perfil con contador `desbloqueados/total`.
 - Emblema del logro mas reciente sobre el avatar del topbar.

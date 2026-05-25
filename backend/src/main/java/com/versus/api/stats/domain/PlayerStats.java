@@ -44,6 +44,9 @@ public class PlayerStats {
     @Column(name = "current_streak", nullable = false)
     private Integer currentStreak;
 
+    @Column(name = "avg_score")
+    private Integer avgScore;
+
     @PrePersist
     void prePersist() {
         if (gamesPlayed == null) gamesPlayed = 0;

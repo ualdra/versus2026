@@ -90,6 +90,35 @@ El estado se inicializa leyendo `localStorage` al arrancar (`vs.accessToken`, `v
 | `QuestionService` | Preguntas aleatorias con filtros | — |
 | `StatsService` | Estadísticas del jugador | — |
 | `WebSocketService` | Conexión STOMP + eventos de partida | (pendiente Sprint 3) |
+| `NotificationCenterService` | Centro de notificaciones en tiempo real | `items`, `unreadCount` |
+
+## Centro de notificaciones en tiempo real
+
+El centro de notificaciones vive en el `TopbarComponent` y se alimenta desde `NotificationCenterService`.
+
+Ficheros principales:
+
+| Fichero | Responsabilidad |
+|---|---|
+| `core/models/notification.models.ts` | Tipos `NotificationItem`, preferencias y claves de `localStorage`. |
+| `core/services/notification-center.service.ts` | Suscripciones STOMP, normalizacion de eventos, persistencia local y estado de lectura. |
+| `shared/components/layout/topbar/*` | Boton de campana, contador, panel desplegable y acciones de lectura. |
+
+Canales consumidos:
+
+| Canal | Evento | Resultado en UI |
+|---|---|---|
+| `/user/queue/achievements` | `ACHIEVEMENT_UNLOCKED` | Notificacion de logro, ruta a `/profile` y toast global si esta permitido. |
+| `/user/queue/match` | `MATCH_FOUND` | Notificacion de rival encontrado, ruta a `/play/lobby/:matchId`. |
+
+Persistencia y preferencias:
+
+- Las notificaciones se guardan por usuario en `localStorage` con clave `vs.notifications.<userId>`.
+- El historial se limita a las ultimas 30 notificaciones.
+- Las preferencias viven en `vs.notificationPrefs` y se editan desde `/settings`.
+- `achievements=false` desactiva tanto el toast global como la entrada en el centro.
+- `matchInvites=false` oculta las notificaciones de `MATCH_FOUND`.
+- Si cambia el usuario autenticado, el servicio reconecta el WebSocket para evitar reutilizar una sesion STOMP anterior.
 
 ## AuthInterceptor
 

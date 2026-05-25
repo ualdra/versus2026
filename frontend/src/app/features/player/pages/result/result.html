@@ -1,30 +1,53 @@
 <div class="vs-result-page">
   <app-topbar active="play" />
 
-  <div class="vs-result" [class.is-win]="isWin()" [class.is-loss]="!isWin()">
+  <div class="vs-result" [class.is-win]="isWin()" [class.is-loss]="!isWin() && !isDraw()" [class.is-draw]="isDraw()">
 
     <div class="vs-result__hero">
       <div class="vs-q-label">{{ modeLabel() }}</div>
-      <div class="vs-display vs-result__verdict">
-        {{ isWin() ? '¡EL ÚLTIMO EN PIE!' : 'GAME OVER' }}
-      </div>
+      <div class="vs-display vs-result__verdict">{{ verdict() }}</div>
       @if (state(); as s) {
-        <div style="color: var(--vs-text-secondary); margin-top: 4px">
-          Aguantaste <strong class="vs-mono">{{ s.rounds }} preguntas</strong>.
+        <div class="vs-result__sub">
+          Aguantaste <strong class="vs-mono">{{ s.rounds }} rondas</strong>.
         </div>
+        @if (reasonNote()) {
+          <div class="vs-result__reason">{{ reasonNote() }}</div>
+        }
       }
     </div>
 
-    <div class="vs-result__stats">
-      @for (s of stats(); track s.label) {
-        <div class="vs-stat-block">
-          <div class="vs-stat-num" [style.color]="s.accent || null">{{ s.num }}</div>
-          <div class="vs-stat-label">{{ s.label }}</div>
+    @if (state()?.multiplayer && state()?.opponent; as _) {
+      <div class="vs-result__versus">
+        <div class="vs-result__player vs-result__player--self">
+          <div class="vs-q-label">TÚ</div>
+          <div class="vs-stat-num">{{ state()!.score.toLocaleString('es-ES') }}</div>
+          <div class="vs-stat-label">Vidas: {{ state()!.livesRemaining ?? 0 }} · Racha: {{ state()!.bestStreak }}</div>
+          @if (state()!.avgDeviation !== null && state()!.avgDeviation !== undefined) {
+            <div class="vs-stat-label">Desv. media: {{ state()!.avgDeviation | number:'1.0-2' }}%</div>
+          }
         </div>
-      }
-    </div>
+        <div class="vs-result__vs">VS</div>
+        <div class="vs-result__player vs-result__player--opp">
+          <div class="vs-q-label">{{ state()!.opponent!.username }}</div>
+          <div class="vs-stat-num">{{ state()!.opponent!.score.toLocaleString('es-ES') }}</div>
+          <div class="vs-stat-label">Vidas: {{ state()!.opponent!.livesRemaining }} · Racha: {{ state()!.opponent!.bestStreak }}</div>
+          @if (state()!.opponent!.avgDeviation !== null && state()!.opponent!.avgDeviation !== undefined) {
+            <div class="vs-stat-label">Desv. media: {{ state()!.opponent!.avgDeviation | number:'1.0-2' }}%</div>
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="vs-result__stats">
+        @for (s of stats(); track s.label) {
+          <div class="vs-stat-block">
+            <div class="vs-stat-num" [style.color]="s.accent || null">{{ s.num }}</div>
+            <div class="vs-stat-label">{{ s.label }}</div>
+          </div>
+        }
+      </div>
+    }
 
-    <div style="display: flex; gap: 12px; justify-content: center">
+    <div class="vs-result__actions">
       <a routerLink="/dashboard" class="btn btn--ghost btn--lg">VOLVER AL INICIO</a>
       <a [routerLink]="replayLink()" class="btn btn--danger btn--lg">▶ OTRA PARTIDA</a>
     </div>

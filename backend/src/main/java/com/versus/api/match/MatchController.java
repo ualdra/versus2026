@@ -4,6 +4,7 @@ import com.versus.api.common.dto.ErrorResponse;
 import com.versus.api.match.dto.CreateMatchRequest;
 import com.versus.api.match.dto.LobbyStateDto;
 import com.versus.api.match.dto.MatchCreatedResponse;
+import com.versus.api.match.dto.MatchDetailResponse;
 import com.versus.api.match.state.LiveMatchState;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-@Tag(name = "Match", description = "Multiplayer match lifecycle (lobby, join, abandon)")
+@Tag(name = "Match", description = "Multiplayer match lifecycle and history")
 @SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/api/matches")
@@ -28,6 +29,18 @@ import java.util.UUID;
 public class MatchController {
 
     private final MatchService matchService;
+
+    @Operation(summary = "Get detailed match information including all rounds",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Match detail returned"),
+                    @ApiResponse(responseCode = "404", description = "Match not found"),
+                    @ApiResponse(responseCode = "403", description = "Not a participant of this match")
+            })
+    @GetMapping("/{id}")
+    public MatchDetailResponse detail(@PathVariable UUID id,
+                                      @AuthenticationPrincipal UUID userId) {
+        return matchService.getDetail(id, userId);
+    }
 
     @Operation(summary = "Create a new multiplayer match (room) and join as owner",
             responses = {

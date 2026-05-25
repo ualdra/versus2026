@@ -1,0 +1,179 @@
+<div class="vs-practice">
+
+  <!-- HUD (visible en question y feedback) -->
+  @if (phase() !== 'setup') {
+    <div class="vs-hud">
+      <div class="vs-hud__left">
+        <span class="vs-pill vs-pill--ok">
+          <span class="vs-pill__dot"></span>PRÁCTICA
+        </span>
+        @if (selectedCategory(); as cat) {
+          <span class="vs-pill vs-pill--mute">{{ cat | uppercase }}</span>
+        }
+      </div>
+      <div class="vs-hud__center">
+        <div class="vs-streak" [attr.data-active]="streak() > 0">
+          <span class="vs-streak__x">×</span>
+          <span class="vs-streak__num vs-mono">{{ streak() }}</span>
+          <span class="vs-streak__label">RACHA</span>
+        </div>
+      </div>
+      <div class="vs-hud__right">
+        <div class="vs-hud__score">
+          <div class="vs-stat-label">PRECISIÓN</div>
+          <div class="vs-stat-num vs-mono">{{ accuracy() }}%</div>
+        </div>
+        <button class="btn btn--ghost btn--sm" (click)="changeFilters()">FILTROS</button>
+        <a routerLink="/play/select" class="btn btn--ghost btn--sm">SALIR</a>
+      </div>
+    </div>
+  }
+
+  @if (errorMessage(); as err) {
+    <div class="vs-error">{{ err }}</div>
+  }
+
+  <!-- ─── SETUP ─────────────────────────────────────────────────────────── -->
+  @if (phase() === 'setup') {
+    <div class="vs-practice__setup">
+      <div class="vs-practice__setup-header">
+        <h1 class="vs-display">MODO PRÁCTICA</h1>
+        <p class="vs-practice__subtitle">Elige categoría y tipo de pregunta para empezar.</p>
+      </div>
+
+      <div class="vs-practice__section-label">TIPO DE PREGUNTA</div>
+      <div class="vs-practice__type-row">
+        <button class="btn btn--sm"
+          [class.btn--primary]="selectedType() === null"
+          [class.btn--ghost]="selectedType() !== null"
+          (click)="selectType(null)">AMBOS</button>
+        <button class="btn btn--sm"
+          [class.btn--primary]="selectedType() === 'BINARY'"
+          [class.btn--ghost]="selectedType() !== 'BINARY'"
+          (click)="selectType('BINARY')">BINARIO</button>
+        <button class="btn btn--sm"
+          [class.btn--primary]="selectedType() === 'NUMERIC'"
+          [class.btn--ghost]="selectedType() !== 'NUMERIC'"
+          (click)="selectType('NUMERIC')">NUMÉRICO</button>
+      </div>
+
+      <div class="vs-practice__section-label">CATEGORÍA <span class="vs-text-muted">(opcional)</span></div>
+      <div class="vs-practice__categories">
+        @for (cat of categories(); track cat) {
+          <button class="vs-practice__cat-btn"
+            [class.is-selected]="selectedCategory() === cat"
+            (click)="selectCategory(cat)">
+            {{ cat | uppercase }}
+          </button>
+        }
+        @if (categories().length === 0) {
+          <span class="vs-text-muted">Cargando categorías…</span>
+        }
+      </div>
+
+      <button class="btn btn--primary btn--lg vs-practice__start-btn" (click)="start()">
+        EMPEZAR →
+      </button>
+      <a routerLink="/play/select" class="btn btn--ghost btn--sm">VOLVER</a>
+    </div>
+  }
+
+  <!-- ─── LOADING ───────────────────────────────────────────────────────── -->
+  @if (phase() === 'loading') {
+    <div class="vs-loading">Cargando pregunta…</div>
+  }
+
+  <!-- ─── QUESTION ──────────────────────────────────────────────────────── -->
+  @if (phase() === 'question') {
+    @if (question(); as q) {
+      <div class="vs-practice__question">
+        <div class="vs-q-label">CATEGORÍA · {{ q.category | uppercase }}</div>
+        <h2 class="vs-q-text vs-display">{{ q.text }}</h2>
+      </div>
+
+      @if (q.type === 'BINARY') {
+        <div class="vs-practice__arena vs-binary-arena">
+          @for (opt of asBinary(q).options; track opt.id) {
+            <button type="button"
+              [class]="optionClass(opt.id)"
+              (click)="pickOption(opt.id)">
+              <span class="vs-bopt__text">{{ opt.text }}</span>
+            </button>
+          }
+        </div>
+      }
+
+      @if (q.type === 'NUMERIC') {
+        <div class="vs-practice__numeric">
+          <div class="vs-practice__numeric-row">
+            <input class="vs-input vs-input--numeric"
+              type="number"
+              placeholder="Tu respuesta"
+              [(ngModel)]="enteredValue"
+              (keydown.enter)="submitNumeric()" />
+            @if (asNumeric(q).unit; as unit) {
+              <span class="vs-practice__unit vs-mono">{{ unit }}</span>
+            }
+          </div>
+          <button class="btn btn--primary" (click)="submitNumeric()">ENVIAR →</button>
+        </div>
+      }
+    }
+  }
+
+  <!-- ─── FEEDBACK ──────────────────────────────────────────────────────── -->
+  @if (phase() === 'feedback') {
+    @if (result(); as res) {
+      <div class="vs-practice__question">
+        @if (question(); as q) {
+          <div class="vs-q-label">CATEGORÍA · {{ q.category | uppercase }}</div>
+          <h2 class="vs-q-text vs-display">{{ q.text }}</h2>
+        }
+      </div>
+
+      @if (question()?.type === 'BINARY') {
+        <div class="vs-practice__arena vs-binary-arena">
+          @for (opt of asBinary(question()!).options; track opt.id) {
+            <button type="button" [class]="optionClass(opt.id)" disabled>
+              <span class="vs-bopt__text">{{ opt.text }}</span>
+            </button>
+          }
+        </div>
+      }
+
+      @if (question()?.type === 'NUMERIC') {
+        <div class="vs-practice__numeric-result">
+          <div class="vs-practice__correct-value">
+            <span class="vs-stat-label">VALOR CORRECTO</span>
+            <span class="vs-stat-num vs-mono">{{ res.correctValue }}
+              @if (res.unit) { {{ res.unit }} }
+            </span>
+          </div>
+          <div class="vs-practice__deviation">
+            <span class="vs-stat-label">DESVIACIÓN</span>
+            <span class="vs-stat-num vs-mono">{{ res.deviationPercent }}%</span>
+          </div>
+        </div>
+      }
+
+      <div class="vs-feedback vs-practice__feedback-inline"
+        [class.is-correct]="res.correct"
+        [class.is-wrong]="!res.correct">
+        @if (res.correct) {
+          <div class="vs-feedback__title vs-display">¡ACIERTO!</div>
+        } @else {
+          <div class="vs-feedback__title vs-display vs-glitch">FALLO</div>
+        }
+        @if (res.explanation) {
+          <div class="vs-practice__explanation">{{ res.explanation }}</div>
+        }
+      </div>
+
+      <div class="vs-practice__actions">
+        <button class="btn btn--primary btn--lg" (click)="loadNext()">SIGUIENTE PREGUNTA →</button>
+        <button class="btn btn--ghost btn--sm" (click)="changeFilters()">CAMBIAR FILTROS</button>
+      </div>
+    }
+  }
+
+</div>

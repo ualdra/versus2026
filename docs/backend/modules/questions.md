@@ -39,6 +39,7 @@ classDiagram
         +getCategories() List~String~
         +findRandomActiveQuestion(QuestionType, String) Question
         +findActiveQuestion(UUID) Question
+        +findActiveQuestion(UUID, QuestionType) Question
         -toResponse(Question) QuestionResponse
     }
 
@@ -55,6 +56,7 @@ classDiagram
         +BigDecimal correctValue
         +String unit
         +BigDecimal tolerancePercent
+        +String explanation
         +List~QuestionOption~ options
     }
 
@@ -128,11 +130,13 @@ classDiagram
 
 | Método | Ruta | Auth | Parámetros | Respuesta |
 |---|---|---|---|---|
-| `GET` | `/api/questions/random` | No | `?type=BINARY&category=football` | `200` `QuestionResponse` |
-| `GET` | `/api/questions/{id}` | No | — | `200` `QuestionResponse` |
-| `GET` | `/api/questions/categories` | No | — | `200` `List<String>` |
+| `GET` | `/api/questions/random` | No (público) | `?type=BINARY&category=football` | `200` `QuestionResponse` |
+| `GET` | `/api/questions/{id}` | Sí (JWT) | — | `200` `QuestionResponse` |
+| `GET` | `/api/questions/categories` | No (público) | — | `200` `List<String>` |
 
 Los parámetros de `/random` son opcionales: si se omite `type`, devuelve cualquier tipo; si se omite `category`, devuelve cualquier categoría activa.
+
+> `/api/questions/random` es público para que el Modo Práctica pueda cargarse sin sesión JWT.
 
 ### Seguridad de datos en las respuestas
 
@@ -171,6 +175,7 @@ Tabla: questions
 │ correct_value    │ NUMERIC(15,4), nullable (solo NUMERIC)           │
 │ unit             │ VARCHAR(50), nullable (ej: "km", "años")         │
 │ tolerance_percent│ NUMERIC(5,2), default 5 (±5% es acierto)        │
+│ explanation      │ TEXT, nullable (texto mostrado en Modo Práctica) │
 └──────────────────┴──────────────────────────────────────────────────┘
 Índice: (status, type, category)
 ```

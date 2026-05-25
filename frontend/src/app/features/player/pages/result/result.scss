@@ -36,10 +36,56 @@
   color: var(--vs-accent-red);
 }
 
+.vs-result.is-draw .vs-result__verdict {
+  color: var(--vs-accent-blue);
+}
+
+.vs-result__sub {
+  color: var(--vs-text-secondary);
+  margin-top: 4px;
+}
+
+.vs-result__reason {
+  color: var(--vs-text-muted);
+  margin-top: 6px;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
 .vs-result__stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
+}
+
+.vs-result__versus {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 24px;
+  align-items: center;
+  padding: 24px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+}
+
+.vs-result__player {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vs-result__vs {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 48px;
+  color: var(--vs-text-muted);
+}
+
+.vs-result__actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
 }
 
 .vs-result__breakdown {

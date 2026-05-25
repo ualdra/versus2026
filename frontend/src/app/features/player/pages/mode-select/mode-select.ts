@@ -46,5 +46,13 @@ export class ModeSelect {
       tag: '2J · Online',
       route: '/play/queue/sabotage',
     },
+    {
+      key: 'practice', name: 'PRÁCTICA', icon: '◆',
+      color: 'var(--vs-accent-green)',
+      desc: 'Sin presión: elige categoría, contesta y aprende. No hay vidas ni timer.',
+      tag: 'Solo · Sin partida', featured: false,
+      route: '/play/practice',
+    },
   ];
+
 }
