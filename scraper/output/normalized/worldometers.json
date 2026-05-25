@@ -1,0 +1,3506 @@
+[
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Afghanistan",
+    "valor": 20280000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Albania",
+    "valor": 1311000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Algeria",
+    "valor": 9978000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Angola",
+    "valor": 705800000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Antigua and Barbuda",
+    "valor": 11500000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Argentina",
+    "valor": 37780000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Armenia",
+    "valor": 2847000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Australia",
+    "valor": 16130000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Austria",
+    "valor": 3492000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Azerbaijan",
+    "valor": 12780000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Bahrain",
+    "valor": 434400000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Bangladesh",
+    "valor": 35870000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Barbados",
+    "valor": 81000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Belarus",
+    "valor": 1452000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Belgium",
+    "valor": 6005000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Belize",
+    "valor": 101000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Benin",
+    "valor": 130000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Bhutan",
+    "valor": 338000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Bolivia",
+    "valor": 2088000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Bosnia and Herzegovina",
+    "valor": 327900000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Botswana",
+    "valor": 201300000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Brazil",
+    "valor": 63500000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Brunei",
+    "valor": 92000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Bulgaria",
+    "valor": 5629000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Burkina Faso",
+    "valor": 818000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Burundi",
+    "valor": 288000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Cabo Verde",
+    "valor": 22000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Cambodia",
+    "valor": 2184000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Cameroon",
+    "valor": 966400000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Canada",
+    "valor": 35730000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Central African Republic",
+    "valor": 72500000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Chad",
+    "valor": 879600000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Chile",
+    "valor": 35430000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "China",
+    "valor": 598100000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Colombia",
+    "valor": 11770000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Comoros",
+    "valor": 10000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Congo",
+    "valor": 46000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Costa Rica",
+    "valor": 3194000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Côte d'Ivoire",
+    "valor": 1162000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Croatia",
+    "valor": 633800000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Cuba",
+    "valor": 6959000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Cyprus",
+    "valor": 317000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Czech Republic (Czechia)",
+    "valor": 1635000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Denmark",
+    "valor": 652000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Djibouti",
+    "valor": 19000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Dominica",
+    "valor": 20000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Dominican Republic",
+    "valor": 7156000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "DR Congo",
+    "valor": 683600000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Ecuador",
+    "valor": 9918000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Egypt",
+    "valor": 77500000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "El Salvador",
+    "valor": 2118000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Equatorial Guinea",
+    "valor": 17400000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Eritrea",
+    "valor": 582000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Estonia",
+    "valor": 1720000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Eswatini",
+    "valor": 1042000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Ethiopia",
+    "valor": 10550000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Fiji",
+    "valor": 84900000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Finland",
+    "valor": 6562000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "France",
+    "valor": 29370000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Gabon",
+    "valor": 139100000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Gambia",
+    "valor": 90500000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Georgia",
+    "valor": 1823000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Germany",
+    "valor": 25330000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Ghana",
+    "valor": 982000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Greece",
+    "valor": 9630000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Grenada",
+    "valor": 14100000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Guatemala",
+    "valor": 3324000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Guinea",
+    "valor": 553300000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Guinea-Bissau",
+    "valor": 175000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Guyana",
+    "valor": 1445000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Haiti",
+    "valor": 1450000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Honduras",
+    "valor": 1607000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Hungary",
+    "valor": 5051000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Iceland",
+    "valor": 278300000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "India",
+    "valor": 761000000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Indonesia",
+    "valor": 222600000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Iran",
+    "valor": 93300000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Iraq",
+    "valor": 38550000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Ireland",
+    "valor": 757000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Israel",
+    "valor": 1954000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Italy",
+    "valor": 34190000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Jamaica",
+    "valor": 1354000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Japan",
+    "valor": 81450000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Jordan",
+    "valor": 1044000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Kazakhstan",
+    "valor": 22770000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Kenya",
+    "valor": 4032000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Kuwait",
+    "valor": 913200000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Kyrgyzstan",
+    "valor": 8007000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Laos",
+    "valor": 3493000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Latvia",
+    "valor": 224400000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Lebanon",
+    "valor": 1840000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Lesotho",
+    "valor": 43800000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Liberia",
+    "valor": 130800000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Libya",
+    "valor": 5830000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Lithuania",
+    "valor": 2768000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Luxembourg",
+    "valor": 44000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Madagascar",
+    "valor": 13560000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Malawi",
+    "valor": 1357000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Malaysia",
+    "valor": 11200000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Maldives",
+    "valor": 5900000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Mali",
+    "valor": 5186000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Malta",
+    "valor": 62800000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Mauritania",
+    "valor": 1350000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Mauritius",
+    "valor": 725000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Mexico",
+    "valor": 86580000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Moldova",
+    "valor": 1065000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Monaco",
+    "valor": 5000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Mongolia",
+    "valor": 462400000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Montenegro",
+    "valor": 160900000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Morocco",
+    "valor": 10430000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Mozambique",
+    "valor": 1473000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Myanmar",
+    "valor": 33230000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Namibia",
+    "valor": 288000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Nepal",
+    "valor": 9497000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Netherlands",
+    "valor": 8919000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "New Zealand",
+    "valor": 5201000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Nicaragua",
+    "valor": 1545000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Niger",
+    "valor": 1747000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Nigeria",
+    "valor": 12470000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "North Korea",
+    "valor": 8658000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "North Macedonia",
+    "valor": 551200000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Norway",
+    "valor": 3026000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Oman",
+    "valor": 1321000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Pakistan",
+    "valor": 183500000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Panama",
+    "valor": 1211000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Papua New Guinea",
+    "valor": 392100000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Paraguay",
+    "valor": 2413000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Peru",
+    "valor": 13660000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Philippines",
+    "valor": 85140000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Poland",
+    "valor": 10580000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Portugal",
+    "valor": 9151000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Puerto Rico",
+    "valor": 4153000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Qatar",
+    "valor": 444000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Romania",
+    "valor": 6374000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Russia",
+    "valor": 69500000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Rwanda",
+    "valor": 150000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Saint Kitts & Nevis",
+    "valor": 15600000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Saint Lucia",
+    "valor": 42900000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Sao Tome & Principe",
+    "valor": 40900000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Saudi Arabia",
+    "valor": 23350000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Senegal",
+    "valor": 2221000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Serbia",
+    "valor": 4707000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Seychelles",
+    "valor": 13700000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Sierra Leone",
+    "valor": 212200000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Singapore",
+    "valor": 190000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Slovakia",
+    "valor": 535000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Slovenia",
+    "valor": 887300000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Somalia",
+    "valor": 3298000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "South Africa",
+    "valor": 15500000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "South Korea",
+    "valor": 29200000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "South Sudan",
+    "valor": 658000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Spain",
+    "valor": 32850000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Sri Lanka",
+    "valor": 12950000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "St. Vincent & Grenadines",
+    "valor": 8500000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "State of Palestine",
+    "valor": 363600000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Sudan",
+    "valor": 26930000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Suriname",
+    "valor": 615900000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Sweden",
+    "valor": 2689000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Switzerland",
+    "valor": 2005000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Syria",
+    "valor": 16760000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Tajikistan",
+    "valor": 11490000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Tanzania",
+    "valor": 5184000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Thailand",
+    "valor": 57310000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Timor-Leste",
+    "valor": 1172000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Togo",
+    "valor": 169000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Trinidad and Tobago",
+    "valor": 383200000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Tunisia",
+    "valor": 4875000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Turkey",
+    "valor": 58950000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Turkmenistan",
+    "valor": 27950000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Uganda",
+    "valor": 637000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Ukraine",
+    "valor": 9862000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "United Arab Emirates",
+    "valor": 3998000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "United Kingdom",
+    "valor": 8420000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "United States",
+    "valor": 444300000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Uruguay",
+    "valor": 3660000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Uzbekistan",
+    "valor": 54560000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Venezuela",
+    "valor": 22630000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Vietnam",
+    "valor": 82030000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Yemen",
+    "valor": 3565000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Zambia",
+    "valor": 1572000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Agua usada al año",
+    "carta": "Zimbabwe",
+    "valor": 3570000000
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "India",
+    "valor": 1476625576
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "India",
+    "valor": 1
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "China",
+    "valor": 1412914089
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "China",
+    "valor": 2
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "United States",
+    "valor": 349035494
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "United States",
+    "valor": 3
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Indonesia",
+    "valor": 287886782
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Indonesia",
+    "valor": 4
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Pakistan",
+    "valor": 259299791
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Pakistan",
+    "valor": 5
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Nigeria",
+    "valor": 242431832
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Nigeria",
+    "valor": 6
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Brazil",
+    "valor": 213562666
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Brazil",
+    "valor": 7
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Bangladesh",
+    "valor": 177818044
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Bangladesh",
+    "valor": 8
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Russia",
+    "valor": 143394458
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Russia",
+    "valor": 9
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Ethiopia",
+    "valor": 138902185
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Ethiopia",
+    "valor": 10
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Mexico",
+    "valor": 132997658
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Mexico",
+    "valor": 11
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Japan",
+    "valor": 122427731
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Japan",
+    "valor": 12
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Egypt",
+    "valor": 120101175
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Egypt",
+    "valor": 13
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Philippines",
+    "valor": 117724471
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Philippines",
+    "valor": 14
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "DR Congo",
+    "valor": 116452162
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "DR Congo",
+    "valor": 15
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Vietnam",
+    "valor": 102177431
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Vietnam",
+    "valor": 16
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Iran",
+    "valor": 93168497
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Iran",
+    "valor": 17
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Turkey",
+    "valor": 87926082
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Turkey",
+    "valor": 18
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Germany",
+    "valor": 83644258
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Germany",
+    "valor": 19
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Tanzania",
+    "valor": 72563780
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Tanzania",
+    "valor": 20
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Thailand",
+    "valor": 71559614
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Thailand",
+    "valor": 21
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "United Kingdom",
+    "valor": 69931528
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "United Kingdom",
+    "valor": 22
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "France",
+    "valor": 66746401
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "France",
+    "valor": 23
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "South Africa",
+    "valor": 65453084
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "South Africa",
+    "valor": 24
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Italy",
+    "valor": 58926166
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Italy",
+    "valor": 25
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Kenya",
+    "valor": 58636412
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Kenya",
+    "valor": 26
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Myanmar",
+    "valor": 55184819
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Myanmar",
+    "valor": 27
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Colombia",
+    "valor": 53936226
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Colombia",
+    "valor": 28
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Sudan",
+    "valor": 53282719
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Sudan",
+    "valor": 29
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Uganda",
+    "valor": 52761469
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Uganda",
+    "valor": 30
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "South Korea",
+    "valor": 51600388
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "South Korea",
+    "valor": 31
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Algeria",
+    "valor": 48028334
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Algeria",
+    "valor": 32
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Iraq",
+    "valor": 48007437
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Iraq",
+    "valor": 33
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Spain",
+    "valor": 47850793
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Spain",
+    "valor": 34
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Argentina",
+    "valor": 46003734
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Argentina",
+    "valor": 35
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Afghanistan",
+    "valor": 45047069
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Afghanistan",
+    "valor": 36
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Yemen",
+    "valor": 42961653
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Yemen",
+    "valor": 37
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Canada",
+    "valor": 40467728
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Canada",
+    "valor": 38
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Angola",
+    "valor": 40215179
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Angola",
+    "valor": 39
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Ukraine",
+    "valor": 39535849
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Ukraine",
+    "valor": 40
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Morocco",
+    "valor": 38762441
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Morocco",
+    "valor": 41
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Poland",
+    "valor": 37843188
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Poland",
+    "valor": 42
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Uzbekistan",
+    "valor": 37724223
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Uzbekistan",
+    "valor": 43
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Mozambique",
+    "valor": 36639851
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Mozambique",
+    "valor": 44
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Malaysia",
+    "valor": 36385115
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Malaysia",
+    "valor": 45
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Ghana",
+    "valor": 35697557
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Ghana",
+    "valor": 46
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Saudi Arabia",
+    "valor": 35165787
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Saudi Arabia",
+    "valor": 47
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Peru",
+    "valor": 34922148
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Peru",
+    "valor": 48
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Madagascar",
+    "valor": 33522052
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Madagascar",
+    "valor": 49
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Côte d'Ivoire",
+    "valor": 33494346
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Côte d'Ivoire",
+    "valor": 50
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Cameroon",
+    "valor": 30640817
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Cameroon",
+    "valor": 51
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Nepal",
+    "valor": 29629410
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Nepal",
+    "valor": 52
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Niger",
+    "valor": 28814878
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Niger",
+    "valor": 53
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Venezuela",
+    "valor": 28633711
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Venezuela",
+    "valor": 54
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Australia",
+    "valor": 27227096
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Australia",
+    "valor": 55
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "North Korea",
+    "valor": 26633691
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "North Korea",
+    "valor": 56
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Syria",
+    "valor": 26472497
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Syria",
+    "valor": 57
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Mali",
+    "valor": 25932275
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Mali",
+    "valor": 58
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Burkina Faso",
+    "valor": 24601700
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Burkina Faso",
+    "valor": 59
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Sri Lanka",
+    "valor": 23348315
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Sri Lanka",
+    "valor": 60
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Malawi",
+    "valor": 22785535
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Malawi",
+    "valor": 61
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Zambia",
+    "valor": 22521915
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Zambia",
+    "valor": 62
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Chad",
+    "valor": 21560380
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Chad",
+    "valor": 63
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Kazakhstan",
+    "valor": 21083626
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Kazakhstan",
+    "valor": 64
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Somalia",
+    "valor": 20305907
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Somalia",
+    "valor": 65
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Chile",
+    "valor": 19945850
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Chile",
+    "valor": 66
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Senegal",
+    "valor": 19366548
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Senegal",
+    "valor": 67
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Guatemala",
+    "valor": 18967978
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Guatemala",
+    "valor": 68
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Romania",
+    "valor": 18800605
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Romania",
+    "valor": 69
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Netherlands",
+    "valor": 18448775
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Netherlands",
+    "valor": 70
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Ecuador",
+    "valor": 18444506
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Ecuador",
+    "valor": 71
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Cambodia",
+    "valor": 18051219
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Cambodia",
+    "valor": 72
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Zimbabwe",
+    "valor": 17273580
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Zimbabwe",
+    "valor": 73
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Guinea",
+    "valor": 15441993
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Guinea",
+    "valor": 74
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Benin",
+    "valor": 15170419
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Benin",
+    "valor": 75
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Rwanda",
+    "valor": 14889693
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Rwanda",
+    "valor": 76
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Burundi",
+    "valor": 14729157
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Burundi",
+    "valor": 77
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Bolivia",
+    "valor": 12749291
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Bolivia",
+    "valor": 78
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "South Sudan",
+    "valor": 12436037
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "South Sudan",
+    "valor": 79
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Tunisia",
+    "valor": 12415138
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Tunisia",
+    "valor": 80
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Haiti",
+    "valor": 12037506
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Haiti",
+    "valor": 81
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Belgium",
+    "valor": 11774642
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Belgium",
+    "valor": 82
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Dominican Republic",
+    "valor": 11609500
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Dominican Republic",
+    "valor": 83
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Jordan",
+    "valor": 11589532
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Jordan",
+    "valor": 84
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "United Arab Emirates",
+    "valor": 11574682
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "United Arab Emirates",
+    "valor": 85
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Honduras",
+    "valor": 11184760
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Honduras",
+    "valor": 86
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Tajikistan",
+    "valor": 10978599
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Tajikistan",
+    "valor": 87
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Papua New Guinea",
+    "valor": 10947848
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Papua New Guinea",
+    "valor": 88
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Cuba",
+    "valor": 10892659
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Cuba",
+    "valor": 89
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Sweden",
+    "valor": 10701047
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Sweden",
+    "valor": 90
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Czech Republic (Czechia)",
+    "valor": 10527781
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Czech Republic (Czechia)",
+    "valor": 91
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Azerbaijan",
+    "valor": 10454855
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Azerbaijan",
+    "valor": 92
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Portugal",
+    "valor": 10395362
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Portugal",
+    "valor": 93
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Togo",
+    "valor": 9930918
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Togo",
+    "valor": 94
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Greece",
+    "valor": 9897115
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Greece",
+    "valor": 95
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Israel",
+    "valor": 9647689
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Israel",
+    "valor": 96
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Hungary",
+    "valor": 9585818
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Hungary",
+    "valor": 97
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Austria",
+    "valor": 9107266
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Austria",
+    "valor": 98
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Switzerland",
+    "valor": 9007798
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Switzerland",
+    "valor": 99
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Sierra Leone",
+    "valor": 8996745
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Sierra Leone",
+    "valor": 100
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Belarus",
+    "valor": 8937018
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Belarus",
+    "valor": 101
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Laos",
+    "valor": 7974017
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Laos",
+    "valor": 102
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Turkmenistan",
+    "valor": 7736632
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Turkmenistan",
+    "valor": 103
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Libya",
+    "valor": 7539851
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Libya",
+    "valor": 104
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Kyrgyzstan",
+    "valor": 7400465
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Kyrgyzstan",
+    "valor": 105
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Nicaragua",
+    "valor": 7097329
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Nicaragua",
+    "valor": 106
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Paraguay",
+    "valor": 7095279
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Paraguay",
+    "valor": 107
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Bulgaria",
+    "valor": 6667659
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Bulgaria",
+    "valor": 108
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Serbia",
+    "valor": 6641964
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Serbia",
+    "valor": 109
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Congo",
+    "valor": 6637785
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Congo",
+    "valor": 110
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "El Salvador",
+    "valor": 6391253
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "El Salvador",
+    "valor": 111
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Denmark",
+    "valor": 6023520
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Denmark",
+    "valor": 112
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Singapore",
+    "valor": 5905748
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Singapore",
+    "valor": 113
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Lebanon",
+    "valor": 5897467
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Lebanon",
+    "valor": 114
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Liberia",
+    "valor": 5853949
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Liberia",
+    "valor": 115
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Central African Republic",
+    "valor": 5698984
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Central African Republic",
+    "valor": 116
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "State of Palestine",
+    "valor": 5692790
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "State of Palestine",
+    "valor": 117
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Oman",
+    "valor": 5671458
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Oman",
+    "valor": 118
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Norway",
+    "valor": 5652989
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Norway",
+    "valor": 119
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Finland",
+    "valor": 5621739
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Finland",
+    "valor": 120
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Mauritania",
+    "valor": 5461319
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Mauritania",
+    "valor": 121
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Slovakia",
+    "valor": 5451342
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Slovakia",
+    "valor": 122
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Ireland",
+    "valor": 5356950
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Ireland",
+    "valor": 123
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "New Zealand",
+    "valor": 5287479
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "New Zealand",
+    "valor": 124
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Costa Rica",
+    "valor": 5174789
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Costa Rica",
+    "valor": 125
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Kuwait",
+    "valor": 5102773
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Kuwait",
+    "valor": 126
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Panama",
+    "valor": 4625718
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Panama",
+    "valor": 127
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Croatia",
+    "valor": 3822345
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Croatia",
+    "valor": 128
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Georgia",
+    "valor": 3804642
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Georgia",
+    "valor": 129
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Eritrea",
+    "valor": 3682669
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Eritrea",
+    "valor": 130
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Mongolia",
+    "valor": 3556798
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Mongolia",
+    "valor": 131
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Uruguay",
+    "valor": 3382537
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Uruguay",
+    "valor": 132
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Qatar",
+    "valor": 3173559
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Qatar",
+    "valor": 133
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Namibia",
+    "valor": 3153246
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Namibia",
+    "valor": 134
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Bosnia and Herzegovina",
+    "valor": 3114242
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Bosnia and Herzegovina",
+    "valor": 135
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Moldova",
+    "valor": 2961253
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Moldova",
+    "valor": 136
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Armenia",
+    "valor": 2930915
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Armenia",
+    "valor": 137
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Gambia",
+    "valor": 2884079
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Gambia",
+    "valor": 138
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Jamaica",
+    "valor": 2833403
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Jamaica",
+    "valor": 139
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Lithuania",
+    "valor": 2797338
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Lithuania",
+    "valor": 140
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Albania",
+    "valor": 2751025
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Albania",
+    "valor": 141
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Gabon",
+    "valor": 2647399
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Gabon",
+    "valor": 142
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Botswana",
+    "valor": 2603388
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Botswana",
+    "valor": 143
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Lesotho",
+    "valor": 2389336
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Lesotho",
+    "valor": 144
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Guinea-Bissau",
+    "valor": 2297808
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Guinea-Bissau",
+    "valor": 145
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Slovenia",
+    "valor": 2114573
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Slovenia",
+    "valor": 146
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Equatorial Guinea",
+    "valor": 1984468
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Equatorial Guinea",
+    "valor": 147
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Latvia",
+    "valor": 1835935
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Latvia",
+    "valor": 148
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "North Macedonia",
+    "valor": 1804063
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "North Macedonia",
+    "valor": 149
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Bahrain",
+    "valor": 1675572
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Bahrain",
+    "valor": 150
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Trinidad and Tobago",
+    "valor": 1513268
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Trinidad and Tobago",
+    "valor": 151
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Timor-Leste",
+    "valor": 1436923
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Timor-Leste",
+    "valor": 152
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Cyprus",
+    "valor": 1382334
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Cyprus",
+    "valor": 153
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Estonia",
+    "valor": 1331062
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Estonia",
+    "valor": 154
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Eswatini",
+    "valor": 1269859
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Eswatini",
+    "valor": 155
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Mauritius",
+    "valor": 1265059
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Mauritius",
+    "valor": 156
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Djibouti",
+    "valor": 1199459
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Djibouti",
+    "valor": 157
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Fiji",
+    "valor": 937282
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Fiji",
+    "valor": 158
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Comoros",
+    "valor": 899010
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Comoros",
+    "valor": 159
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Solomon Islands",
+    "valor": 858288
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Solomon Islands",
+    "valor": 160
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Guyana",
+    "valor": 840890
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Guyana",
+    "valor": 161
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Bhutan",
+    "valor": 802214
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Bhutan",
+    "valor": 162
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Luxembourg",
+    "valor": 687448
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Luxembourg",
+    "valor": 163
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Suriname",
+    "valor": 645256
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Suriname",
+    "valor": 164
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Montenegro",
+    "valor": 626233
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Montenegro",
+    "valor": 165
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Malta",
+    "valor": 549011
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Malta",
+    "valor": 166
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Maldives",
+    "valor": 531517
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Maldives",
+    "valor": 167
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Cabo Verde",
+    "valor": 529630
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Cabo Verde",
+    "valor": 168
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Brunei",
+    "valor": 469775
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Brunei",
+    "valor": 169
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Belize",
+    "valor": 428644
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Belize",
+    "valor": 170
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Bahamas",
+    "valor": 404628
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Bahamas",
+    "valor": 171
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Iceland",
+    "valor": 402329
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Iceland",
+    "valor": 172
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Vanuatu",
+    "valor": 342564
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Vanuatu",
+    "valor": 173
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Barbados",
+    "valor": 282724
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Barbados",
+    "valor": 174
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Sao Tome & Principe",
+    "valor": 244994
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Sao Tome & Principe",
+    "valor": 175
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Samoa",
+    "valor": 220528
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Samoa",
+    "valor": 176
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Saint Lucia",
+    "valor": 180488
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Saint Lucia",
+    "valor": 177
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Kiribati",
+    "valor": 138445
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Kiribati",
+    "valor": 178
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Seychelles",
+    "valor": 134959
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Seychelles",
+    "valor": 179
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Grenada",
+    "valor": 117362
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Grenada",
+    "valor": 180
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Micronesia",
+    "valor": 114183
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Micronesia",
+    "valor": 181
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Tonga",
+    "valor": 103291
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Tonga",
+    "valor": 182
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "St. Vincent & Grenadines",
+    "valor": 99245
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "St. Vincent & Grenadines",
+    "valor": 183
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Antigua and Barbuda",
+    "valor": 94626
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Antigua and Barbuda",
+    "valor": 184
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Andorra",
+    "valor": 83753
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Andorra",
+    "valor": 185
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Dominica",
+    "valor": 65511
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Dominica",
+    "valor": 186
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Saint Kitts & Nevis",
+    "valor": 46992
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Saint Kitts & Nevis",
+    "valor": 187
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Liechtenstein",
+    "valor": 40368
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Liechtenstein",
+    "valor": 188
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Monaco",
+    "valor": 38087
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Monaco",
+    "valor": 189
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Marshall Islands",
+    "valor": 35075
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Marshall Islands",
+    "valor": 190
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "San Marino",
+    "valor": 33605
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "San Marino",
+    "valor": 191
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Palau",
+    "valor": 17614
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Palau",
+    "valor": 192
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Nauru",
+    "valor": 12101
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Nauru",
+    "valor": 193
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Tuvalu",
+    "valor": 9362
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Tuvalu",
+    "valor": 194
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Población en 2026",
+    "carta": "Holy See",
+    "valor": 506
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Ranking en Población en 2026",
+    "carta": "Holy See",
+    "valor": 195
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Datos Globales",
+    "carta": "Casos de Coronavirus",
+    "valor": 704753890
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Datos Globales",
+    "carta": "Población Global en el Mundo",
+    "valor": 8294270995
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Datos Globales",
+    "carta": "Nacimientos este año",
+    "valor": 51048726
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Datos Globales",
+    "carta": "Muertes este año",
+    "valor": 24054399
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Datos Globales",
+    "carta": "Coches producidos este año",
+    "valor": 35350789
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Datos Globales",
+    "carta": "Bicicletas producidas este año",
+    "valor": 62371496
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Datos Globales",
+    "carta": "Ordenadores producidos este año",
+    "valor": 86106170
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Datos Globales",
+    "carta": "Nuevos libros publicados este año",
+    "valor": 1112081
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Datos Globales",
+    "carta": "Personas con sobrepeso en el mundo",
+    "valor": 1795474920
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Datos Globales",
+    "carta": "Personas obesas en el mundo",
+    "valor": 914149136
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Datos Globales",
+    "carta": "Agua usada este año (millones L)",
+    "valor": 1846374788
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Datos Globales",
+    "carta": "Abortos este año",
+    "valor": 17548466
+  },
+  {
+    "categoria": "Datos Globales",
+    "subcategoria": "Datos Globales",
+    "carta": "Dinero gastado en drogas ilegales este año",
+    "valor": 154218558242
+  }
+]
