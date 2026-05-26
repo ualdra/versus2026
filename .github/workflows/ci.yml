@@ -410,10 +410,11 @@ jobs:
 
       - name: Notify Discord
         env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          # PRs → canal de PRs; push a main (despliegue) → canal de commits.
+          DISCORD_WEBHOOK: ${{ github.event_name == 'pull_request_target' && secrets.DISCORD_WEBHOOK_URL || secrets.DISCORD_WEBHOOK_COMMITS }}
         run: |
           if [ -z "$DISCORD_WEBHOOK" ]; then
-            echo "DISCORD_WEBHOOK_URL no configurado; se omite la notificación."
+            echo "Webhook de Discord no configurado para este evento; se omite la notificación."
             exit 0
           fi
 
