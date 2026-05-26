@@ -1,0 +1,26 @@
+<section class="vs-elo-widget">
+  <div class="vs-section-title">ELO por modo</div>
+
+  @if (loading()) {
+    <div class="vs-elo-widget__empty">Cargando ELO...</div>
+  } @else if (orderedRows().length === 0) {
+    <div class="vs-elo-widget__empty">Sin clasificacion.</div>
+  } @else {
+    <div class="vs-elo-widget__rows">
+      @for (row of orderedRows(); track row.mode) {
+        <div class="vs-elo-widget__row">
+          <div>
+            <div class="vs-elo-widget__mode">{{ labelFor(row.mode) }}</div>
+            <div class="vs-elo-widget__rank">#{{ row.rank || '-' }} - {{ row.wins }}/{{ row.losses }}</div>
+          </div>
+          <div class="vs-elo-widget__rating">
+            <span class="vs-mono">{{ row.rating }}</span>
+            <span class="vs-elo-widget__trend" [class]="trendClass(row.lastDelta)">
+              {{ trendText(row.lastDelta) }}
+            </span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</section>

@@ -41,6 +41,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/auth/verify").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/questions/categories").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/questions/random").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/rankings").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users/*/ranking").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/practice/answer").permitAll()
                         .requestMatchers(HttpMethod.GET, "/media-files/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()

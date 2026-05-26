@@ -5,11 +5,12 @@ import { TopbarComponent } from '../../../../shared/components/layout/topbar/top
 import { AuthService } from '../../../../core/services/auth.service';
 import { StatsService } from '../../../../core/services/stats.service';
 import { PlayerStats } from '../../../../core/models/game.models';
+import { EloWidgetComponent } from '../../components/elo-widget/elo-widget';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterLink, TopbarComponent, UpperCasePipe],
+  imports: [RouterLink, TopbarComponent, UpperCasePipe, EloWidgetComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })

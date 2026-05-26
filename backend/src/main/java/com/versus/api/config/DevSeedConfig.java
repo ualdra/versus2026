@@ -31,16 +31,16 @@ public class DevSeedConfig {
         seedUser("admin", "admin@versus.com", "admin123", Role.ADMIN);
     }
 
-    private void seedUser(String username, String email, String password, Role role) {
-        if (users.existsByEmail(email) || users.existsByUsername(username)) {
-            return;
-        }
-        users.save(User.builder()
-                .username(username)
-                .email(email)
-                .passwordHash(passwordEncoder.encode(password))
-                .role(role)
-                .isActive(true)
-                .build());
+    private User seedUser(String username, String email, String password, Role role) {
+        return users.findByEmail(email)
+                .or(() -> users.findByUsername(username))
+                .orElseGet(() -> users.save(User.builder()
+                        .username(username)
+                        .email(email)
+                        .passwordHash(passwordEncoder.encode(password))
+                        .role(role)
+                        .isActive(true)
+                        .enabled(true)
+                        .build()));
     }
 }
