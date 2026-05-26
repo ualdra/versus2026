@@ -1,5 +1,8 @@
 package com.versus.api.it.support;
 
+import com.versus.api.cards.CardStatus;
+import com.versus.api.cards.domain.Card;
+import com.versus.api.cards.repo.CardRepository;
 import com.versus.api.questions.QuestionStatus;
 import com.versus.api.questions.QuestionType;
 import com.versus.api.questions.domain.Question;
@@ -29,6 +32,7 @@ public class Factories {
 
     private final UserRepository users;
     private final QuestionRepository questions;
+    private final CardRepository cards;
     private final PasswordEncoder encoder;
     private final AtomicInteger seq = new AtomicInteger();
 
@@ -93,5 +97,44 @@ public class Factories {
                 .tolerancePercent(new BigDecimal("5"))
                 .textHash("hash-num-" + n + "-" + UUID.randomUUID())
                 .build());
+    }
+
+    /**
+     * Par determinista para Survival (binary): misma categoría/subcategoría,
+     * no-inverso, valor 100 y 50. CardService elegirá uno como "A" y buscará un
+     * partner; con ambos elegibles, siempre encuentra el par y la carta de
+     * valor=100 es el winner.
+     */
+    public CardPair binaryCardPair() {
+        int n = seq.incrementAndGet();
+        Card a = saveCard("sport", "football", "Card A #" + n, new BigDecimal("100"), n + "-a");
+        Card b = saveCard("sport", "football", "Card B #" + n, new BigDecimal("50"), n + "-b");
+        return new CardPair(a, b);
+    }
+
+    /** Carta numérica con valor=100 para Precision. */
+    public Card numericCard() {
+        int n = seq.incrementAndGet();
+        return saveCard("sport", "football", "Num Card #" + n, new BigDecimal("100"), n + "-num");
+    }
+
+    private Card saveCard(String categoria, String subcategoria, String nombre,
+                          BigDecimal valor, String tag) {
+        return cards.save(Card.builder()
+                .categoria(categoria).subcategoria(subcategoria).nombre(nombre)
+                .valor(valor).unidad("pts").inverse(false).eligibleForSurvival(true)
+                .status(CardStatus.ACTIVE)
+                .textHash("hash-card-" + tag + "-" + UUID.randomUUID())
+                .build());
+    }
+
+    public record CardPair(Card a, Card b) {
+        /** Ganador para survival no-inverso: el de mayor valor. */
+        public Card winner() {
+            return a.getValor().compareTo(b.getValor()) >= 0 ? a : b;
+        }
+        public Card loser() {
+            return winner() == a ? b : a;
+        }
     }
 }

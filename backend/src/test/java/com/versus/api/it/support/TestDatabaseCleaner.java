@@ -25,6 +25,7 @@ public class TestDatabaseCleaner {
             "question_reports",
             "question_options",
             "questions",
+            "cards",
             "spider_runs",
             "spiders",
             "rankings",
