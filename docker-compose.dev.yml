@@ -19,11 +19,12 @@ services:
       dockerfile: Dockerfile
       target: development      # stage development
     ports:
-      - "8080:8080"           
-      - "5005:5005"            
+      - "8080:8080"
+      - "5005:5005"
     volumes:
       - ./backend:/app         # Monta el código fuente del host
       - maven_cache:/root/.m2  # Caché de Maven entre reinicios
+      - ./scraper/output:/scraper-output:ro  # JSON de cartas disponible para el seed
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
