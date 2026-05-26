@@ -6,98 +6,98 @@
     <div class="vs-admin__head">
       <div>
         <h1>SPIDERS Y SCRAPING</h1>
-        <div class="vs-admin__head-meta">6 arañas · 2 con incidencias · última ejecución hace 14 min</div>
+        <div class="vs-admin__head-meta">
+          {{ filteredSpiders().length }} arañas
+          @if (allSpiders().length > 0) {
+            · {{ allSpiders().length }} en total
+          }
+        </div>
       </div>
-      <div style="display: flex; gap: 8px">
-        <button class="btn btn--ghost btn--sm">DETENER TODAS</button>
-        <button class="btn btn--primary btn--sm">+ NUEVA SPIDER</button>
-      </div>
-    </div>
-
-    <!-- KPIs -->
-    <div class="vs-admin__kpis">
-      <div class="vs-kpi"><div class="vs-kpi__label">Ejecuciones (24h)</div><div class="vs-kpi__num">42</div><div class="vs-kpi__delta up">▲ 6</div></div>
-      <div class="vs-kpi"><div class="vs-kpi__label">Preguntas insertadas (24h)</div><div class="vs-kpi__num">3 824</div><div class="vs-kpi__delta up">▲ 12%</div></div>
-      <div class="vs-kpi"><div class="vs-kpi__label">Tasa de error</div><div class="vs-kpi__num" style="color: var(--vs-accent-gold)">4.7%</div><div class="vs-kpi__delta down">▼ 0.3%</div></div>
-      <div class="vs-kpi"><div class="vs-kpi__label">Latencia media</div><div class="vs-kpi__num">2.1s</div><div class="vs-kpi__delta up">estable</div></div>
     </div>
 
     <!-- Tabla de spiders -->
     <div class="vs-card" style="padding: 0">
       <div style="padding: 14px 20px; border-bottom: 1px solid var(--vs-border); display: flex; justify-content: space-between; align-items: center">
         <div style="display: flex; gap: 10px; align-items: center">
-          <input class="vs-input" placeholder="Filtrar por nombre…" style="width: 220px; padding: 7px 12px; font-size: 12px" />
-          <span class="vs-pill vs-pill--mute" style="cursor: pointer">TODAS</span>
-          <span class="vs-pill vs-pill--err" style="cursor: pointer"><span class="vs-pill__dot"></span>CON ERROR</span>
-          <span class="vs-pill vs-pill--ok" style="cursor: pointer"><span class="vs-pill__dot"></span>OK</span>
+          <input class="vs-input"
+                 placeholder="Filtrar por nombre…"
+                 style="width: 220px; padding: 7px 12px; font-size: 12px"
+                 [ngModel]="filter()"
+                 (ngModelChange)="filter.set($event)" />
+          <span class="vs-pill"
+                [class]="statusFilter() === '' ? 'vs-pill--ok' : 'vs-pill--mute'"
+                style="cursor: pointer"
+                (click)="setStatusFilter('')">TODAS</span>
+          <span class="vs-pill"
+                [class]="statusFilter() === 'FAILED' ? 'vs-pill--err' : 'vs-pill--mute'"
+                style="cursor: pointer"
+                (click)="setStatusFilter('FAILED')">
+            <span class="vs-pill__dot"></span>CON ERROR
+          </span>
+          <span class="vs-pill"
+                [class]="statusFilter() === 'IDLE' ? 'vs-pill--ok' : 'vs-pill--mute'"
+                style="cursor: pointer"
+                (click)="setStatusFilter('IDLE')">
+            <span class="vs-pill__dot"></span>OK
+          </span>
         </div>
-        <div style="font-size: 11px; color: var(--vs-text-muted); letter-spacing: 0.12em">6 RESULTADOS</div>
+        <div style="font-size: 11px; color: var(--vs-text-muted); letter-spacing: 0.12em">
+          {{ filteredSpiders().length }} RESULTADOS
+        </div>
       </div>
 
-      <div style="padding: 10px 20px; display: grid; grid-template-columns: 24px 2fr 1fr 1fr 1fr 100px; gap: 14px; font-size: 10px; letter-spacing: 0.16em; color: var(--vs-text-muted); text-transform: uppercase; border-bottom: 1px solid var(--vs-border)">
-        <span></span><span>Nombre / URL</span><span>Categoría</span><span>Última ejecución</span><span>Insertadas</span><span>Estado</span>
+      <div style="padding: 10px 20px; display: grid; grid-template-columns: 24px 2fr 1fr 1fr 110px; gap: 14px; font-size: 10px; letter-spacing: 0.16em; color: var(--vs-text-muted); text-transform: uppercase; border-bottom: 1px solid var(--vs-border)">
+        <span></span><span>Nombre / URL</span><span>Última ejecución</span><span>Insertadas</span><span>Estado</span>
       </div>
 
-      @for (s of spiders; track s.name) {
-        <div class="vs-spider-row" style="grid-template-columns: 24px 2fr 1fr 1fr 1fr 100px">
-          <span class="vs-status-dot" [class]="s.stat"></span>
+      @if (loading()) {
+        <div style="padding: 20px; color: var(--vs-text-muted); font-size: 13px">Cargando spiders…</div>
+      }
+
+      @for (s of filteredSpiders(); track s.name) {
+        <div class="vs-spider-row" style="grid-template-columns: 24px 2fr 1fr 1fr 110px">
+          <span class="vs-status-dot" [class]="dotClass(s.status)"></span>
           <div>
             <div class="vs-spider-row__name">{{ s.name }}</div>
-            <div class="vs-spider-row__url">{{ s.url }}</div>
+            <div class="vs-spider-row__url">{{ s.targetUrl }}</div>
           </div>
-          <div style="font-size: 12px; color: var(--vs-text-secondary)">{{ s.cat }}</div>
           <div>
-            <div class="vs-mono" style="font-size: 12px">{{ s.lastRun }}</div>
-            <div style="font-size: 11px; color: var(--vs-text-muted)">{{ s.schedule }}</div>
+            <div class="vs-mono" style="font-size: 12px">{{ lastRunLabel(s) }}</div>
+            <div style="font-size: 11px; color: var(--vs-text-muted)">{{ s.status }}</div>
           </div>
-          <div class="vs-mono" style="font-size: 13px">{{ s.lastQ }}</div>
-          <div style="display: flex; gap: 6px">
-            <button class="btn btn--ghost btn--sm" style="padding: 5px 10px; font-size: 10px">▶</button>
-            <button class="btn btn--ghost btn--sm" style="padding: 5px 10px; font-size: 10px">⚙</button>
+          <div class="vs-mono" style="font-size: 13px">{{ s.lastRun?.questionsInserted ?? 0 }}</div>
+          <div style="display: flex; gap: 6px; align-items: center">
+            <span class="vs-pill" [class]="pillClass(s.status)">
+              <span class="vs-pill__dot"></span>{{ pillLabel(s.status) }}
+            </span>
+            <button class="btn btn--ghost btn--sm"
+                    style="padding: 5px 10px; font-size: 10px"
+                    [disabled]="isRunning(s.name) || s.status === 'RUNNING'"
+                    (click)="triggerRun(s.name)"
+                    title="Ejecutar spider">
+              {{ isRunning(s.name) ? '…' : '▶' }}
+            </button>
           </div>
         </div>
       }
+
+      @if (!loading() && filteredSpiders().length === 0) {
+        <div style="padding: 20px; color: var(--vs-text-muted); font-size: 13px">Sin resultados.</div>
+      }
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px">
-
-      <!-- Log de instagram -->
-      <div class="vs-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px">
-          <div class="vs-section-title" style="margin: 0">spider_instagram · log</div>
-          <span class="vs-pill vs-pill--err"><span class="vs-pill__dot"></span>FALLA</span>
-        </div>
-        <div class="vs-run-log">
-          <div><span class="ts">04:12:02</span><span class="err">[ERR]</span> auth required (HTTP 401)</div>
-          <div><span class="ts">04:12:02</span><span class="err">[ERR]</span> retry 3/3 falló</div>
-          <div><span class="ts">04:11:58</span><span class="warn">[WARN]</span> token expirado · age=24h</div>
-          <div><span class="ts">04:11:55</span> conectando a https://i.instagram.com/api/v1/...</div>
-          <div><span class="ts">04:11:54</span> spider iniciada · pid=18829</div>
-          <div><span class="ts">04:11:53</span> cargando perfil `instagram_followers.yaml`</div>
-        </div>
-        <div style="display: flex; gap: 8px; margin-top: 14px">
-          <button class="btn btn--danger btn--sm">REINICIAR</button>
-          <button class="btn btn--ghost btn--sm">RENOVAR TOKEN</button>
-          <button class="btn btn--ghost btn--sm">DESHABILITAR</button>
-        </div>
+    <!-- Barras por hora -->
+    <div class="vs-card" style="max-width: 600px">
+      <div class="vs-section-title">Actividad relativa · últimas 24h</div>
+      <div style="display: flex; align-items: flex-end; gap: 3px; height: 90px; margin-top: 8px">
+        @for (v of barData; track $index) {
+          <div style="flex: 1; border-radius: 2px 2px 0 0; transition: all 200ms"
+               [style.height]="(v / barMax * 100) + '%'"
+               [style.background]="$index === 8 ? 'var(--vs-accent-gold)' : 'var(--vs-accent-blue)'"
+               [style.opacity]="$index === 8 ? 1 : 0.7"></div>
+        }
       </div>
-
-      <!-- Barras por hora -->
-      <div class="vs-card">
-        <div class="vs-section-title">Inserciones por hora · últimas 24h</div>
-        <div style="display: flex; align-items: flex-end; gap: 3px; height: 90px; margin-top: 8px">
-          @for (v of barData; track $index) {
-            <div style="flex: 1; border-radius: 2px 2px 0 0; transition: all 200ms"
-                 [style.height]="(v / barMax * 100) + '%'"
-                 [style.background]="$index === 8 ? 'var(--vs-accent-gold)' : 'var(--vs-accent-blue)'"
-                 [style.opacity]="$index === 8 ? 1 : 0.7"></div>
-          }
-        </div>
-        <div style="margin-top: 14px; font-size: 12px; color: var(--vs-text-secondary)">
-          Pico a las 03:00 (mantenimiento) · 1 240 nuevas preguntas en la ventana.
-        </div>
-      </div>
-
     </div>
+
   </div>
 </div>

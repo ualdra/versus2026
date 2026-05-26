@@ -58,6 +58,9 @@ export interface FinalStatsPayload {
   roundsPlayed: number;
   avgDeviation: number | null;
   sabotagesUsed: number;
+  eloDelta?: number | null;
+  previousRating?: number | null;
+  currentRating?: number | null;
 }
 
 export interface MatchEndPayload {

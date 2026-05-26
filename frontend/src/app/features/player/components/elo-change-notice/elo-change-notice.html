@@ -1,0 +1,15 @@
+@if (visible()) {
+  <section
+    class="vs-elo-change"
+    [class.is-positive]="positive()"
+    [class.is-negative]="negative()"
+  >
+    <div class="vs-elo-change__label">Cambio ELO</div>
+    <div class="vs-elo-change__delta vs-mono">{{ formattedDelta() }} ELO</div>
+    @if (previousRating() !== null && previousRating() !== undefined && currentRating() !== null && currentRating() !== undefined) {
+      <div class="vs-elo-change__ratings vs-mono">
+        {{ previousRating() }} -> {{ currentRating() }}
+      </div>
+    }
+  </section>
+}

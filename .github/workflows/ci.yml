@@ -1,4 +1,4 @@
-name: CI — Tests
+name: CI
 
 on:
   pull_request_target:
@@ -10,6 +10,7 @@ on:
 permissions:
   contents: read
   checks: write
+  pull-requests: write   # necesario para el comentario sticky de resultados
 
 concurrency:
   group: ci-${{ github.event_name == 'pull_request_target' && github.event.pull_request.number || github.ref_name }}
@@ -17,17 +18,24 @@ concurrency:
 
 jobs:
   # ──────────────────────────────────────────────
-  # Job 1: Test unitarios
+  # Backend · Pruebas unitarias (Surefire)
   # ──────────────────────────────────────────────
-  test-backend:
-    name: Test unitarios
+  backend-unit:
+    name: Backend · Unit tests
     runs-on: ubuntu-latest
+    outputs:
+      total: ${{ steps.counts.outputs.total }}
+      passed: ${{ steps.counts.outputs.passed }}
+      failed: ${{ steps.counts.outputs.failed }}
+      errors: ${{ steps.counts.outputs.errors }}
+      skipped: ${{ steps.counts.outputs.skipped }}
+      coverage: ${{ steps.counts.outputs.coverage }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # For PRs (including forks): test the contributor's code, not the base branch.
+          # En PRs (incluidos forks): probar el código del contribuidor, no la base.
           ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
 
       - name: Set up Java 25
@@ -37,11 +45,29 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Run tests
+      - name: Run unit tests + coverage
         working-directory: backend
         run: |
           chmod +x mvnw
-          ./mvnw test --batch-mode -Dstyle.color=never
+          # jacoco:report genera target/site/jacoco/jacoco.xml a partir de la
+          # ejecución de Surefire (el agente se inyecta vía jacoco:prepare-agent).
+          ./mvnw test jacoco:report --batch-mode -Dstyle.color=never
+
+      - name: Compute counts & coverage
+        id: counts
+        if: always()
+        run: |
+          REPORTS=backend/target/surefire-reports
+          JACOCO=backend/target/site/jacoco/jacoco.xml
+          source .github/scripts/junit-counts.sh "$REPORTS"/TEST-*.xml
+          {
+            echo "total=$TOTAL"
+            echo "passed=$PASSED"
+            echo "failed=$FAILURES"
+            echo "errors=$ERRORS"
+            echo "skipped=$SKIPPED"
+            echo "coverage=$(.github/scripts/jacoco-coverage.sh "$JACOCO")"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Upload Surefire reports
         uses: actions/upload-artifact@v4
@@ -55,40 +81,40 @@ jobs:
         uses: dorny/test-reporter@v1
         if: always()
         with:
-          name: Backend Tests
+          name: Backend · Unit tests (report)
           path: backend/target/surefire-reports/TEST-*.xml
           reporter: java-junit
           fail-on-error: 'true'
 
-      - name: Write job summary
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-unit-coverage
+          path: backend/target/site/jacoco/
+          retention-days: 7
+
+      - name: Job summary
         if: always()
         run: |
-          echo "## Backend Tests" >> $GITHUB_STEP_SUMMARY
-          if [ -d backend/target/surefire-reports ]; then
-            TOTAL=$(grep -rh 'tests="' backend/target/surefire-reports/TEST-*.xml 2>/dev/null \
-              | grep -oP 'tests="\K[0-9]+' | awk '{s+=$1} END {print s+0}')
-            FAILURES=$(grep -rh 'failures="' backend/target/surefire-reports/TEST-*.xml 2>/dev/null \
-              | grep -oP 'failures="\K[0-9]+' | awk '{s+=$1} END {print s+0}')
-            ERRORS=$(grep -rh 'errors="' backend/target/surefire-reports/TEST-*.xml 2>/dev/null \
-              | grep -oP 'errors="\K[0-9]+' | awk '{s+=$1} END {print s+0}')
-            SKIPPED=$(grep -rh 'skipped="' backend/target/surefire-reports/TEST-*.xml 2>/dev/null \
-              | grep -oP 'skipped="\K[0-9]+' | awk '{s+=$1} END {print s+0}')
-            echo "| Total | Passed | Failed | Errors | Skipped |" >> $GITHUB_STEP_SUMMARY
-            echo "|-------|--------|--------|--------|---------|" >> $GITHUB_STEP_SUMMARY
-            PASSED=$(( TOTAL - FAILURES - ERRORS - SKIPPED ))
-            echo "| $TOTAL | $PASSED | $FAILURES | $ERRORS | $SKIPPED |" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "_No Surefire reports found — build may have failed before tests ran._" >> $GITHUB_STEP_SUMMARY
-          fi
-
-
+          echo "## Backend · Unit tests" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Total | Passed | Failed | Errors | Skipped | Coverage |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|--------|--------|--------|---------|----------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| ${{ steps.counts.outputs.total }} | ${{ steps.counts.outputs.passed }} | ${{ steps.counts.outputs.failed }} | ${{ steps.counts.outputs.errors }} | ${{ steps.counts.outputs.skipped }} | ${{ steps.counts.outputs.coverage }}% |" >> "$GITHUB_STEP_SUMMARY"
 
   # ──────────────────────────────────────────────
-  # Job 2: Tests de integración
+  # Backend · Pruebas de integración (Failsafe, en Docker)
   # ──────────────────────────────────────────────
-  test-integration:
-    name: Tests de integración
+  backend-integration:
+    name: Backend · Integration tests
     runs-on: ubuntu-latest
+    outputs:
+      total: ${{ steps.counts.outputs.total }}
+      passed: ${{ steps.counts.outputs.passed }}
+      failed: ${{ steps.counts.outputs.failed }}
+      errors: ${{ steps.counts.outputs.errors }}
+      skipped: ${{ steps.counts.outputs.skipped }}
+      coverage: ${{ steps.counts.outputs.coverage }}
 
     steps:
       - name: Checkout
@@ -97,8 +123,8 @@ jobs:
           ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
 
       # Mismos contenedores que en local: db-test + backend-test bajo el perfil
-      # "test" del stack versus. Failsafe corre dentro de backend-test contra
-      # db-test:5432 (env vars SPRING_DATASOURCE_* del compose).
+      # "test". `mvnw verify` corre Surefire + Failsafe; el volumen ./backend:/app
+      # hace que reportes y cobertura aparezcan en backend/target del runner.
       - name: Run integration tests (docker compose)
         run: |
           docker compose -f docker-compose.test.yml \
@@ -117,6 +143,22 @@ jobs:
           docker compose -f docker-compose.test.yml \
             --profile test down -v || true
 
+      - name: Compute counts & coverage
+        id: counts
+        if: always()
+        run: |
+          REPORTS=backend/target/failsafe-reports
+          JACOCO=backend/target/site/jacoco/jacoco.xml
+          source .github/scripts/junit-counts.sh "$REPORTS"/TEST-*.xml
+          {
+            echo "total=$TOTAL"
+            echo "passed=$PASSED"
+            echo "failed=$FAILURES"
+            echo "errors=$ERRORS"
+            echo "skipped=$SKIPPED"
+            echo "coverage=$(.github/scripts/jacoco-coverage.sh "$JACOCO")"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Upload Failsafe reports
         uses: actions/upload-artifact@v4
         if: always()
@@ -125,3 +167,294 @@ jobs:
           path: backend/target/failsafe-reports/
           retention-days: 7
 
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Backend · Integration tests (report)
+          path: backend/target/failsafe-reports/TEST-*.xml
+          reporter: java-junit
+          fail-on-error: 'true'
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-integration-coverage
+          path: backend/target/site/jacoco/
+          retention-days: 7
+
+      - name: Job summary
+        if: always()
+        run: |
+          echo "## Backend · Integration tests" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Total | Passed | Failed | Errors | Skipped | Coverage |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|--------|--------|--------|---------|----------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| ${{ steps.counts.outputs.total }} | ${{ steps.counts.outputs.passed }} | ${{ steps.counts.outputs.failed }} | ${{ steps.counts.outputs.errors }} | ${{ steps.counts.outputs.skipped }} | ${{ steps.counts.outputs.coverage }}% |" >> "$GITHUB_STEP_SUMMARY"
+
+  # ──────────────────────────────────────────────
+  # Frontend · Pruebas unitarias (Vitest)
+  # ──────────────────────────────────────────────
+  frontend-unit:
+    name: Frontend · Unit tests
+    runs-on: ubuntu-latest
+    outputs:
+      total: ${{ steps.counts.outputs.total }}
+      passed: ${{ steps.counts.outputs.passed }}
+      failed: ${{ steps.counts.outputs.failed }}
+      errors: ${{ steps.counts.outputs.errors }}
+      skipped: ${{ steps.counts.outputs.skipped }}
+      coverage: ${{ steps.counts.outputs.coverage }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run unit tests + coverage
+        working-directory: frontend
+        run: npm run test:ci
+
+      - name: Compute counts & coverage
+        id: counts
+        if: always()
+        run: |
+          source .github/scripts/junit-counts.sh frontend/test-results/junit.xml
+          {
+            echo "total=$TOTAL"
+            echo "passed=$PASSED"
+            echo "failed=$FAILURES"
+            echo "errors=$ERRORS"
+            echo "skipped=$SKIPPED"
+            echo "coverage=$(.github/scripts/lcov-coverage.sh frontend/coverage/frontend/lcov.info)"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Upload Vitest report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-vitest-report
+          path: frontend/test-results/
+          retention-days: 7
+
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Frontend · Unit tests (report)
+          path: frontend/test-results/junit.xml
+          reporter: jest-junit
+          fail-on-error: 'true'
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-coverage
+          path: frontend/coverage/
+          retention-days: 7
+
+      - name: Job summary
+        if: always()
+        run: |
+          echo "## Frontend · Unit tests" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Total | Passed | Failed | Errors | Skipped | Coverage |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|--------|--------|--------|---------|----------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| ${{ steps.counts.outputs.total }} | ${{ steps.counts.outputs.passed }} | ${{ steps.counts.outputs.failed }} | ${{ steps.counts.outputs.errors }} | ${{ steps.counts.outputs.skipped }} | ${{ steps.counts.outputs.coverage }}% |" >> "$GITHUB_STEP_SUMMARY"
+
+  # ──────────────────────────────────────────────
+  # Build · Verificar imágenes de producción
+  # Garantiza que las imágenes de producción compilan ANTES de mergear a main,
+  # evitando builds rotas en main que bloquean el deploy. No publica imágenes.
+  # ──────────────────────────────────────────────
+  build-verification:
+    name: Build · Production images
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend (production target)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          target: production
+          push: false
+          load: false
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,scope=backend,mode=max
+
+      - name: Build frontend (production target)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          target: production
+          push: false
+          load: false
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,scope=frontend,mode=max
+
+  # ──────────────────────────────────────────────
+  # CI · Notificación de resultados
+  # Agrega conteos y cobertura de las tres suites + estado del build y:
+  #   - en PRs: publica/actualiza un comentario sticky;
+  #   - siempre (PR y push a main): envía un embed a Discord.
+  # Corre always(): notifica también cuando algo falla.
+  # ──────────────────────────────────────────────
+  ci-notify:
+    name: CI · Notify results
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [backend-unit, backend-integration, frontend-unit, build-verification]
+    permissions:
+      pull-requests: write
+
+    env:
+      # Resultado de cada job (success/failure/cancelled/skipped).
+      BU_RESULT: ${{ needs.backend-unit.result }}
+      BI_RESULT: ${{ needs.backend-integration.result }}
+      FE_RESULT: ${{ needs.frontend-unit.result }}
+      BUILD_RESULT: ${{ needs.build-verification.result }}
+      # Conteos y cobertura. Pueden venir vacíos si un job no llegó a calcularlos.
+      BU_TOTAL: ${{ needs.backend-unit.outputs.total }}
+      BU_PASSED: ${{ needs.backend-unit.outputs.passed }}
+      BU_FAILED: ${{ needs.backend-unit.outputs.failed }}
+      BU_ERRORS: ${{ needs.backend-unit.outputs.errors }}
+      BU_SKIPPED: ${{ needs.backend-unit.outputs.skipped }}
+      BU_COV: ${{ needs.backend-unit.outputs.coverage }}
+      BI_TOTAL: ${{ needs.backend-integration.outputs.total }}
+      BI_PASSED: ${{ needs.backend-integration.outputs.passed }}
+      BI_FAILED: ${{ needs.backend-integration.outputs.failed }}
+      BI_ERRORS: ${{ needs.backend-integration.outputs.errors }}
+      BI_SKIPPED: ${{ needs.backend-integration.outputs.skipped }}
+      BI_COV: ${{ needs.backend-integration.outputs.coverage }}
+      FE_TOTAL: ${{ needs.frontend-unit.outputs.total }}
+      FE_PASSED: ${{ needs.frontend-unit.outputs.passed }}
+      FE_FAILED: ${{ needs.frontend-unit.outputs.failed }}
+      FE_ERRORS: ${{ needs.frontend-unit.outputs.errors }}
+      FE_SKIPPED: ${{ needs.frontend-unit.outputs.skipped }}
+      FE_COV: ${{ needs.frontend-unit.outputs.coverage }}
+      # Contexto del evento (PR vs push a main).
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      HEAD_SHA: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
+      TARGET_URL: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.html_url || format('{0}/{1}/commit/{2}', github.server_url, github.repository, github.sha) }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+    steps:
+      - name: Build summary
+        run: |
+          # Normaliza un número (vacío -> 0) y una cobertura (vacío -> "n/a").
+          n() { echo "${1:-0}"; }
+          cov() { [ -n "$1" ] && echo "$1%" || echo "n/a"; }
+          emoji() { [ "$1" = "success" ] && echo "✅" || echo "❌"; }
+
+          TOTAL=$(( $(n "$BU_TOTAL") + $(n "$BI_TOTAL") + $(n "$FE_TOTAL") ))
+
+          # Estado global: éxito sólo si los cuatro jobs pasaron.
+          OVERALL=success
+          for r in "$BU_RESULT" "$BI_RESULT" "$FE_RESULT" "$BUILD_RESULT"; do
+            [ "$r" != "success" ] && OVERALL=failure
+          done
+
+          # Markdown para el comentario del PR / step summary.
+          {
+            echo "## 🧪 Resultados de CI"
+            echo ""
+            echo "| Suite | Total | ✅ Passed | ❌ Failed | ⚠️ Errors | ⏭️ Skipped | 📊 Coverage |"
+            echo "|-------|------:|--------:|--------:|--------:|---------:|----------:|"
+            echo "| $(emoji "$BU_RESULT") Backend · Unit | $(n "$BU_TOTAL") | $(n "$BU_PASSED") | $(n "$BU_FAILED") | $(n "$BU_ERRORS") | $(n "$BU_SKIPPED") | $(cov "$BU_COV") |"
+            echo "| $(emoji "$BI_RESULT") Backend · Integration | $(n "$BI_TOTAL") | $(n "$BI_PASSED") | $(n "$BI_FAILED") | $(n "$BI_ERRORS") | $(n "$BI_SKIPPED") | $(cov "$BI_COV") |"
+            echo "| $(emoji "$FE_RESULT") Frontend · Unit | $(n "$FE_TOTAL") | $(n "$FE_PASSED") | $(n "$FE_FAILED") | $(n "$FE_ERRORS") | $(n "$FE_SKIPPED") | $(cov "$FE_COV") |"
+            echo ""
+            echo "**Total de pruebas ejecutadas: $TOTAL** · Build de imágenes: $(emoji "$BUILD_RESULT")"
+            echo ""
+            echo "<sub>commit \`$HEAD_SHA\` · [ver run]($RUN_URL)</sub>"
+          } > comment.md
+          cat comment.md >> "$GITHUB_STEP_SUMMARY"
+
+          # Exporta valores normalizados para el paso de Discord.
+          {
+            echo "OVERALL=$OVERALL"
+            echo "TOTAL=$TOTAL"
+            echo "F_BU=$(emoji "$BU_RESULT") $(n "$BU_PASSED")/$(n "$BU_TOTAL") · cov $(cov "$BU_COV")"
+            echo "F_BI=$(emoji "$BI_RESULT") $(n "$BI_PASSED")/$(n "$BI_TOTAL") · cov $(cov "$BI_COV")"
+            echo "F_FE=$(emoji "$FE_RESULT") $(n "$FE_PASSED")/$(n "$FE_TOTAL") · cov $(cov "$FE_COV")"
+            echo "F_BUILD=$(emoji "$BUILD_RESULT") $BUILD_RESULT"
+          } >> "$GITHUB_ENV"
+
+      - name: Post sticky comment
+        if: github.event_name == 'pull_request_target'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          number: ${{ github.event.pull_request.number }}
+          header: ci-test-summary
+          path: comment.md
+
+      - name: Notify Discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK" ]; then
+            echo "DISCORD_WEBHOOK_URL no configurado; se omite la notificación."
+            exit 0
+          fi
+
+          if [ "$OVERALL" = "success" ]; then
+            COLOR=5763719; STATUS_EMOJI="✅"; STATUS_TXT="CI en verde"
+          else
+            COLOR=15548997; STATUS_EMOJI="❌"; STATUS_TXT="CI con fallos"
+          fi
+
+          if [ "${{ github.event_name }}" = "pull_request_target" ]; then
+            CONTEXT="PR #$PR_NUMBER"
+          else
+            CONTEXT="push a main"
+          fi
+
+          PAYLOAD=$(jq -n \
+            --arg title "$STATUS_EMOJI $STATUS_TXT — $CONTEXT" \
+            --arg url "$TARGET_URL" \
+            --arg desc "**$TOTAL** pruebas ejecutadas · commit \`$HEAD_SHA\`" \
+            --argjson color "$COLOR" \
+            --arg f_bu "$F_BU" \
+            --arg f_bi "$F_BI" \
+            --arg f_fe "$F_FE" \
+            --arg f_build "$F_BUILD" \
+            --arg run_url "$RUN_URL" \
+            --arg footer "GitHub Actions • ${{ github.repository }}" \
+            '{embeds:[{
+               title: $title,
+               url: $url,
+               description: ($desc + "\n[Ver ejecución completa](" + $run_url + ")"),
+               color: $color,
+               fields: [
+                 {name:"Backend · Unit",        value:$f_bu,    inline:true},
+                 {name:"Backend · Integration", value:$f_bi,    inline:true},
+                 {name:"Frontend · Unit",       value:$f_fe,    inline:true},
+                 {name:"Build · Imágenes",      value:$f_build, inline:false}
+               ],
+               footer: {text: $footer}
+             }]}')
+
+          # No fallar el job si Discord tiene un hipo (rate limit, etc.).
+          curl -sf -X POST "$DISCORD_WEBHOOK" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD" || echo "::warning::No se pudo enviar la notificación a Discord."

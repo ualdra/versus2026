@@ -1,0 +1,50 @@
+.vs-elo-change {
+  align-items: center;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid var(--vs-border);
+  border-radius: var(--vs-radius-md);
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  margin: 0 auto;
+  max-width: 360px;
+  padding: 18px 22px;
+  text-align: center;
+}
+
+.vs-elo-change.is-positive {
+  border-color: rgba(46,196,182,0.5);
+  box-shadow: 0 0 32px rgba(46,196,182,0.14);
+}
+
+.vs-elo-change.is-negative {
+  border-color: rgba(230,57,70,0.5);
+  box-shadow: 0 0 32px rgba(230,57,70,0.14);
+}
+
+.vs-elo-change__label {
+  color: var(--vs-text-muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.vs-elo-change__delta {
+  color: var(--vs-text-secondary);
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.vs-elo-change.is-positive .vs-elo-change__delta {
+  color: var(--vs-accent-green);
+}
+
+.vs-elo-change.is-negative .vs-elo-change__delta {
+  color: var(--vs-accent-red);
+}
+
+.vs-elo-change__ratings {
+  color: var(--vs-text-muted);
+  font-size: 12px;
+}

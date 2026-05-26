@@ -31,3 +31,37 @@ export interface AdminLog {
   level: 'INFO' | 'WARN' | 'ERR';
   message: string;
 }
+
+export interface AdminSpider {
+  id: string;
+  name: string;
+  targetUrl: string;
+  status: 'IDLE' | 'RUNNING' | 'FAILED';
+  lastRunAt: string | null;
+  lastRun: {
+    id: string;
+    startedAt: string;
+    finishedAt: string | null;
+    questionsInserted: number;
+    errors: number;
+  } | null;
+}
+
+export interface AdminReport {
+  id: string;
+  questionId: string;
+  questionText: string | null;
+  reason: 'WRONG_ANSWER' | 'OUTDATED' | 'OFFENSIVE' | 'OTHER';
+  status: 'PENDING' | 'DISMISSED' | 'RESOLVED';
+  comment: string | null;
+  createdAt: string;
+  resolvedBy: string | null;
+  resolvedAt: string | null;
+}
+
+export interface PageResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+}
