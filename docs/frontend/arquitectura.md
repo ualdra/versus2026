@@ -105,6 +105,11 @@ Ficheros principales:
 | `core/services/notification-center.service.ts` | Suscripciones STOMP, normalizacion de eventos, persistencia local y estado de lectura. |
 | `shared/components/layout/topbar/*` | Boton de campana, contador, panel desplegable y acciones de lectura. |
 
+Contrato de layout:
+
+- La campana de notificaciones y el menu de usuario deben renderizarse dentro de `vs-topbar__actions`.
+- `vs-topbar__actions` es un grupo flex horizontal; evita colocar la campana fuera de este contenedor porque el contador y el panel se anclan al `vs-notification-center`.
+
 Canales consumidos:
 
 | Canal | Evento | Resultado en UI |
@@ -134,6 +139,10 @@ Flujos soportados:
 - Enviar, aceptar, rechazar y cancelar solicitudes de amistad.
 - Invitar a amigos a `BINARY_DUEL`, `PRECISION_DUEL` o `SABOTAGE`.
 - Aceptar una invitación y navegar al lobby devuelto por el backend.
+
+## Invitaciones desde lobby privado
+
+La pantalla `features/player/pages/lobby` muestra un selector de amigos cuando la sala privada esta en `WAITING`, tiene `roomCode` y aun queda hueco. El envio reutiliza `SocialService.inviteFriend(friendUserId, mode, matchId)` para crear una invitacion sobre el match actual sin abrir una sala nueva.
 
 ## AuthInterceptor
 

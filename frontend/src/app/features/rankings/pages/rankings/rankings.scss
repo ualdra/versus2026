@@ -1,0 +1,182 @@
+.vs-rankings-page {
+  min-height: 100vh;
+  background: var(--vs-bg-base);
+  color: var(--vs-text-primary);
+}
+
+.vs-rankings-topbar {
+  .vs-mark {
+    text-decoration: none;
+  }
+}
+
+.vs-rankings-topbar__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.vs-rankings {
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 42px 0 56px;
+}
+
+.vs-rankings__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-end;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--vs-border);
+}
+
+.vs-rankings__title {
+  font-size: 64px;
+  line-height: 0.95;
+}
+
+.vs-rankings__meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.vs-rankings__tabs {
+  display: flex;
+  gap: 8px;
+  margin: 24px 0;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.vs-rankings__tab {
+  appearance: none;
+  border: 1px solid var(--vs-border);
+  border-radius: var(--vs-radius-sm);
+  background: transparent;
+  color: var(--vs-text-secondary);
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  min-height: 38px;
+  padding: 0 14px;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: var(--vs-border-focus);
+    color: var(--vs-text-primary);
+  }
+
+  &.is-active {
+    background: rgba(67,97,238,0.14);
+    border-color: var(--vs-accent-blue);
+    color: var(--vs-text-primary);
+  }
+}
+
+.vs-rankings__table-wrap {
+  background: var(--vs-bg-surface);
+  border: 1px solid var(--vs-border);
+  border-radius: var(--vs-radius-md);
+  overflow: hidden;
+  box-shadow: var(--vs-shadow-card);
+}
+
+.vs-rankings__table {
+  min-width: 760px;
+
+  tbody tr.is-current {
+    background: rgba(67,97,238,0.12);
+    outline: 1px solid rgba(67,97,238,0.55);
+    outline-offset: -1px;
+  }
+}
+
+.vs-rankings__rank {
+  color: var(--vs-accent-gold);
+  font-weight: 800;
+}
+
+.vs-rankings__rating {
+  color: var(--vs-text-primary);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.vs-rankings__name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.vs-rankings__mode {
+  color: var(--vs-text-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  margin-top: 3px;
+}
+
+.vs-rankings__you {
+  color: var(--vs-accent-blue);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.vs-rankings__delta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  font-weight: 800;
+
+  &.is-up { color: var(--vs-accent-green); }
+  &.is-down { color: var(--vs-accent-red); }
+  &.is-flat { color: var(--vs-text-muted); }
+}
+
+.vs-rankings__state {
+  color: var(--vs-text-muted);
+  padding: 36px 18px;
+  text-align: center;
+
+  &.is-error {
+    color: var(--vs-accent-red);
+  }
+}
+
+.vs-rankings__pager {
+  align-items: center;
+  color: var(--vs-text-muted);
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+@media (max-width: 760px) {
+  .vs-rankings {
+    width: min(1180px, calc(100% - 24px));
+    padding-top: 28px;
+  }
+
+  .vs-rankings__head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .vs-rankings__title {
+    font-size: 48px;
+  }
+
+  .vs-rankings__table-wrap {
+    overflow-x: auto;
+  }
+
+  .vs-rankings__pager {
+    justify-content: space-between;
+  }
+}

@@ -163,7 +163,7 @@ Respuesta: `204 No Content`. En frontend se exige doble confirmacion escribiendo
 - Centro de notificaciones: desplegable en el topbar con contador de no leidas, historial local por usuario (`vs.notifications.<userId>`) y acciones de marcar leidas/vaciar.
 - Audio: controles `Efectos de sonido`, `Musica de fondo`, silenciar todo y feedback reducido guardados en `localStorage`.
 - Zona de peligro: borrar cuenta exige escribir el username.
-- Topbar: muestra username/avatar reales y XP calculado desde `/api/stats/me` mientras no exista campo `xp` dedicado.
+- Topbar: muestra username/avatar reales con `shared/components/ui/avatar` y XP calculado desde `/api/stats/me` mientras no exista campo `xp` dedicado.
  
 ---
 
@@ -184,7 +184,7 @@ Gestiona busqueda de jugadores, solicitudes de amistad e invitaciones a partidas
 | `POST` | `/api/social/friend-requests/{id}/accept` | Acepta una solicitud recibida. |
 | `POST` | `/api/social/friend-requests/{id}/decline` | Rechaza una solicitud recibida. |
 | `DELETE` | `/api/social/friend-requests/{id}` | Cancela una solicitud enviada. |
-| `POST` | `/api/social/match-invites` | Crea lobby PvP e invita a `{ friendUserId, mode }`. |
+| `POST` | `/api/social/match-invites` | Crea lobby PvP o reutiliza sala privada e invita a `{ friendUserId, mode, matchId? }`. |
 | `GET` | `/api/social/match-invites/incoming` | Invitaciones recibidas pendientes. |
 | `GET` | `/api/social/match-invites/outgoing` | Invitaciones enviadas recientes. |
 | `POST` | `/api/social/match-invites/{id}/accept` | Acepta invitación y devuelve `LobbyStateDto`. |
@@ -210,10 +210,11 @@ POST /api/social/friend-requests
 
 ```json
 POST /api/social/match-invites
-{ "friendUserId": "uuid", "mode": "BINARY_DUEL" }
+{ "friendUserId": "uuid", "mode": "BINARY_DUEL", "matchId": "uuid-opcional" }
 ```
 
 `mode` debe ser multijugador: `BINARY_DUEL`, `PRECISION_DUEL` o `SABOTAGE`.
+Si `matchId` se envia, debe ser una sala privada viva en `WAITING`, con el emisor dentro, mismo modo y espacio disponible.
 
 ### Eventos WebSocket
 
@@ -417,6 +418,8 @@ Detalles de la capa de transport (envelope, autenticación, reconexión) en [`do
 ```
 
 ### Flujo de partida privada con código (issue #105)
+
+Desde el lobby privado, el host tambien puede invitar a un amigo con `POST /api/social/match-invites` enviando `{ friendUserId, mode, matchId }`.
 
 ```
 1. Host: POST /api/matches {mode}              → crea sala y recibe {matchId, roomCode}
@@ -779,6 +782,7 @@ Authorization: Bearer <admin-token>
       "id": "bbbb0000-0000-0000-0000-000000000002",
       "username": "alice",
       "email": "alice@versus.com",
+      "avatarUrl": "https://api.dicebear.com/...",
       "role": "PLAYER",
       "isActive": true,
       "createdAt": "2025-03-15T10:00:00Z"
@@ -793,6 +797,7 @@ Authorization: Bearer <admin-token>
  
 > Todos los query params son opcionales. `search` hace coincidencia parcial case-insensitive sobre username y email.  
 > `role` debe ser uno de `PLAYER`, `MODERATOR`, `ADMIN`. Resultados ordenados por `createdAt` descendente.  
+> `avatarUrl` se propaga al panel admin y se renderiza con el mismo componente compartido que topbar, perfil, lobby y amigos.
 > Errores: `401` token inválido · `403` usuario no es ADMIN.
  
 ### Contrato PUT /api/admin/users/{id}/role
@@ -809,6 +814,7 @@ Content-Type: application/json
   "id": "bbbb0000-0000-0000-0000-000000000002",
   "username": "alice",
   "email": "alice@versus.com",
+  "avatarUrl": "https://api.dicebear.com/...",
   "role": "MODERATOR",
   "isActive": true,
   "createdAt": "2025-03-15T10:00:00Z"
@@ -831,6 +837,7 @@ Content-Type: application/json
   "id": "bbbb0000-0000-0000-0000-000000000002",
   "username": "alice",
   "email": "alice@versus.com",
+  "avatarUrl": "https://api.dicebear.com/...",
   "role": "PLAYER",
   "isActive": false,
   "createdAt": "2025-03-15T10:00:00Z"

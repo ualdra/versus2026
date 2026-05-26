@@ -165,6 +165,7 @@ class AdminServiceTest {
         @Test
         void devuelveAdminUserResponse() {
             User existing = user(TARGET_ID, "alice", Role.MODERATOR);
+            existing.setAvatarUrl("data:image/png;base64,abc");
             when(users.findById(TARGET_ID)).thenReturn(Optional.of(existing));
             when(users.save(any(User.class))).thenReturn(existing);
 
@@ -172,6 +173,7 @@ class AdminServiceTest {
 
             assertThat(response).isNotNull();
             assertThat(response.id()).isEqualTo(TARGET_ID.toString());
+            assertThat(response.avatarUrl()).isEqualTo("data:image/png;base64,abc");
             assertThat(response.role()).isEqualTo("MODERATOR");
         }
     }

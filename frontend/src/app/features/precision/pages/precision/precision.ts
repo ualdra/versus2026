@@ -96,9 +96,16 @@ export class Precision implements OnInit, OnDestroy {
         this.phase.set('idle');
         audioService.playBgm('bgm_game');
       },
-      error: () => {
+      error: (err) => {
         this.phase.set('idle');
-        this.errorMessage.set('No se pudo iniciar la partida.');
+        const serverMsg = err?.error?.message as string | undefined;
+        const noQuestions =
+          err?.status === 404 && /no active question/i.test(serverMsg ?? '');
+        this.errorMessage.set(
+          noQuestions
+            ? 'Aún no hay preguntas disponibles para este modo. Inténtalo más tarde.'
+            : serverMsg || 'No se pudo iniciar la partida.',
+        );
       },
     });
   }

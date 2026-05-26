@@ -3,7 +3,7 @@ name: Deploy — Production
 # Se dispara automáticamente cuando el workflow de CI pasa en main.
 on:
   workflow_run:
-    workflows: ["CI — Tests"]
+    workflows: ["CI"]
     branches: [main]
     types: [completed]
 

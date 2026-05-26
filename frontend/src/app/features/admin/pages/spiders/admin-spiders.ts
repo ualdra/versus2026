@@ -1,29 +1,98 @@
-// TODO: wire to /api/admin/spiders when Pipeline Scrapy feature is done (#45-#50)
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { AdminSidebarComponent } from '../../components/sidebar/sidebar';
+import { AdminService } from '../../../../core/services/admin.service';
+import { AdminSpider } from '../../../../core/models/admin.models';
 
 @Component({
   selector: 'app-admin-spiders',
   standalone: true,
-  imports: [AdminSidebarComponent],
+  imports: [AdminSidebarComponent, FormsModule],
   templateUrl: './admin-spiders.html',
   styleUrl: '../dashboard/admin-dashboard.scss',
 })
-export class AdminSpiders {
+export class AdminSpiders implements OnInit {
+  private readonly adminSvc = inject(AdminService);
+
+  allSpiders = signal<AdminSpider[]>([]);
   filter = signal('');
+  statusFilter = signal<string>('');
+  running = signal<Set<string>>(new Set());
+  loading = signal(true);
 
-  spiders = [
-    { name: 'spider_transfermarkt',  url: 'https://transfermarkt.es/...',        stat: 'ok',   runs: 1280, lastQ: 1240, lastRun: '10:31', schedule: 'cada 4h', cat: 'Fútbol'     },
-    { name: 'spider_spotify_charts', url: 'https://charts.spotify.com',           stat: 'ok',   runs: 980,  lastQ: 845,  lastRun: '10:18', schedule: 'diario',  cat: 'Música'     },
-    { name: 'spider_box_office',     url: 'https://www.boxofficemojo.com',        stat: 'warn', runs: 612,  lastQ: 320,  lastRun: '08:42', schedule: 'cada 6h', cat: 'Cine'       },
-    { name: 'spider_instagram',      url: 'https://www.instagram.com',            stat: 'err',  runs: 1488, lastQ: 0,    lastRun: '04:12', schedule: 'cada 2h', cat: 'Social'     },
-    { name: 'spider_twitch_top',     url: 'https://www.twitch.tv/directory',      stat: 'ok',   runs: 218,  lastQ: 156,  lastRun: '09:55', schedule: 'cada 6h', cat: 'Streaming'  },
-    { name: 'spider_geo_pop',        url: 'https://en.wikipedia.org/wiki/...',    stat: 'idle', runs: 12,   lastQ: 0,    lastRun: '—',     schedule: 'manual',  cat: 'Geografía'  },
-  ];
+  filteredSpiders = computed(() => {
+    const q = this.filter().toLowerCase();
+    const s = this.statusFilter();
+    return this.allSpiders().filter(
+      (sp) =>
+        (!q || sp.name.toLowerCase().includes(q)) &&
+        (!s || sp.status === s),
+    );
+  });
 
-  barData = [12,18,24,9,6,4,32,78,90,64,22,18,14,11,9,16,28,34,42,36,28,22,18,14];
-  barMax  = Math.max(...[12,18,24,9,6,4,32,78,90,64,22,18,14,11,9,16,28,34,42,36,28,22,18,14]);
+  barData = [12, 18, 24, 9, 6, 4, 32, 78, 90, 64, 22, 18, 14, 11, 9, 16, 28, 34, 42, 36, 28, 22, 18, 14];
+  barMax = Math.max(...[12, 18, 24, 9, 6, 4, 32, 78, 90, 64, 22, 18, 14, 11, 9, 16, 28, 34, 42, 36, 28, 22, 18, 14]);
 
-  pillClass(s: string) { return { ok:'vs-pill--ok', warn:'vs-pill--warn', err:'vs-pill--err' }[s] ?? 'vs-pill--mute'; }
-  pillLabel(s: string) { return { ok:'OK', warn:'LENTA', err:'CAÍDA', idle:'INACTIVA' }[s] ?? s; }
+  ngOnInit(): void {
+    this.loadSpiders();
+  }
+
+  private loadSpiders(): void {
+    this.loading.set(true);
+    this.adminSvc.getSpiders().subscribe({
+      next: (list) => {
+        this.allSpiders.set(list);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
+    });
+  }
+
+  triggerRun(name: string): void {
+    const current = new Set(this.running());
+    current.add(name);
+    this.running.set(current);
+
+    this.adminSvc.triggerSpider(name).subscribe({
+      next: () => {
+        const s = new Set(this.running());
+        s.delete(name);
+        this.running.set(s);
+        this.loadSpiders();
+      },
+      error: () => {
+        const s = new Set(this.running());
+        s.delete(name);
+        this.running.set(s);
+      },
+    });
+  }
+
+  isRunning(name: string): boolean {
+    return this.running().has(name);
+  }
+
+  setStatusFilter(s: string): void {
+    this.statusFilter.set(this.statusFilter() === s ? '' : s);
+  }
+
+  pillClass(status: string): string {
+    return { IDLE: 'vs-pill--mute', RUNNING: 'vs-pill--info', FAILED: 'vs-pill--err' }[status] ?? 'vs-pill--mute';
+  }
+
+  pillLabel(status: string): string {
+    return { IDLE: 'INACTIVA', RUNNING: 'EJECUTANDO', FAILED: 'CAÍDA' }[status] ?? status;
+  }
+
+  dotClass(status: string): string {
+    return { IDLE: 'idle', RUNNING: 'ok', FAILED: 'err' }[status] ?? 'idle';
+  }
+
+  lastRunLabel(spider: AdminSpider): string {
+    if (!spider.lastRunAt) return '—';
+    const d = new Date(spider.lastRunAt);
+    const diff = Math.floor((Date.now() - d.getTime()) / 60000);
+    if (diff < 60) return `hace ${diff} min`;
+    return `hace ${Math.floor(diff / 60)} h`;
+  }
 }

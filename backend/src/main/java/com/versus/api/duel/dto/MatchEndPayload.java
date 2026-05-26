@@ -11,4 +11,5 @@ public record MatchEndPayload(
     public static final String REASON_NORMAL = "NORMAL";
     public static final String REASON_DISCONNECT = "DISCONNECT";
     public static final String REASON_MAX_ROUNDS_TIE = "MAX_ROUNDS_TIE";
+    public static final String REASON_NO_QUESTION = "NO_QUESTION";
 }

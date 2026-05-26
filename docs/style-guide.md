@@ -243,6 +243,69 @@ $mode-colors: (
 // Uso: <span class="vs-badge" [style.color]="modeColor">SABOTAJE</span>
 ```
 
+### Avatar
+
+```scss
+.vs-avatar {
+  width: 32px;
+  height: 32px;
+  position: relative;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--vs-accent-red), var(--vs-accent-purple));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  border: 1px solid var(--vs-border-strong);
+  flex-shrink: 0;
+  color: #fff;
+  overflow: visible; // allows achievement overlays outside the circle
+
+  // Fills the container and crops the image to the circular shape
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+  }
+
+  &--lg { width: 56px; height: 56px; font-size: 22px; }
+  &--xl { width: 88px; height: 88px; font-size: 32px; }
+}
+
+// Achievement badge overlay
+.vs-avatar__achievement {
+  position: absolute;
+  right: -7px;
+  bottom: -7px;
+  z-index: 1;
+  background: var(--vs-accent-gold);
+  border-radius: 999px;
+}
+```
+
+**Uso con imagen personalizada**:
+```html
+<vs-avatar [name]="user.username" [avatarUrl]="user.avatarUrl" />
+```
+
+Usa el componente compartido `shared/components/ui/avatar` en cualquier vista que reciba `avatarUrl`
+(topbar, perfil, ranking, lobby, amigos y admin). Si `avatarUrl` es `null` o la imagen falla,
+el componente muestra las iniciales del usuario sobre el fondo de gradiente.
+
+### Invite Toasts (pop-up de invitaciones)
+
+Pop-ups en esquina inferior-derecha para invitaciones a partida. Se apilan encima de los achievement toasts (`bottom: 108px`). Auto-desaparecen a los 8 segundos. Gestionados por `InviteToastService` y `<app-invite-toasts />` en `app.html`.
+
+```html
+<!-- montado globalmente en app.html -->
+<app-invite-toasts />
+```
+
+Botones en el toast y en el panel de notificaciones del topbar permiten Aceptar (navega al lobby) o Rechazar directamente, sin ir a /friends.
+
 ### Temporizador
 
 ```scss

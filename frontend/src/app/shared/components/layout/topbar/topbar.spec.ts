@@ -91,7 +91,7 @@ describe('TopbarComponent', () => {
         {
           provide: StatsService,
           useValue: {
-            mine: () => of(stats),
+            mine: () => of({ byMode: stats, favoriteMode: 'SURVIVAL', totalPlayTimeSeconds: 0 }),
           },
         },
         {

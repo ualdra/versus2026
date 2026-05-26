@@ -114,6 +114,53 @@
   border-color: var(--vs-border);
 }
 
+.vs-competitive-row {
+  border-bottom: 1px solid var(--vs-border);
+  display: grid;
+  gap: 14px;
+  padding-bottom: 14px;
+
+  &:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+}
+
+.vs-competitive-row__mode {
+  font-weight: 800;
+}
+
+.vs-competitive-row__meta {
+  color: var(--vs-text-muted);
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.vs-competitive-row__stats {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.vs-competitive-row__value {
+  color: var(--vs-text-primary);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.vs-competitive-row__label {
+  color: var(--vs-text-muted);
+  font-size: 10px;
+  margin-top: 3px;
+  text-transform: uppercase;
+}
+
+.vs-competitive-empty {
+  color: var(--vs-text-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
 .btn--xs {
   font-size: 11px;
   padding: 2px 10px;

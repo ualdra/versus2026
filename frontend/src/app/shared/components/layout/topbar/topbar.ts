@@ -4,10 +4,12 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { AchievementService } from '../../../../core/services/achievement.service';
 import { StatsService } from '../../../../core/services/stats.service';
 import { UserService } from '../../../../core/services/user.service';
+import { SocialService } from '../../../../core/services/social.service';
 import { Achievement } from '../../../../core/models/achievement.models';
 import { PlayerStats } from '../../../../core/models/game.models';
 import type { NotificationItem } from '../../../../core/models/notification.models';
 import { NotificationCenterService } from '../../../../core/services/notification-center.service';
+import { AvatarComponent } from '../../ui/avatar/avatar.component';
 
 
 export type NavKey = 'home' | 'play' | 'ranking' | 'friends' | 'profile' | 'settings' | 'admin' | 'users' | 'spiders' | 'reports';
@@ -16,7 +18,7 @@ export type TopbarUser = { name: string; xp: number; avatarUrl?: string | null }
 @Component({
   selector: 'app-topbar',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, AvatarComponent],
   templateUrl: './topbar.html',
 })
 export class TopbarComponent implements OnInit {
@@ -25,11 +27,13 @@ export class TopbarComponent implements OnInit {
   private readonly statsApi = inject(StatsService);
   private readonly achievementsApi = inject(AchievementService);
   private readonly notifications = inject(NotificationCenterService);
+  private readonly social = inject(SocialService);
   private readonly router = inject(Router);
   private readonly host = inject(ElementRef<HTMLElement>);
 
   readonly menuOpen = signal(false);
   readonly loggingOut = signal(false);
+  readonly inviteActioning = signal<Set<string>>(new Set());
 
   active = input<NavKey>('home');
   role = input<'player' | 'admin'>('player');
@@ -54,7 +58,7 @@ export class TopbarComponent implements OnInit {
   private routes: Record<NavKey, string | null> = {
     home: '/dashboard',
     play: '/play/select',
-    ranking: null,
+    ranking: '/rankings',
     friends: '/friends',
     profile: '/profile',
     settings: '/settings',
@@ -78,8 +82,6 @@ export class TopbarComponent implements OnInit {
       xp: this.calculateXp(this.stats()),
     };
   });
-
-  initials = computed(() => this.displayUser().name.slice(0, 2).toUpperCase());
 
   latestAchievement = computed(() => {
     const unlocked = this.achievements().filter((achievement) => achievement.unlocked);
@@ -152,6 +154,50 @@ export class TopbarComponent implements OnInit {
   selectNotification(notification: NotificationItem): void {
     this.notifications.markRead(notification.id);
     this.closeNotifications();
+  }
+
+  isInviteActioning(notificationId: string): boolean {
+    return this.inviteActioning().has(notificationId);
+  }
+
+  acceptInvite(notification: NotificationItem, event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!notification.inviteId || this.isInviteActioning(notification.id)) return;
+
+    this.inviteActioning.update((set) => new Set([...set, notification.id]));
+    this.social.acceptMatchInvite(notification.inviteId).subscribe({
+      next: (lobby) => {
+        this.notifications.remove(notification.id);
+        this.closeNotifications();
+        this.router.navigate(['/play/lobby', lobby.matchId]);
+      },
+      error: () => {
+        this.inviteActioning.update((set) => {
+          const next = new Set(set);
+          next.delete(notification.id);
+          return next;
+        });
+      },
+    });
+  }
+
+  declineInvite(notification: NotificationItem, event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!notification.inviteId || this.isInviteActioning(notification.id)) return;
+
+    this.inviteActioning.update((set) => new Set([...set, notification.id]));
+    this.social.declineMatchInvite(notification.inviteId).subscribe({
+      next: () => this.notifications.remove(notification.id),
+      error: () => {
+        this.inviteActioning.update((set) => {
+          const next = new Set(set);
+          next.delete(notification.id);
+          return next;
+        });
+      },
+    });
   }
 
   notificationIcon(notification: NotificationItem): string {

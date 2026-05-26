@@ -1,0 +1,21 @@
+[
+{"rank": 1, "club": "Real Madrid", "LL": 36, "CdR": 20, "CdL": 1, "SdE": 14, "total_nacionales": 71},
+{"rank": 2, "club": "Barcelona", "LL": 29, "CdR": 32, "CdL": 2, "SdE": 19, "total_nacionales": 82},
+{"rank": 3, "club": "Athletic Club", "LL": 8, "CdR": 24, "CdL": 0, "SdE": 4, "total_nacionales": 36},
+{"rank": 4, "club": "Atlético  Madrid", "LL": 11, "CdR": 10, "CdL": 0, "SdE": 4, "total_nacionales": 25},
+{"rank": 5, "club": "Valencia", "LL": 6, "CdR": 8, "CdL": 0, "SdE": 2, "total_nacionales": 16},
+{"rank": 6, "club": "Sevilla", "LL": 1, "CdR": 5, "CdL": 0, "SdE": 1, "total_nacionales": 7},
+{"rank": 7, "club": "Real Zaragoza", "LL": 0, "CdR": 6, "CdL": 0, "SdE": 1, "total_nacionales": 7},
+{"rank": 8, "club": "Real Sociedad", "LL": 2, "CdR": 4, "CdL": 0, "SdE": 1, "total_nacionales": 7},
+{"rank": 9, "club": "Deportivo La Coruña", "LL": 1, "CdR": 3, "CdL": 0, "SdE": 3, "total_nacionales": 7},
+{"rank": 10, "club": "Real Betis", "LL": 1, "CdR": 3, "CdL": 0, "SdE": 0, "total_nacionales": 4},
+{"rank": 11, "club": "Espanyol", "LL": 0, "CdR": 4, "CdL": 0, "SdE": 0, "total_nacionales": 4},
+{"rank": 12, "club": "Real Unión", "LL": 0, "CdR": 4, "CdL": 0, "SdE": 0, "total_nacionales": 4},
+{"rank": 13, "club": "Villarreal", "LL": 0, "CdR": 0, "CdL": 0, "SdE": 0, "total_nacionales": 0},
+{"rank": 14, "club": "Mallorca", "LL": 0, "CdR": 1, "CdL": 0, "SdE": 1, "total_nacionales": 2},
+{"rank": 15, "club": "Arenas", "LL": 0, "CdR": 1, "CdL": 0, "SdE": 0, "total_nacionales": 1},
+{"rank": 16, "club": "Levante", "LL": 0, "CdR": 1, "CdL": 0, "SdE": 0, "total_nacionales": 1},
+{"rank": 17, "club": "Real Valladolid", "LL": 0, "CdR": 0, "CdL": 1, "SdE": 0, "total_nacionales": 1},
+{"rank": 18, "club": "Málaga", "LL": 0, "CdR": 0, "CdL": 0, "SdE": 0, "total_nacionales": 0},
+{"rank": 19, "club": "Celta Vigo", "LL": 0, "CdR": 0, "CdL": 0, "SdE": 0, "total_nacionales": 0}
+]

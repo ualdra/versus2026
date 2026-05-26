@@ -1,7 +1,7 @@
 package com.versus.api.duel;
 
-import com.versus.api.achievements.dto.AchievementResponse;
 import com.versus.api.common.exception.ApiException;
+import com.versus.api.common.exception.ErrorCode;
 import com.versus.api.duel.dto.AnswerMessage;
 import com.versus.api.duel.dto.AnswerResultPayload;
 import com.versus.api.duel.dto.EffectAppliedPayload;
@@ -16,6 +16,7 @@ import com.versus.api.duel.dto.SabotageMessage;
 import com.versus.api.duel.dto.SabotageRejectedPayload;
 import com.versus.api.duel.engine.DuelEngine;
 import com.versus.api.duel.engine.RoundResolution;
+import com.versus.api.duel.persistence.DuelFinalizationResult;
 import com.versus.api.duel.persistence.DuelPersistenceService;
 import com.versus.api.duel.state.DuelMatchState;
 import com.versus.api.duel.state.DuelPhase;
@@ -32,6 +33,7 @@ import com.versus.api.questions.QuestionService;
 import com.versus.api.questions.domain.Question;
 import com.versus.api.questions.dto.QuestionBinaryResponse;
 import com.versus.api.questions.dto.QuestionOptionResponse;
+import com.versus.api.stats.dto.EloChangeResponse;
 import com.versus.api.websocket.MatchEventEnvelope;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -140,7 +142,18 @@ public class DuelOrchestrator {
                 return;
             }
 
-            Question question = questions.findRandomActiveQuestion(engine.questionType(), null);
+            Question question;
+            try {
+                question = questions.findRandomActiveQuestion(engine.questionType(), null);
+            } catch (ApiException ex) {
+                if (ex.getCode() == ErrorCode.NOT_FOUND) {
+                    log.warn("Match {} ending early: no active question of type {} available",
+                            matchId, engine.questionType());
+                    endMatchNoQuestion(duel);
+                    return;
+                }
+                throw ex;
+            }
             Instant now = Instant.now();
 
             DuelRoundState round = new DuelRoundState(n, question.getId(), now, computeDeadline(duel, now));
@@ -379,6 +392,10 @@ public class DuelOrchestrator {
         finalize(duel, MatchEndPayload.REASON_MAX_ROUNDS_TIE);
     }
 
+    private void endMatchNoQuestion(DuelMatchState duel) {
+        finalize(duel, MatchEndPayload.REASON_NO_QUESTION);
+    }
+
     private void endMatchDisconnect(DuelMatchState duel, UUID disconnectedUserId) {
         // Forzar al desconectado a 0 vidas para que el otro sea winner por reglas estándar.
         DuelPlayerRuntime rt = duel.getPlayers().get(disconnectedUserId);
@@ -413,24 +430,29 @@ public class DuelOrchestrator {
             });
         }
 
-        Map<UUID, List<AchievementResponse>> unlocked;
+        DuelFinalizationResult finalization;
         try {
-            unlocked = persistence.finalizeMatch(duel.getMatchId(), duel.getMode(), results,
+            finalization = persistence.finalizeMatch(duel.getMatchId(), duel.getMode(), results,
                     duel.getPlayers(), avgDeviationByUser);
         } catch (Exception e) {
             log.error("Failed to persist final match {}: {}", duel.getMatchId(), e.getMessage(), e);
-            unlocked = Map.of();
+            finalization = new DuelFinalizationResult(Map.of(), Map.of());
         }
+        Map<UUID, EloChangeResponse> eloChanges = finalization.eloChangesByUser();
 
         List<FinalStatsPayload> finalStats = new ArrayList<>();
         for (DuelPlayerRuntime rt : duel.getPlayers().values()) {
+            EloChangeResponse elo = eloChanges.get(rt.getUserId());
             finalStats.add(new FinalStatsPayload(
                     rt.getUserId(), rt.getUsername(),
                     results.get(rt.getUserId()),
                     rt.getLivesRemaining(), rt.getScore(),
                     rt.getBestStreakInMatch(), rt.getRoundsPlayed(),
                     avgDeviationByUser.get(rt.getUserId()),
-                    rt.getSabotagesUsed()));
+                    rt.getSabotagesUsed(),
+                    elo == null ? null : elo.delta(),
+                    elo == null ? null : elo.previousRating(),
+                    elo == null ? null : elo.currentRating()));
         }
         broadcast(duel.getMatchId(), "MATCH_END",
                 new MatchEndPayload(winnerId, reason, finalStats));

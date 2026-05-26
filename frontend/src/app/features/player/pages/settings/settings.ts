@@ -3,6 +3,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TopbarComponent } from '../../../../shared/components/layout/topbar/topbar';
+import { AvatarComponent } from '../../../../shared/components/ui/avatar/avatar.component';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserService } from '../../../../core/services/user.service';
 import { UserMe } from '../../../../core/models/auth.models';
@@ -23,7 +24,7 @@ const DEFAULT_AUDIO_FORM: AudioFormValue = {
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TopbarComponent],
+  imports: [CommonModule, ReactiveFormsModule, TopbarComponent, AvatarComponent],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
@@ -67,8 +68,6 @@ export class Settings implements OnInit {
     xp: 0,
     avatarUrl: this.me()?.avatarUrl ?? this.auth.user()?.avatarUrl,
   }));
-
-  readonly initials = computed(() => this.topbarUser().name.slice(0, 2).toUpperCase());
 
   readonly predefinedAvatars = [
     'https://api.dicebear.com/9.x/bottts-neutral/svg?seed=VersusRed&backgroundColor=e63946',

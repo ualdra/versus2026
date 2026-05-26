@@ -56,8 +56,9 @@ export class SocialService {
     return this.http.get<MatchInvite[]>(`${this.base}/match-invites/outgoing`);
   }
 
-  inviteFriend(friendUserId: string, mode: GameMode): Observable<MatchInvite> {
-    return this.http.post<MatchInvite>(`${this.base}/match-invites`, { friendUserId, mode });
+  inviteFriend(friendUserId: string, mode: GameMode, matchId?: string): Observable<MatchInvite> {
+    const body = matchId ? { friendUserId, mode, matchId } : { friendUserId, mode };
+    return this.http.post<MatchInvite>(`${this.base}/match-invites`, body);
   }
 
   acceptMatchInvite(id: string): Observable<LobbyState> {

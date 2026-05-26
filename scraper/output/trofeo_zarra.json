@@ -1,0 +1,22 @@
+[
+{"temporada": "2005-06", "jugador": "David Villa", "goles": 25, "partidos": 37, "promedio": 0.68},
+{"temporada": "2006-07", "jugador": "David Villa", "goles": 16, "partidos": 37, "promedio": 0.43},
+{"temporada": "2007-08", "jugador": "Dani Güiza (1)", "goles": 27, "partidos": 37, "promedio": 0.73},
+{"temporada": "2008-09", "jugador": "David Villa", "goles": 28, "partidos": 33, "promedio": 0.85},
+{"temporada": "2009-10", "jugador": "David Villa (4)", "goles": 21, "partidos": 32, "promedio": 0.66},
+{"temporada": "2010-11", "jugador": "Álvaro Negredo", "goles": 20, "partidos": 38, "promedio": 0.53},
+{"temporada": "2011-12", "jugador": "Fernando Llorente (1)", "goles": 17, "partidos": 32, "promedio": 0.53},
+{"temporada": "2012-13", "jugador": "Álvaro Negredo (2)", "goles": 25, "partidos": 36, "promedio": 0.69},
+{"temporada": "2013-14", "jugador": "Diego Costa (1)", "goles": 27, "partidos": 35, "promedio": 0.77},
+{"temporada": "2014-15", "jugador": "Aritz Aduriz", "goles": 18, "partidos": 31, "promedio": 0.58},
+{"temporada": "2015-16", "jugador": "Aritz Aduriz (2)", "goles": 20, "partidos": 34, "promedio": 0.59},
+{"temporada": "2016-17", "jugador": "Iago Aspas", "goles": 19, "partidos": 32, "promedio": 0.59},
+{"temporada": "2017-18", "jugador": "Iago Aspas", "goles": 22, "partidos": 34, "promedio": 0.65},
+{"temporada": "2018-19", "jugador": "Iago Aspas", "goles": 20, "partidos": 27, "promedio": 0.74},
+{"temporada": "2019-20", "jugador": "Gerard Moreno", "goles": 18, "partidos": 35, "promedio": 0.51},
+{"temporada": "2020-21", "jugador": "Gerard Moreno (2)", "goles": 23, "partidos": 33, "promedio": 0.70},
+{"temporada": "2021-22", "jugador": "Iago Aspas (4)", "goles": 17, "partidos": 37, "promedio": 0.46},
+{"temporada": "2022-23", "jugador": "Joselu (1)", "goles": 16, "partidos": 34, "promedio": 0.47},
+{"temporada": "2023-24", "jugador": "Borja Mayoral (1)", "goles": 15, "partidos": 27, "promedio": 0.56},
+{"temporada": "2024-25", "jugador": "Ayoze Pérez", "goles": 19, "partidos": 30, "promedio": 0.63}
+]

@@ -17,6 +17,8 @@ export interface NotificationItem {
   tone: NotificationTone;
   route?: string;
   sourceId?: string;
+  inviteId?: string;
+  matchId?: string;
 }
 
 export interface NotificationPrefs {

@@ -3,6 +3,7 @@ import { DecimalPipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { TopbarComponent } from '../../../../shared/components/layout/topbar/topbar';
 import { GameMode } from '../../../../core/models/match.models';
+import { EloChangeNoticeComponent } from '../../components/elo-change-notice/elo-change-notice';
 
 interface OpponentRecap {
   username: string;
@@ -25,14 +26,17 @@ export interface ResultState {
   livesRemaining?: number;
   avgDeviation?: number | null;
   opponent?: OpponentRecap;
-  reason?: 'NORMAL' | 'DISCONNECT' | 'MAX_ROUNDS_TIE';
+  reason?: 'NORMAL' | 'DISCONNECT' | 'MAX_ROUNDS_TIE' | 'NO_QUESTION';
   sabotagesUsed?: number;
+  eloDelta?: number | null;
+  previousRating?: number | null;
+  currentRating?: number | null;
 }
 
 @Component({
   selector: 'app-result',
   standalone: true,
-  imports: [RouterLink, TopbarComponent, DecimalPipe],
+  imports: [RouterLink, TopbarComponent, DecimalPipe, EloChangeNoticeComponent],
   templateUrl: './result.html',
   styleUrl: './result.scss',
 })
@@ -71,6 +75,7 @@ export class Result {
     const r = this.state()?.reason;
     if (r === 'DISCONNECT') return 'Tu rival se desconectó.';
     if (r === 'MAX_ROUNDS_TIE') return 'Se alcanzó el límite de rondas.';
+    if (r === 'NO_QUESTION') return 'La partida no pudo continuar: no hay preguntas disponibles para este modo.';
     return null;
   });
 

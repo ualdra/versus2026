@@ -13,5 +13,8 @@ public record FinalStatsPayload(
         int bestStreakInMatch,
         int roundsPlayed,
         Double avgDeviation,
-        int sabotagesUsed) {
+        int sabotagesUsed,
+        Integer eloDelta,
+        Integer previousRating,
+        Integer currentRating) {
 }

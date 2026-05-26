@@ -35,6 +35,15 @@ public class MatchPlayer {
     @Column(length = 16)
     private MatchResult result;
 
+    @Column(name = "current_card_a_id")
+    private java.util.UUID currentCardAId;
+
+    @Column(name = "current_card_b_id")
+    private java.util.UUID currentCardBId;
+
+    @Column(name = "current_round_token")
+    private java.util.UUID currentRoundToken;
+
     @PrePersist
     void prePersist() {
         if (score == null) score = 0;

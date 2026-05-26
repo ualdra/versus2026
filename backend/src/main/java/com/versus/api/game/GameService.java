@@ -2,6 +2,8 @@ package com.versus.api.game;
 
 import com.versus.api.achievements.AchievementService;
 import com.versus.api.achievements.dto.AchievementResponse;
+import com.versus.api.cards.CardService;
+import com.versus.api.cards.domain.Card;
 import com.versus.api.common.exception.ApiException;
 import com.versus.api.game.dto.PrecisionAnswerRequest;
 import com.versus.api.game.dto.PrecisionAnswerResponse;
@@ -20,10 +22,10 @@ import com.versus.api.match.repo.MatchAnswerRepository;
 import com.versus.api.match.repo.MatchPlayerRepository;
 import com.versus.api.match.repo.MatchRepository;
 import com.versus.api.match.repo.MatchRoundRepository;
-import com.versus.api.questions.QuestionService;
 import com.versus.api.questions.QuestionType;
-import com.versus.api.questions.domain.Question;
-import com.versus.api.questions.domain.QuestionOption;
+import com.versus.api.questions.dto.QuestionBinaryResponse;
+import com.versus.api.questions.dto.QuestionNumericResponse;
+import com.versus.api.questions.dto.QuestionOptionResponse;
 import com.versus.api.questions.dto.QuestionResponse;
 import com.versus.api.stats.StatsService;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,7 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -49,29 +52,50 @@ public class GameService {
     private final MatchPlayerRepository matchPlayers;
     private final MatchRoundRepository matchRounds;
     private final MatchAnswerRepository matchAnswers;
-    private final QuestionService questions;
+    private final CardService cards;
     private final StatsService statsService;
     private final AchievementService achievementService;
 
     @Transactional
     public StartGameResponse startSurvival(UUID userId) {
-        return start(userId, GameMode.SURVIVAL, SURVIVAL_INITIAL_LIVES, QuestionType.BINARY);
+        Match match = createMatch(userId, GameMode.SURVIVAL);
+        MatchPlayer player = createPlayer(match.getId(), userId, SURVIVAL_INITIAL_LIVES);
+
+        CardService.CardPair pair = cards.getRandomPairForSurvival();
+        UUID roundToken = UUID.randomUUID();
+        player.setCurrentCardAId(pair.a().getId());
+        player.setCurrentCardBId(pair.b().getId());
+        player.setCurrentRoundToken(roundToken);
+        matchPlayers.save(player);
+
+        return new StartGameResponse(match.getId(), buildBinaryResponse(roundToken, pair.a(), pair.b()));
     }
 
     @Transactional
     public SurvivalAnswerResponse answerSurvival(UUID userId, SurvivalAnswerRequest request) {
         Session session = loadSession(userId, request.sessionId(), GameMode.SURVIVAL);
-        Question question = questions.findActiveQuestion(request.questionId(), QuestionType.BINARY);
-        QuestionOption selected = question.getOptions().stream()
-                .filter(option -> option.getId().equals(request.optionId()))
-                .findFirst()
-                .orElseThrow(() -> ApiException.validation("Option does not belong to question"));
+        MatchPlayer player = session.player();
 
-        boolean correct = Boolean.TRUE.equals(selected.getIsCorrect());
+        if (!request.questionId().equals(player.getCurrentRoundToken())) {
+            throw ApiException.validation("Invalid question token (anti-replay)");
+        }
+
+        Card cardA = cards.getById(player.getCurrentCardAId());
+        Card cardB = cards.getById(player.getCurrentCardBId());
+
+        UUID optionId = request.optionId();
+        if (!optionId.equals(cardA.getId()) && !optionId.equals(cardB.getId())) {
+            throw ApiException.validation("Option does not belong to current question");
+        }
+
+        Card winner = cardA.isInverse()
+                ? (cardA.getValor().compareTo(cardB.getValor()) <= 0 ? cardA : cardB)
+                : (cardA.getValor().compareTo(cardB.getValor()) >= 0 ? cardA : cardB);
+
+        boolean correct = optionId.equals(winner.getId());
         int lifeDelta = correct ? 0 : -1;
         int scoreDelta = 0;
 
-        MatchPlayer player = session.player();
         player.setRoundsPlayed(player.getRoundsPlayed() + 1);
         if (correct) {
             player.setCurrentStreak(player.getCurrentStreak() + 1);
@@ -83,8 +107,13 @@ public class GameService {
             player.setLivesRemaining(Math.max(0, player.getLivesRemaining() + lifeDelta));
         }
 
-        MatchRound round = createRound(session.match(), question);
-        createAnswer(round, userId, selected.getId().toString(), null, lifeDelta, correct);
+        MatchRound round = createCardRound(session.match(), cardA.getId(), cardB.getId());
+        createAnswer(round, userId, optionId.toString(), null, lifeDelta, correct);
+
+        Map<String, Number> revealedValues = Map.of(
+                cardA.getId().toString(), cardA.getValor(),
+                cardB.getId().toString(), cardB.getValor()
+        );
 
         boolean gameOver = player.getLivesRemaining() == 0;
         QuestionResponse nextQuestion = null;
@@ -93,8 +122,16 @@ public class GameService {
             finishMatch(session.match(), player, player.getRoundsPlayed() >= 5 ? MatchResult.WIN : MatchResult.LOSS);
             statsService.recordFinishedGame(userId, GameMode.SURVIVAL, player, null);
             achievementsUnlocked = safeAchievements(achievementService.evaluateAfterGame(userId, GameMode.SURVIVAL, player, null));
+            player.setCurrentCardAId(null);
+            player.setCurrentCardBId(null);
+            player.setCurrentRoundToken(null);
         } else {
-            nextQuestion = questions.toResponse(questions.findRandomActiveQuestion(QuestionType.BINARY, null));
+            CardService.CardPair nextPair = cards.getRandomPairForSurvival();
+            UUID nextToken = UUID.randomUUID();
+            player.setCurrentCardAId(nextPair.a().getId());
+            player.setCurrentCardBId(nextPair.b().getId());
+            player.setCurrentRoundToken(nextToken);
+            nextQuestion = buildBinaryResponse(nextToken, nextPair.a(), nextPair.b());
         }
 
         matchPlayers.save(player);
@@ -106,26 +143,41 @@ public class GameService {
                 scoreDelta,
                 nextQuestion,
                 gameOver,
-                achievementsUnlocked);
+                achievementsUnlocked,
+                revealedValues);
     }
 
     @Transactional
     public StartGameResponse startPrecision(UUID userId) {
-        return start(userId, GameMode.PRECISION, PRECISION_INITIAL_LIVES, QuestionType.NUMERIC);
+        Match match = createMatch(userId, GameMode.PRECISION);
+        MatchPlayer player = createPlayer(match.getId(), userId, PRECISION_INITIAL_LIVES);
+
+        Card card = cards.getRandomCard();
+        UUID roundToken = UUID.randomUUID();
+        player.setCurrentCardAId(card.getId());
+        player.setCurrentCardBId(null);
+        player.setCurrentRoundToken(roundToken);
+        matchPlayers.save(player);
+
+        return new StartGameResponse(match.getId(), buildNumericResponse(roundToken, card));
     }
 
     @Transactional
     public PrecisionAnswerResponse answerPrecision(UUID userId, PrecisionAnswerRequest request) {
         Session session = loadSession(userId, request.sessionId(), GameMode.PRECISION);
-        Question question = questions.findActiveQuestion(request.questionId(), QuestionType.NUMERIC);
-        BigDecimal correctValue = question.getCorrectValue();
-        if (correctValue == null || BigDecimal.ZERO.compareTo(correctValue) == 0) {
-            throw ApiException.validation("Numeric question has invalid correct value");
+        MatchPlayer player = session.player();
+
+        if (!request.questionId().equals(player.getCurrentRoundToken())) {
+            throw ApiException.validation("Invalid question token (anti-replay)");
         }
 
-        BigDecimal tolerance = question.getTolerancePercent() == null
-                ? new BigDecimal("5")
-                : question.getTolerancePercent();
+        Card card = cards.getById(player.getCurrentCardAId());
+        BigDecimal correctValue = card.getValor();
+        if (correctValue == null || BigDecimal.ZERO.compareTo(correctValue) == 0) {
+            throw ApiException.validation("Card has invalid value (zero or null)");
+        }
+
+        BigDecimal tolerance = new BigDecimal("5");
 
         BigDecimal deviationPercent = request.value()
                 .subtract(correctValue)
@@ -147,7 +199,6 @@ public class GameService {
             correct = false;
         }
 
-        MatchPlayer player = session.player();
         player.setRoundsPlayed(player.getRoundsPlayed() + 1);
         player.setLivesRemaining(Math.max(0, player.getLivesRemaining() + lifeDelta));
         if (correct) {
@@ -157,7 +208,7 @@ public class GameService {
             player.setCurrentStreak(0);
         }
 
-        MatchRound round = createRound(session.match(), question);
+        MatchRound round = createCardRound(session.match(), card.getId(), null);
         createAnswer(round, userId, request.value().toPlainString(), deviationPercent.doubleValue(), lifeDelta, correct);
 
         boolean gameOver = player.getLivesRemaining() == 0;
@@ -168,12 +219,15 @@ public class GameService {
             Double avgDeviation = averageDeviation(session.match().getId(), userId);
             statsService.recordFinishedGame(userId, GameMode.PRECISION, player, avgDeviation);
             achievementsUnlocked = safeAchievements(achievementService.evaluateAfterGame(
-                    userId,
-                    GameMode.PRECISION,
-                    player,
-                    avgDeviation));
+                    userId, GameMode.PRECISION, player, avgDeviation));
+            player.setCurrentCardAId(null);
+            player.setCurrentRoundToken(null);
         } else {
-            nextQuestion = questions.toResponse(questions.findRandomActiveQuestion(QuestionType.NUMERIC, null));
+            Card nextCard = cards.getRandomCard();
+            UUID nextToken = UUID.randomUUID();
+            player.setCurrentCardAId(nextCard.getId());
+            player.setCurrentRoundToken(nextToken);
+            nextQuestion = buildNumericResponse(nextToken, nextCard);
         }
 
         matchPlayers.save(player);
@@ -189,24 +243,24 @@ public class GameService {
                 achievementsUnlocked);
     }
 
-    private StartGameResponse start(UUID userId, GameMode mode, int lives, QuestionType questionType) {
-        Match match = matches.save(Match.builder()
+    private Match createMatch(UUID userId, GameMode mode) {
+        return matches.save(Match.builder()
                 .mode(mode)
                 .status(MatchStatus.IN_PROGRESS)
                 .ownerUserId(userId)
                 .build());
+    }
+
+    private MatchPlayer createPlayer(UUID matchId, UUID userId, int lives) {
         MatchPlayer player = MatchPlayer.builder()
-                .id(new MatchPlayerId(match.getId(), userId))
+                .id(new MatchPlayerId(matchId, userId))
                 .livesRemaining(lives)
                 .score(0)
                 .currentStreak(0)
                 .bestStreakInMatch(0)
                 .roundsPlayed(0)
                 .build();
-        matchPlayers.save(player);
-
-        Question firstQuestion = questions.findRandomActiveQuestion(questionType, null);
-        return new StartGameResponse(match.getId(), questions.toResponse(firstQuestion));
+        return matchPlayers.save(player);
     }
 
     private Session loadSession(UUID userId, UUID sessionId, GameMode expectedMode) {
@@ -226,12 +280,13 @@ public class GameService {
         return new Session(match, player);
     }
 
-    private MatchRound createRound(Match match, Question question) {
+    private MatchRound createCardRound(Match match, UUID cardAId, UUID cardBId) {
         long existingRounds = matchRounds.countByMatchId(match.getId());
         return matchRounds.save(MatchRound.builder()
                 .matchId(match.getId())
-                .questionId(question.getId())
                 .roundNumber((int) existingRounds + 1)
+                .cardAId(cardAId)
+                .cardBId(cardBId)
                 .build());
     }
 
@@ -258,6 +313,24 @@ public class GameService {
         matches.save(match);
     }
 
+    private QuestionBinaryResponse buildBinaryResponse(UUID roundToken, Card a, Card b) {
+        String text = a.isInverse()
+                ? "¿Cuál tiene el valor MÁS BAJO?"
+                : "¿Cuál tiene el valor MÁS ALTO?";
+        String category = a.getCategoria() + " · " + a.getSubcategoria();
+        List<QuestionOptionResponse> options = List.of(
+                new QuestionOptionResponse(a.getId(), a.getNombre(), null, a.getUnidad()),
+                new QuestionOptionResponse(b.getId(), b.getNombre(), null, b.getUnidad())
+        );
+        return new QuestionBinaryResponse(roundToken, QuestionType.BINARY, text, category, options, a.getScrapedAt());
+    }
+
+    private QuestionNumericResponse buildNumericResponse(UUID roundToken, Card card) {
+        String text = "¿Cuál es el valor de " + card.getNombre() + "?";
+        String category = card.getCategoria() + " · " + card.getSubcategoria();
+        return new QuestionNumericResponse(roundToken, QuestionType.NUMERIC, text, category, card.getUnidad(), card.getScrapedAt());
+    }
+
     private Double averageDeviation(UUID matchId, UUID userId) {
         List<UUID> roundIds = matchRounds.findByMatchIdOrderByRoundNumber(matchId).stream()
                 .map(MatchRound::getId)
@@ -275,6 +348,5 @@ public class GameService {
         return unlocked == null ? List.of() : unlocked;
     }
 
-    private record Session(Match match, MatchPlayer player) {
-    }
+    private record Session(Match match, MatchPlayer player) {}
 }

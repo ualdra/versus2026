@@ -1,6 +1,7 @@
 package com.versus.api.match.state;
 
 import com.versus.api.match.GameMode;
+import com.versus.api.match.MatchAccessType;
 import com.versus.api.match.MatchStatus;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,8 @@ import java.util.UUID;
 public class LiveMatchState {
     private final UUID matchId;
     private final GameMode mode;
+    @Builder.Default
+    private final MatchAccessType accessType = MatchAccessType.PRIVATE_ROOM;
     private final String roomCode;
     private final Instant createdAt;
     @Builder.Default

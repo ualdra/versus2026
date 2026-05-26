@@ -191,8 +191,9 @@ Tabla: users
 2. **Cambio de password seguro**: `PUT /api/users/me/password` exige `currentPassword` y `newPassword` de minimo 8 caracteres.
 3. **Avatar predefinido**: `PUT /api/users/me/avatar` con JSON guarda una URL corta; el frontend pide confirmacion antes de persistir.
 4. **Avatar propio**: `PUT /api/users/me` conserva `avatarUrl` para compatibilidad, pero `PUT /api/users/me/avatar` delega en `media` y actualiza la URL tras subir la imagen.
-5. **Soft delete**: `DELETE /api/users/me` marca `status = DELETED`, `isActive = false`, anonimiza username/email/password/avatar y bloquea login/perfiles futuros.
-6. **Usuarios eliminados/inactivos**: `getMe`, `getPublic`, `updateMe`, password, avatar y delete tratan cuentas `DELETED` o inactivas como `NOT_FOUND`.
+5. **Render frontend**: las vistas que reciben `avatarUrl` deben usar `shared/components/ui/avatar`; si la URL falta o falla, se muestran iniciales.
+6. **Soft delete**: `DELETE /api/users/me` marca `status = DELETED`, `isActive = false`, anonimiza username/email/password/avatar y bloquea login/perfiles futuros.
+7. **Usuarios eliminados/inactivos**: `getMe`, `getPublic`, `updateMe`, password, avatar y delete tratan cuentas `DELETED` o inactivas como `NOT_FOUND`.
 
 ---
 

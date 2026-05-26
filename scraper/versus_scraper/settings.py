@@ -1,4 +1,4 @@
-# Scrapy settings for deerdays_scraper project
+# Scrapy settings for versus_scraper project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -45,13 +45,13 @@ ROBOTSTXT_OBEY = False
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    "deerdays_scraper.middlewares.DeerdaysScraperSpiderMiddleware": 543,
+#    "versus_scraper.middlewares.VersusSpiderMiddleware": 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    "deerdays_scraper.middlewares.DeerdaysScraperDownloaderMiddleware": 543,
+#    "versus_scraper.middlewares.VersusDownloaderMiddleware": 543,
 #}
 
 # Enable or disable extensions
@@ -62,18 +62,6 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {
-    "versus_scraper.pipelines.DeerdaysScraperPipeline": 300,
-}
-
-# PostgreSQL connection — override via environment variables in Docker
-import os  # noqa: E402
-
-DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_PORT = int(os.getenv("DB_PORT", "5432"))
-DB_NAME = os.getenv("DB_NAME", "versus")
-DB_USER = os.getenv("DB_USER", "versus")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "versus")
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

@@ -58,11 +58,14 @@ export interface FinalStatsPayload {
   roundsPlayed: number;
   avgDeviation: number | null;
   sabotagesUsed: number;
+  eloDelta?: number | null;
+  previousRating?: number | null;
+  currentRating?: number | null;
 }
 
 export interface MatchEndPayload {
   winnerUserId: string | null;
-  reason: 'NORMAL' | 'DISCONNECT' | 'MAX_ROUNDS_TIE';
+  reason: 'NORMAL' | 'DISCONNECT' | 'MAX_ROUNDS_TIE' | 'NO_QUESTION';
   stats: FinalStatsPayload[];
 }
 

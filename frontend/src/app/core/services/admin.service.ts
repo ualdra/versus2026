@@ -3,12 +3,34 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Role } from '../models/auth.models';
-import { AdminLog, AdminStats, AdminUser, AdminUserPage } from '../models/admin.models';
+import {
+  AdminLog,
+  AdminReport,
+  AdminSpider,
+  AdminStats,
+  AdminUser,
+  AdminUserPage,
+  PageResponse,
+} from '../models/admin.models';
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {
   private readonly http = inject(HttpClient);
   private readonly base = environment.apiBaseUrl;
+
+  // ── Stats ──────────────────────────────────────────────────────────────────
+
+  stats(): Observable<AdminStats> {
+    return this.http.get<AdminStats>(`${this.base}/admin/stats`);
+  }
+
+  logs(limit = 20): Observable<AdminLog[]> {
+    return this.http.get<AdminLog[]>(`${this.base}/admin/logs`, {
+      params: new HttpParams().set('limit', limit),
+    });
+  }
+
+  // ── Users ──────────────────────────────────────────────────────────────────
 
   listUsers(params: {
     page?: number;
@@ -34,13 +56,34 @@ export class AdminService {
     return this.http.put<AdminUser>(`${this.base}/admin/users/${id}/status`, { active });
   }
 
-  stats(): Observable<AdminStats> {
-    return this.http.get<AdminStats>(`${this.base}/admin/stats`);
+  // ── Spiders ────────────────────────────────────────────────────────────────
+
+  getSpiders(): Observable<AdminSpider[]> {
+    return this.http.get<AdminSpider[]>(`${this.base}/admin/spiders`);
   }
 
-  logs(limit = 20): Observable<AdminLog[]> {
-    return this.http.get<AdminLog[]>(`${this.base}/admin/logs`, {
-      params: new HttpParams().set('limit', limit),
-    });
+  triggerSpider(name: string): Observable<unknown> {
+    return this.http.post(`${this.base}/admin/spiders/${name}/run`, {});
+  }
+
+  // ── Reports ────────────────────────────────────────────────────────────────
+
+  getReports(status?: string, page = 0): Observable<PageResponse<AdminReport>> {
+    let params = new HttpParams().set('page', page).set('size', 20);
+    if (status) params = params.set('status', status);
+    return this.http.get<PageResponse<AdminReport>>(
+      `${this.base}/moderation/reports`,
+      { params },
+    );
+  }
+
+  resolveReport(
+    id: string,
+    action: 'DISMISS' | 'DELETE_QUESTION' | 'EDIT_QUESTION',
+  ): Observable<AdminReport> {
+    return this.http.put<AdminReport>(
+      `${this.base}/moderation/reports/${id}/resolve`,
+      { action },
+    );
   }
 }
