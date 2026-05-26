@@ -1,0 +1,129 @@
+<div class="vs-duel vs-sabotage"
+     [class.is-correct]="selfOutcome()?.isCorrect === true"
+     [class.is-wrong]="selfOutcome()?.isCorrect === false"
+     [class.has-time-bomb]="activeEffectAgainstSelf() === 'TIME_BOMB'">
+
+  <!-- HUD -->
+  <div class="vs-hud">
+    <div class="vs-hud__left">
+      <span class="vs-pill vs-pill--purple">
+        <span class="vs-pill__dot"></span>SABOTAJE
+      </span>
+      <div class="vs-mono vs-hud__round">Ronda {{ roundNumber() || '—' }} / 10</div>
+    </div>
+
+    <div class="vs-hud__center">
+      <div class="vs-timer-big" [class.is-low]="secondsLeft() <= 5">
+        {{ secondsLeft() }}<span class="vs-timer-big__unit">s</span>
+      </div>
+    </div>
+
+    <div class="vs-hud__right">
+      <div class="vs-streak-chip" [attr.data-active]="selfStreak() > 0">
+        <span class="vs-streak-chip__x">×</span>
+        <span class="vs-streak-chip__num vs-mono">{{ selfStreak() }}</span>
+        <span class="vs-streak-chip__label">RACHA</span>
+      </div>
+      <a routerLink="/play/select" class="btn btn--ghost btn--sm">ABANDONAR</a>
+    </div>
+  </div>
+
+  <!-- Versus bar -->
+  <div class="vs-versus-bar vs-versus-bar--sabotage">
+    <div class="vs-versus-bar__side vs-versus-bar__side--self">
+      <div class="vs-versus-bar__label">TÚ</div>
+      <div class="vs-lifebar">
+        @for (i of [0,1,2]; track i) {
+          <span class="vs-lifebar__heart" [class.vs-lifebar__heart--lost]="i >= selfLives()"></span>
+        }
+      </div>
+      @if (activeEffectAgainstSelf(); as eff) {
+        <app-effect-indicator [type]="eff" />
+      } @else {
+        <span class="vs-versus-bar__placeholder"></span>
+      }
+    </div>
+
+    <div class="vs-versus-bar__center">
+      <span class="vs-versus-bar__vs">VS</span>
+    </div>
+
+    <div class="vs-versus-bar__side vs-versus-bar__side--opp">
+      <div class="vs-versus-bar__label">RIVAL</div>
+      <div class="vs-lifebar vs-lifebar--right">
+        @for (i of [0,1,2]; track i) {
+          <span class="vs-lifebar__heart" [class.vs-lifebar__heart--lost]="i >= oppLives()"></span>
+        }
+      </div>
+      <span class="vs-versus-bar__placeholder"></span>
+    </div>
+  </div>
+
+  @if (errorMsg()) {
+    <div class="vs-error">{{ errorMsg() }}</div>
+  }
+  @if (notice(); as n) {
+    <div class="vs-notice">⚡ {{ n }}</div>
+  }
+
+  <!-- Arena: pregunta + panel sabotaje -->
+  <div class="vs-sabotage__arena">
+    <div class="vs-sabotage__center">
+      @if (currentQuestion(); as q) {
+        <div class="vs-duel-question">
+          <div class="vs-q-label">CATEGORÍA · {{ q.category | uppercase }}</div>
+          <h2 class="vs-q-text vs-display">{{ q.text }}</h2>
+        </div>
+        <div class="vs-binary-arena">
+          @for (opt of q.options; track opt.id) {
+            <button
+              type="button"
+              [class]="optionClass(opt.id)"
+              [disabled]="phase() !== 'idle'"
+              (click)="pick(opt.id)">
+              <span class="vs-bopt__text">{{ opt.text }}</span>
+            </button>
+          }
+        </div>
+      } @else {
+        <div class="vs-loading">Esperando primera pregunta…</div>
+      }
+    </div>
+
+    <app-sabotage-panel
+      [tokens]="selfTokens()"
+      [canActivate]="canActivateSabotage()"
+      (activate)="activateSabotage($event)" />
+  </div>
+
+  <!-- Feedback overlay al cerrar ronda -->
+  @if (phase() === 'between' && selfOutcome(); as so) {
+    <div class="vs-feedback-overlay"
+         [class.is-correct]="so.isCorrect === true"
+         [class.is-wrong]="so.isCorrect === false">
+      @if (so.isCorrect === true) {
+        <div class="vs-feedback-overlay__title">¡ACIERTO!</div>
+        <div class="vs-feedback-overlay__delta">+{{ selfStreak() * 50 }} pts</div>
+        <div class="vs-feedback-overlay__sub">
+          Racha × {{ selfStreak() }}
+          @if (selfStreak() > 0 && selfStreak() % 3 === 0) { · +1 ⚡ }
+        </div>
+      } @else if (so.isCorrect === false) {
+        <div class="vs-feedback-overlay__title vs-glitch">FALLO</div>
+        <div class="vs-feedback-overlay__delta">{{ so.lifeDelta }} vida{{ so.lifeDelta === -1 ? '' : 's' }}</div>
+        <div class="vs-feedback-overlay__sub">{{ so.answered ? 'Racha rota' : 'Sin respuesta' }}</div>
+      } @else {
+        <div class="vs-feedback-overlay__title">TIMEOUT</div>
+        <div class="vs-feedback-overlay__delta">{{ so.lifeDelta }} vida</div>
+        <div class="vs-feedback-overlay__sub">Sin respuesta</div>
+      }
+
+      @if (oppOutcome(); as oo) {
+        <div class="vs-feedback-overlay__sub">
+          Rival: <strong class="vs-mono">{{ oo.isCorrect === true ? '✓' : (oo.isCorrect === false ? '✗' : '—') }}</strong>
+          · vidas {{ oppLives() }}/3
+        </div>
+      }
+    </div>
+  }
+</div>

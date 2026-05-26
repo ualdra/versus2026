@@ -23,10 +23,116 @@
   padding: 28px;
 }
 
+.vs-profile__meta {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.vs-meta-chip {
+  font-size: 12px;
+  color: var(--vs-text-muted);
+  background: var(--vs-bg-elevated);
+  border: 1px solid var(--vs-border);
+  border-radius: var(--vs-radius-sm);
+  padding: 3px 10px;
+
+  strong {
+    color: var(--vs-text-primary);
+  }
+}
+
 .vs-profile__cols {
   display: flex;
   gap: 24px;
   align-items: flex-start;
+}
+
+.vs-profile__left {
+  flex: 0 0 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.vs-profile__right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.vs-filter-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.vs-chip {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: var(--vs-radius-sm);
+  border: 1px solid var(--vs-border);
+  background: transparent;
+  color: var(--vs-text-muted);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+
+  &:hover {
+    color: var(--vs-text-primary);
+    border-color: var(--vs-text-muted);
+  }
+
+  &--active {
+    border-color: var(--vs-accent-blue);
+    color: var(--vs-accent-blue);
+  }
+}
+
+.vs-result-badge {
+  font-size: 11px;
+  font-family: 'IBM Plex Mono', monospace;
+  padding: 2px 8px;
+  border-radius: var(--vs-radius-sm);
+  border: 1px solid transparent;
+}
+
+.vs-result--win {
+  color: var(--vs-accent-green);
+  border-color: var(--vs-accent-green);
+}
+
+.vs-result--loss {
+  color: var(--vs-accent-red);
+  border-color: var(--vs-accent-red);
+}
+
+.vs-result--draw {
+  color: var(--vs-text-muted);
+  border-color: var(--vs-border);
+}
+
+.btn--xs {
+  font-size: 11px;
+  padding: 2px 10px;
+}
+
+.vs-chart-card {
+  padding: 16px 16px 8px;
+}
+
+.vs-chart-canvas {
+  width: 100%;
+  height: 100px;
+  display: block;
+}
+
+.vs-chart-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
 }
 
 .vs-achievements-grid {
@@ -120,5 +226,14 @@
   .vs-profile__head {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .vs-profile__cols {
+    flex-direction: column;
+  }
+
+  .vs-profile__left {
+    flex: none;
+    width: 100%;
   }
 }

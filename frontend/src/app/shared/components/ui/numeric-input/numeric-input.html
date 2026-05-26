@@ -1,0 +1,31 @@
+<div class="vs-numeric-input" [class.is-sent]="wasSubmitted()">
+  @if (noiseHint !== null) {
+    <span class="vs-numeric-input__noise" title="Ofuscación activa">±{{ noiseHint }}%</span>
+  }
+  <input
+    type="text"
+    inputmode="decimal"
+    autocomplete="off"
+    class="vs-numeric-input__field"
+    [class.is-sent]="wasSubmitted()"
+    [disabled]="disabled"
+    [readonly]="wasSubmitted()"
+    [ngModel]="value()"
+    (ngModelChange)="value.set($event)"
+    (keydown.enter)="submit()"
+    [placeholder]="placeholder" />
+  @if (wasSubmitted()) {
+    <div class="btn btn--lg vs-numeric-input__sent" aria-live="polite">
+      <span class="vs-numeric-input__check">✓</span>
+      <span>ENVIADO</span>
+    </div>
+  } @else {
+    <button
+      type="button"
+      class="btn btn--primary btn--lg"
+      [disabled]="!canSubmit()"
+      (click)="submit()">
+      {{ submitLabel }}
+    </button>
+  }
+</div>

@@ -18,14 +18,14 @@ Un juego de preguntas multijugador con **5 modos de juego**. Las preguntas se ex
  
 ## 🗺️ Módulos del sistema
  
-El proyecto se divide en **9 módulos**. Cada issue pertenece a uno.
+El proyecto se divide en **10 módulos**. Cada issue pertenece a uno.
  
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                        VERSUS                           │
 │                                                         │
-│  [AUTH]  [USERS]  [QUESTIONS]  [GAME]  [MATCH]         │
-│  [STATS]  [ACHIEVEMENTS]  [SCRAPING]  [ADMIN]          │
+│  [AUTH]  [USERS]  [SOCIAL]  [QUESTIONS]  [GAME]        │
+│  [MATCH]  [STATS]  [ACHIEVEMENTS]  [SCRAPING] [ADMIN]  │
 └─────────────────────────────────────────────────────────┘
 ```
  
@@ -160,10 +160,78 @@ Respuesta: `204 No Content`. En frontend se exige doble confirmacion escribiendo
 - Password: requiere password actual y confirmacion visual en el formulario.
 - Avatar: galeria de avatares predefinidos con confirmacion `Aceptar/Cancelar`; upload PNG/JPEG con crop basico y boton de subida.
 - Notificaciones: preferencias de solicitudes de amistad, invitaciones y logros guardadas en `localStorage`.
+- Centro de notificaciones: desplegable en el topbar con contador de no leidas, historial local por usuario (`vs.notifications.<userId>`) y acciones de marcar leidas/vaciar.
 - Audio: controles `Efectos de sonido`, `Musica de fondo`, silenciar todo y feedback reducido guardados en `localStorage`.
 - Zona de peligro: borrar cuenta exige escribir el username.
 - Topbar: muestra username/avatar reales y XP calculado desde `/api/stats/me` mientras no exista campo `xp` dedicado.
  
+---
+
+## 🤝 Módulo SOCIAL — AMIGOS E INVITACIONES
+> Issue: #94
+
+Gestiona busqueda de jugadores, solicitudes de amistad e invitaciones a partidas PvP entre amigos.
+
+### Endpoints
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET` | `/api/social/users/search?query=ra` | Busca usuarios activos por username. Devuelve máximo 10 resultados. |
+| `GET` | `/api/social/friends` | Lista de amigos del usuario autenticado. |
+| `POST` | `/api/social/friend-requests` | Envía solicitud de amistad a `{ toUserId }`. |
+| `GET` | `/api/social/friend-requests/incoming` | Solicitudes recibidas pendientes. |
+| `GET` | `/api/social/friend-requests/outgoing` | Solicitudes enviadas pendientes. |
+| `POST` | `/api/social/friend-requests/{id}/accept` | Acepta una solicitud recibida. |
+| `POST` | `/api/social/friend-requests/{id}/decline` | Rechaza una solicitud recibida. |
+| `DELETE` | `/api/social/friend-requests/{id}` | Cancela una solicitud enviada. |
+| `POST` | `/api/social/match-invites` | Crea lobby PvP e invita a `{ friendUserId, mode }`. |
+| `GET` | `/api/social/match-invites/incoming` | Invitaciones recibidas pendientes. |
+| `GET` | `/api/social/match-invites/outgoing` | Invitaciones enviadas recientes. |
+| `POST` | `/api/social/match-invites/{id}/accept` | Acepta invitación y devuelve `LobbyStateDto`. |
+| `POST` | `/api/social/match-invites/{id}/decline` | Rechaza invitación recibida. |
+
+### Contratos principales
+
+```json
+POST /api/social/friend-requests
+{ "toUserId": "uuid" }
+```
+
+```json
+{
+  "id": "uuid",
+  "requester": { "userId": "uuid", "username": "Player1", "avatarUrl": null, "relation": "REQUEST_SENT" },
+  "addressee": { "userId": "uuid", "username": "Player2", "avatarUrl": null, "relation": "REQUEST_RECEIVED" },
+  "status": "PENDING",
+  "createdAt": "2026-05-25T18:00:00Z",
+  "respondedAt": null
+}
+```
+
+```json
+POST /api/social/match-invites
+{ "friendUserId": "uuid", "mode": "BINARY_DUEL" }
+```
+
+`mode` debe ser multijugador: `BINARY_DUEL`, `PRECISION_DUEL` o `SABOTAGE`.
+
+### Eventos WebSocket
+
+El cliente se suscribe a `/user/queue/social`.
+
+| Evento | Payload |
+|--------|---------|
+| `FRIEND_REQUEST` | `{ requestId, from: SocialUser }` |
+| `MATCH_INVITE` | `{ inviteId, matchId, mode, from: SocialUser }` |
+
+`SocialUser = { userId, username, avatarUrl, relation }`, con `relation` en `SELF | NONE | FRIEND | REQUEST_SENT | REQUEST_RECEIVED`.
+
+### Frontend
+
+- Ruta `/friends` bajo `authGuard`.
+- `SocialService` centraliza llamadas REST.
+- `NotificationCenterService` escucha `/user/queue/social`, respeta `friendRequests` y `matchInvites` en `vs.notificationPrefs`, y enlaza a `/friends`.
+
 ---
 
 ## ❓ Módulo 3 — QUESTIONS
@@ -180,12 +248,12 @@ Preguntas binarias y numéricas que alimentan los modos de juego.
  
 ### Endpoints
  
-| Método | Ruta | Descripción | Issues |
-|--------|------|-------------|--------|
-| `GET` | `/api/questions/random` | Pregunta aleatoria (opcionalmente por categoría o tipo) | #42 |
-| `GET` | `/api/questions/random?type=BINARY&category=football` | Filtros opcionales | #42, #43 |
-| `GET` | `/api/questions/:id` | Pregunta por ID | #41 |
-| `GET` | `/api/questions/categories` | Lista de categorías disponibles | #43 |
+| Método | Ruta | Auth | Descripción | Issues |
+|--------|------|------|-------------|--------|
+| `GET` | `/api/questions/random` | No (público) | Pregunta aleatoria (opcionalmente por categoría o tipo) | #42 |
+| `GET` | `/api/questions/random?type=BINARY&category=football` | No (público) | Filtros opcionales | #42, #43 |
+| `GET` | `/api/questions/:id` | Sí (JWT) | Pregunta por ID | #41 |
+| `GET` | `/api/questions/categories` | No (público) | Lista de categorías disponibles | #43 |
  
 ### Contrato de pregunta BINARY
  
@@ -320,14 +388,16 @@ Frontend conecta a:  ws://localhost:8080/ws  (STOMP sobre SockJS)
 Auth: header CONNECT  Authorization: Bearer <jwt>
  
 Suscripciones del cliente:
+  /user/queue/achievements   -> logros desbloqueados (ACHIEVEMENT_UNLOCKED)
   /user/queue/match          → notificaciones privadas (MATCH_FOUND)
+  /user/queue/social         → solicitudes de amistad e invitaciones (FRIEND_REQUEST, MATCH_INVITE)
   /topic/match/{matchId}     → estado compartido del lobby/partida
  
 Envíos del cliente:
   /app/match/ready           → marcar listo en el lobby       (PR #90)
   /app/match/unready         → quitar listo                    (PR #90)
   /app/match/abandon         → abandonar la sala vía WS        (PR #90)
-  /app/match/answer          → enviar respuesta a una ronda    (PR #91+)
+  /app/match/answer          → enviar respuesta a una ronda    (PR #91 #92 #93)
   /app/match/sabotage        → activar sabotaje                (PR #93)
 ```
 
@@ -345,13 +415,25 @@ Detalles de la capa de transport (envelope, autenticación, reconexión) en [`do
 7. Tras el countdown                    → emite MATCH_START { matchId, mode }
 8. (PR #91+) lógica de juego: QUESTION / ROUND_RESULT / MATCH_END
 ```
+
+### Flujo de partida privada con código (issue #105)
+
+```
+1. Host: POST /api/matches {mode}              → crea sala y recibe {matchId, roomCode}
+2. Host comparte roomCode                      → código de 6 chars, generado server-side
+3. Invitado: POST /api/matches/join-by-code    → body {roomCode}
+4. Backend normaliza abc-234 → ABC234          → valida formato y estado WAITING
+5. Invitado recibe LobbyStateDto               → frontend redirige a /play/lobby/:matchId
+6. Ambos usan el mismo flujo de ready/countdown que matchmaking
+```
  
-### Endpoints REST de sala (PR #90)
+### Endpoints REST de sala (PR #90, #105)
  
 | Método | Ruta | Descripción | Issues |
 |--------|------|-------------|--------|
 | `POST` | `/api/matches` | Crear sala privada (devuelve `roomCode`) | #90 |
 | `POST` | `/api/matches/{id}/join` | Unirse a sala existente | #90 |
+| `POST` | `/api/matches/join-by-code` | Unirse a sala privada con `{ roomCode }` | #105 |
 | `DELETE` | `/api/matches/{id}/abandon` | Abandonar la sala | #90 |
 | `GET` | `/api/matches/{id}/lobby` | Snapshot del estado del lobby | #90 |
 | `POST` | `/api/matchmaking/queue` | Entrar en cola de matchmaking | #90 |
@@ -369,27 +451,41 @@ Todos los eventos van envueltos en `{ type, matchId, payload }`.
 | `PLAYER_READY` | #90 | `/topic/match/{id}` | `{ userId, ready }` |
 | `MATCH_STARTING` | #90 | `/topic/match/{id}` | `{ countdownSeconds }` |
 | `MATCH_START` | #90 | `/topic/match/{id}` | `{ matchId, mode }` |
-| `QUESTION` | #91+ | `/topic/match/{id}` | `{ question, timeLimit, roundNumber }` |
-| `ROUND_RESULT` | #91+ | `/topic/match/{id}` | `{ player1Lives, player2Lives, correct, deltas }` |
-| `MATCH_END` | #91+ | `/topic/match/{id}` | `{ winnerId, stats }` |
-| `SABOTAGE_ACTIVATED` | #93 | `/topic/match/{id}` | `{ byUserId, type }` |
+| `QUESTION` | #91-#93 | `/topic/match/{id}` | `{ roundNumber, question, serverNow, deadline, timerSeconds, effectsApplied }` |
+| `ANSWER_RESULT` | #91-#93 | `/user/queue/match` | `{ accepted, rejectionReason?, isCorrect?, deviation? }` |
+| `ROUND_RESULT` | #91-#93 | `/topic/match/{id}` | `{ roundNumber, questionId, reveal, outcomes[], runtime }` |
+| `MATCH_END` | #91-#93 | `/topic/match/{id}` | `{ winnerUserId?, reason, stats[] }` (`reason: NORMAL\|DISCONNECT\|MAX_ROUNDS_TIE`) |
+| `SABOTAGE_ACTIVATED` | #93 | `/topic/match/{id}` | `{ type, by, target, appliesOnRound }` |
+| `SABOTAGE_REJECTED` | #93 | `/user/queue/match` | `{ reason: NO_TOKENS\|ALREADY_USED\|INVALID_TARGET\|WRONG_PHASE\|UNSUPPORTED_MODE }` |
+| `EFFECT_APPLIED` | #93 | `/topic/match/{id}` | `{ type, target, roundNumber }` |
 
 `PlayerInLobby = { userId, username, avatarUrl, ready }`.
- 
-### Lógica de daño por modo
- 
-| Modo | Quién pierde vida | Cuándo |
-|------|-------------------|--------|
-| Duelo binario | El que falla | Al responder |
-| Duelo de precisión | El que se desvía más | Al responder ambos |
-| Sabotaje | El rival | Cuando el otro acierta mejor |
- 
-> El algoritmo de daño al rival (Sabotaje) se implementa en #74.
+`PlayerRoundOutcome = { userId, answered, isCorrect, deviation, valueGiven, optionGiven, lifeDelta }`.
+`PlayerRuntimeSnapshot = { userId, livesRemaining, score, currentStreak, sabotageTokens, pendingIncomingEffects: SabotageType[] }`.
+`FinalStats = { userId, username, result: WIN|LOSS|DRAW|ABANDONED, livesRemaining, score, bestStreakInMatch, roundsPlayed, avgDeviation, sabotagesUsed }`.
+
+### Mensajes que envía el cliente
+
+| Destination | Payload | Modos |
+|---|---|---|
+| `/app/match/ready` · `/unready` · `/abandon` | `{ matchId }` | Todos (lobby) |
+| `/app/match/answer` | `{ matchId, questionId, optionId? (UUID), value? (BigDecimal) }` | #91 #92 #93 |
+| `/app/match/sabotage` | `{ matchId, type, targetUserId }` | #93 |
+
+### Lógica de daño por modo (Sprint 4 — implementación final)
+
+| Modo | Quién pierde vida | Detalles |
+|------|-------------------|----------|
+| **Binary Duel (#91)** | Quien falla | `-1` vida base. Bonus de racha: si el rival acertó con `streak >= 1` previo, **`-1` adicional**. Sin respuesta = `-1`. |
+| **Precision Duel (#92)** | Quien tiene mayor desviación | `-max(1, ceil(|devLoser − devWinner| × 0.02))`. Empate de desviaciones = 0 daño + racha. Timeout = **-3** vidas. |
+| **Sabotaje (#93)** | Mecánica binaria + efectos | +1 token cada 3 aciertos. Tres efectos: `TIME_BOMB` (-5s al timer del rival), `OBFUSCATION` (oculta opción), `LIFE_STEAL` (si target falla, atacante recupera +1 vida). |
+
+Defaults: **3 vidas iniciales, 15s/pregunta (10s con TIME_BOMB), 10 rondas máximas**. Detalle completo en [`docs/backend/modules/duel.md`](backend/modules/duel.md).
  
 ---
  
 ## 📊 Módulo 6 — STATS & RANKING
-> Issues: #54, #76, #77, #78, #79
+> Issues: #54, #76, #77, #78, #79, #96
  
 Historial de partidas, estadísticas personales y ranking global.
  
@@ -397,13 +493,42 @@ Historial de partidas, estadísticas personales y ranking global.
  
 | Método | Ruta | Descripción | Issues |
 |--------|------|-------------|--------|
-| `GET` | `/api/stats/me` | Estadísticas del usuario autenticado | #77 |
-| `GET` | `/api/stats/me?mode=SURVIVAL` | Filtradas por modo | #77 |
-| `GET` | `/api/stats/me/history` | Historial de partidas | #76 |
+| `GET` | `/api/stats/me` | Resumen de stats en todos los modos (overview) | #77, #96 |
+| `GET` | `/api/stats/me?mode=SURVIVAL` | Stats filtradas por modo | #77 |
+| `GET` | `/api/users/me/history` | Historial paginado de partidas | #76, #96 |
+| `GET` | `/api/users/me/history?mode=BINARY_DUEL` | Historial filtrado por modo | #96 |
+| `GET` | `/api/matches/{id}` | Detalle completo de una partida | #96 |
 | `GET` | `/api/ranking/:mode` | Top 100 de un modo | #78 |
 | `GET` | `/api/ranking/:mode/me` | Posición propia en el ranking | #78 |
  
-### Contrato de stats
+### Contrato de stats — overview (sin parámetro mode)
+ 
+```json
+GET /api/stats/me
+→ 200
+{
+  "byMode": [
+    {
+      "mode": "SURVIVAL",
+      "gamesPlayed": 42,
+      "gamesWon": 28,
+      "winRate": 66.6,
+      "bestStreak": 12,
+      "currentStreak": 3,
+      "avgDeviation": null,
+      "avgScore": 310
+    }
+  ],
+  "favoriteMode": "SURVIVAL",
+  "totalPlayTimeSeconds": 18450
+}
+```
+ 
+> `byMode` contiene una entrada por cada modo (SURVIVAL, PRECISION, BINARY_DUEL, PRECISION_DUEL, SABOTAGE).  
+> `favoriteMode` es el modo con más `gamesPlayed`, o `null` si el usuario nunca ha jugado.  
+> `totalPlayTimeSeconds` es la suma de segundos de todas las partidas FINISHED del usuario.
+ 
+### Contrato de stats — por modo
  
 ```json
 GET /api/stats/me?mode=SURVIVAL
@@ -415,11 +540,86 @@ GET /api/stats/me?mode=SURVIVAL
   "winRate": 66.6,
   "bestStreak": 12,
   "currentStreak": 3,
-  "avgDeviation": null
+  "avgDeviation": null,
+  "avgScore": 310
 }
 ```
  
-> `avgDeviation` solo aplica a modos numéricos (PRECISION, PRECISION_DUEL).
+> `avgDeviation` solo aplica a modos numéricos (PRECISION, PRECISION_DUEL).  
+> `avgScore` es el promedio de puntuación a lo largo de todas las partidas del modo; `null` si nunca se ha jugado.
+ 
+### Contrato de historial de partidas
+ 
+```json
+GET /api/users/me/history?page=0&size=20&mode=BINARY_DUEL
+→ 200
+{
+  "content": [
+    {
+      "id": "bbbb0000-0000-0000-0000-000000000002",
+      "mode": "BINARY_DUEL",
+      "result": "WIN",
+      "score": 480,
+      "bestStreak": 5,
+      "livesRemaining": 2,
+      "roundsPlayed": 10,
+      "finishedAt": "2025-05-07T14:22:00Z",
+      "opponent": {
+        "id": "cccc0000-0000-0000-0000-000000000003",
+        "username": "Rival",
+        "avatarUrl": "https://..."
+      }
+    }
+  ],
+  "totalElements": 1,
+  "totalPages": 1,
+  "size": 20,
+  "number": 0
+}
+```
+ 
+> `opponent` es `null` en modos solitarios (SURVIVAL, PRECISION).  
+> El tamaño máximo de página es 50; valores superiores se clampean automáticamente.  
+> `mode` es un query param opcional; si se omite se devuelven partidas de todos los modos.
+ 
+### Contrato de detalle de partida
+ 
+```json
+GET /api/matches/{id}
+→ 200
+{
+  "id": "bbbb0000-0000-0000-0000-000000000002",
+  "mode": "PRECISION_DUEL",
+  "createdAt": "2025-05-07T14:10:00Z",
+  "finishedAt": "2025-05-07T14:22:00Z",
+  "players": [
+    {
+      "userId": "aaaa0000-0000-0000-0000-000000000001",
+      "username": "Player1",
+      "score": 480,
+      "livesRemaining": 2,
+      "bestStreakInMatch": 5,
+      "result": "WIN"
+    }
+  ],
+  "rounds": [
+    {
+      "roundNumber": 1,
+      "questionId": "dddd0000-0000-0000-0000-000000000004",
+      "questionText": "¿Cuántos seguidores tiene...?",
+      "correct": true,
+      "answerGiven": "4200000",
+      "deviation": 1.8
+    }
+  ]
+}
+
+→ 404  si la partida no existe
+→ 403  si el usuario autenticado no es jugador de esa partida
+```
+ 
+> `deviation` es `null` para modos no numéricos (BINARY_DUEL, SABOTAGE).  
+> `rounds` está ordenado por `roundNumber` ascendente y solo contiene las respuestas del usuario autenticado.
  
 ---
 
@@ -460,6 +660,7 @@ Si un logro esta bloqueado, el backend devuelve `name: "???"`, `description: "??
 ### Frontend
 
 - Toast global no bloqueante al desbloquear un logro.
+- Centro de notificaciones: registra logros desbloqueados en tiempo real, respeta `vs.notificationPrefs.achievements` y enlaza a `/profile`.
 - Perfil: seccion `Logros` con contador `desbloqueados/total`, grid de catalogo y fecha si esta desbloqueado.
 - Topbar/avatar: muestra como emblema el logro desbloqueado mas reciente.
  
@@ -555,12 +756,211 @@ Cuando una pregunta acumula **5 reportes PENDING**, su estado cambia automática
  
 ### Endpoints de administración
  
+Todos requieren rol `ADMIN`. Protegidos con `@PreAuthorize("hasRole('ADMIN')")` y matcher de ruta.
+ 
 | Método | Ruta | Descripción | Issues |
 |--------|------|-------------|--------|
-| `GET` | `/api/admin/users` | Lista de usuarios | #82 |
-| `PUT` | `/api/admin/users/:id/role` | Cambiar rol de usuario | #82 |
-| `DELETE` | `/api/admin/users/:id` | Eliminar usuario | #82 |
-| `PUT` | `/api/admin/questions/:id/status` | Activar/desactivar pregunta | #82 |
+| `GET` | `/api/admin/users?page=0&size=20&search=&role=&active=` | Lista paginada con filtros opcionales | #82 |
+| `PUT` | `/api/admin/users/{id}/role` | Cambiar rol. No permite self-demotion. | #82 |
+| `PUT` | `/api/admin/users/{id}/status` | Activar/suspender cuenta. No permite self-suspend. | #82 |
+| `GET` | `/api/admin/stats` | KPIs de la plataforma | #82 |
+| `GET` | `/api/admin/logs?limit=20` | Últimas N entradas de actividad del sistema (max 100) | #82 |
+ 
+### Contrato GET /api/admin/users
+ 
+```json
+GET /api/admin/users?page=0&size=20&search=alice&role=PLAYER&active=true
+Authorization: Bearer <admin-token>
+
+→ 200
+{
+  "items": [
+    {
+      "id": "bbbb0000-0000-0000-0000-000000000002",
+      "username": "alice",
+      "email": "alice@versus.com",
+      "role": "PLAYER",
+      "isActive": true,
+      "createdAt": "2025-03-15T10:00:00Z"
+    }
+  ],
+  "page": 0,
+  "size": 20,
+  "totalElements": 1,
+  "totalPages": 1
+}
+```
+ 
+> Todos los query params son opcionales. `search` hace coincidencia parcial case-insensitive sobre username y email.  
+> `role` debe ser uno de `PLAYER`, `MODERATOR`, `ADMIN`. Resultados ordenados por `createdAt` descendente.  
+> Errores: `401` token inválido · `403` usuario no es ADMIN.
+ 
+### Contrato PUT /api/admin/users/{id}/role
+ 
+```json
+PUT /api/admin/users/bbbb0000-0000-0000-0000-000000000002/role
+Authorization: Bearer <admin-token>
+Content-Type: application/json
+
+{ "role": "MODERATOR" }
+
+→ 200
+{
+  "id": "bbbb0000-0000-0000-0000-000000000002",
+  "username": "alice",
+  "email": "alice@versus.com",
+  "role": "MODERATOR",
+  "isActive": true,
+  "createdAt": "2025-03-15T10:00:00Z"
+}
+```
+ 
+> Errores: `400 VALIDATION_ERROR` si el target es el propio admin autenticado (no permite self-demotion) o si `role` es nulo/inválido · `404 NOT_FOUND` si el usuario no existe · `401` · `403`.
+ 
+### Contrato PUT /api/admin/users/{id}/status
+ 
+```json
+PUT /api/admin/users/bbbb0000-0000-0000-0000-000000000002/status
+Authorization: Bearer <admin-token>
+Content-Type: application/json
+
+{ "active": false }
+
+→ 200
+{
+  "id": "bbbb0000-0000-0000-0000-000000000002",
+  "username": "alice",
+  "email": "alice@versus.com",
+  "role": "PLAYER",
+  "isActive": false,
+  "createdAt": "2025-03-15T10:00:00Z"
+}
+```
+ 
+> Enviar `active: true` reactiva una cuenta suspendida. El backend rechaza `active: null` con `400`.  
+> Errores: `400 VALIDATION_ERROR` si el target es el propio admin autenticado (no permite self-suspend) · `404 NOT_FOUND` · `401` · `403`.
+ 
+### Contrato GET /api/admin/stats
+ 
+```json
+GET /api/admin/stats
+Authorization: Bearer <admin-token>
+
+→ 200
+{
+  "totalUsers": 342,
+  "activeUsers": 289,
+  "matchesToday": 17,
+  "totalQuestions": 1240,
+  "activeSpiders": 1,
+  "pendingReports": 5
+}
+```
+ 
+> Todos los valores son `long`. `matchesToday` cuenta partidas cuyo `createdAt` es posterior al inicio del día UTC actual.  
+> `activeSpiders` cuenta spiders con estado `RUNNING`. `pendingReports` cuenta reportes con estado `PENDING`.  
+> Errores: `401` · `403`.
+ 
+### Contrato GET /api/admin/logs
+ 
+```json
+GET /api/admin/logs?limit=20
+Authorization: Bearer <admin-token>
+
+→ 200
+[
+  {
+    "ts": "2025-04-18T14:32:00Z",
+    "level": "ERR",
+    "message": "Spider run finished with 4 errors, 10 questions inserted"
+  },
+  {
+    "ts": "2025-04-18T13:10:00Z",
+    "level": "INFO",
+    "message": "New user registered: player99"
+  },
+  {
+    "ts": "2025-04-18T12:55:00Z",
+    "level": "INFO",
+    "message": "Question report submitted: texto incorrecto"
+  }
+]
+```
+ 
+> `limit` por defecto es 20; el máximo aceptado es 100 (valores superiores se clampean).  
+> Resultados ordenados por `ts` descendente (más reciente primero).
+ 
+| `level` | Condición |
+|---------|-----------|
+| `INFO`  | Spider run sin errores, registro de usuario, reporte de pregunta |
+| `WARN`  | Spider run con 1 o 2 errores |
+| `ERR`   | Spider run con 3 o más errores |
+ 
+> Fuentes agregadas: ejecuciones de spiders (`startedAt`), registros de usuarios (`createdAt`), reportes de preguntas (`createdAt`).  
+> Errores: `401` · `403`.
+ 
+---
+ 
+## 🎓 Módulo 9 — PRÁCTICA (Modo libre)
+ 
+Modo sin presión para explorar el banco de preguntas y aprender sin consecuencias. No crea partida ni actualiza stats.
+ 
+### Características
+ 
+- Sin sesión de partida — sin `sessionId`
+- La respuesta correcta siempre se revela tras contestar
+- Muestra `explanation` si la pregunta la tiene
+- Contadores de sesión en cliente (racha, precisión media), sin persistir
+- Accesible sin autenticación a nivel de API (el frontend lo mantiene bajo `authGuard`)
+ 
+### Endpoints
+ 
+| Método | Ruta | Auth | Descripción |
+|--------|------|------|-------------|
+| `POST` | `/api/practice/answer` | No (público) | Evalúa respuesta y devuelve la correcta + explicación |
+ 
+**Request BINARY:**
+```json
+{
+  "questionId": "uuid-pregunta",
+  "optionId": "uuid-opcion-elegida"
+}
+```
+ 
+**Request NUMERIC:**
+```json
+{
+  "questionId": "uuid-pregunta",
+  "value": 650000000
+}
+```
+ 
+**Response:**
+```json
+{
+  "correct": true,
+  "correctOptionId": "uuid-opcion-correcta",
+  "correctValue": null,
+  "deviationPercent": null,
+  "unit": null,
+  "explanation": "Texto explicativo (null si no existe)"
+}
+```
+ 
+> Los campos `null` se omiten en el JSON. Para BINARY solo aparecen `correct`, `correctOptionId` y `explanation`. Para NUMERIC aparecen `correct`, `correctValue`, `deviationPercent`, `unit` y `explanation`.
+ 
+### Ruta frontend
+ 
+`/play/practice` — bajo `authGuard`. El selector de modos incluye una carta "PRÁCTICA" con color `--vs-accent-green`.  
+Usa `QuestionService.random(type?, category?)` y `QuestionService.categories()` existentes.
+ 
+### Fórmula de evaluación NUMERIC
+ 
+Idéntica a Modo Precisión:
+```
+deviationPercent = |value - correctValue| / |correctValue| * 100
+correct          = deviationPercent ≤ tolerancePercent (default 5%)
+```
  
 ---
  

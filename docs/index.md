@@ -79,14 +79,17 @@
 | Sprint | Contenido | Estado |
 |---|---|---|
 | 1-2 | Auth, usuarios, preguntas, juego singleplayer, stats | ✅ |
-| 3 | WebSockets, matchmaking, modos PvP | 🚧 |
-| 4 | Historial, ranking, moderación, admin, scraping | 🚧 |
+| 3 | WebSockets, lobby, matchmaking | ✅ |
+| 4 | Modos PvP (Binary Duel, Precision Duel, Sabotaje), historial, ranking, moderación, admin, scraping | 🚧 |
 
 ## Funcionalidades recientes
 
+- `/friends`: busqueda de jugadores, solicitudes de amistad, lista de amigos e invitaciones a partidas PvP.
+- Social realtime: eventos privados `FRIEND_REQUEST` y `MATCH_INVITE` en `/user/queue/social`, integrados en el centro de notificaciones.
 - `/settings`: pagina centralizada para editar username, password, avatar, notificaciones, audio y eliminar cuenta.
 - Avatar: galeria predefinida con confirmacion, upload PNG/JPEG con crop basico y limite de 2MB.
 - Topbar: muestra username/avatar reales y XP derivado de `player_stats` hasta tener un campo `xp` dedicado.
+- Centro de notificaciones: campana en topbar con eventos en tiempo real de logros y matchmaking, historial local por usuario y contador de no leidas.
 - Cuenta: soft delete con `status=DELETED`, `is_active=false` y anonimizacion de datos.
 - Logros: catalogo inicial, desbloqueo al terminar partida, toast global, grid en perfil y emblema reciente en el avatar.
 

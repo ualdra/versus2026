@@ -17,6 +17,22 @@ export const routes: Routes = [
     path: 'register',
     loadComponent: () => import('./features/auth/pages/register/register').then(m => m.Register),
   },
+  {
+    path: 'check-email',
+    loadComponent: () => import('./features/auth/pages/check-email/check-email').then(m => m.CheckEmail),
+  },
+  {
+    path: 'verify-email',
+    loadComponent: () => import('./features/auth/pages/verify-email/verify-email').then(m => m.VerifyEmail),
+  },
+  {
+    path: 'forgot-password',
+    loadComponent: () => import('./features/auth/pages/forgot-password/forgot-password').then(m => m.ForgotPassword),
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () => import('./features/auth/pages/reset-password/reset-password').then(m => m.ResetPassword),
+  },
 
   // ─── Jugador ──────────────────────────────────────────────────────────────
   {
@@ -33,6 +49,11 @@ export const routes: Routes = [
     path: 'settings',
     canActivate: [authGuard],
     loadComponent: () => import('./features/player/pages/settings/settings').then(m => m.Settings),
+  },
+  {
+    path: 'friends',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/player/pages/friends/friends').then(m => m.Friends),
   },
   {
     path: 'play',
@@ -59,8 +80,24 @@ export const routes: Routes = [
         loadComponent: () => import('./features/precision/pages/precision/precision').then(m => m.Precision),
       },
       {
+        path: 'binary-duel/:matchId',
+        loadComponent: () => import('./features/binary-duel/pages/binary-duel/binary-duel').then(m => m.BinaryDuel),
+      },
+      {
+        path: 'precision-duel/:matchId',
+        loadComponent: () => import('./features/precision-duel/pages/precision-duel/precision-duel').then(m => m.PrecisionDuel),
+      },
+      {
+        path: 'sabotage/:matchId',
+        loadComponent: () => import('./features/sabotage/pages/sabotage/sabotage').then(m => m.Sabotage),
+      },
+      {
         path: 'result',
         loadComponent: () => import('./features/player/pages/result/result').then(m => m.Result),
+      },
+      {
+        path: 'practice',
+        loadComponent: () => import('./features/practice/pages/practice/practice').then(m => m.Practice),
       },
       { path: '', redirectTo: 'select', pathMatch: 'full' },
     ],

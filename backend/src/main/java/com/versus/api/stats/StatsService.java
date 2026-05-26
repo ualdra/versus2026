@@ -3,7 +3,9 @@ package com.versus.api.stats;
 import com.versus.api.match.GameMode;
 import com.versus.api.match.MatchResult;
 import com.versus.api.match.domain.MatchPlayer;
+import com.versus.api.match.repo.MatchRepository;
 import com.versus.api.stats.domain.PlayerStats;
+import com.versus.api.stats.dto.PlayerStatsOverviewResponse;
 import com.versus.api.stats.dto.PlayerStatsResponse;
 import com.versus.api.stats.repo.PlayerStatsRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,12 +24,23 @@ public class StatsService {
     private static final int SURVIVAL_WIN_ROUNDS = 5;
 
     private final PlayerStatsRepository playerStats;
+    private final MatchRepository matches;
 
     @Transactional(readOnly = true)
-    public List<PlayerStatsResponse> getMine(UUID userId) {
-        return Arrays.stream(GameMode.values())
+    public PlayerStatsOverviewResponse getMine(UUID userId) {
+        List<PlayerStatsResponse> byMode = Arrays.stream(GameMode.values())
                 .map(mode -> toResponse(findOrEmpty(userId, mode)))
                 .toList();
+
+        String favoriteMode = byMode.stream()
+                .filter(s -> s.gamesPlayed() > 0)
+                .max(Comparator.comparingInt(PlayerStatsResponse::gamesPlayed))
+                .map(s -> s.mode().name())
+                .orElse(null);
+
+        long totalPlayTimeSeconds = matches.sumPlayTimeSecondsByUserId(userId);
+
+        return new PlayerStatsOverviewResponse(byMode, favoriteMode, totalPlayTimeSeconds);
     }
 
     @Transactional(readOnly = true)
@@ -55,6 +69,14 @@ public class StatsService {
         }
         stats.setBestStreak(Math.max(stats.getBestStreak(), matchPlayer.getBestStreakInMatch()));
         stats.setCurrentStreak(matchPlayer.getCurrentStreak());
+
+        int score = matchPlayer.getScore();
+        Integer prevAvgScore = stats.getAvgScore();
+        if (prevAvgScore == null || previousGamesPlayed == 0) {
+            stats.setAvgScore(score);
+        } else {
+            stats.setAvgScore((int) Math.round(((double) prevAvgScore * previousGamesPlayed + score) / stats.getGamesPlayed()));
+        }
 
         if (mode == GameMode.PRECISION && matchAvgDeviation != null) {
             Double previousAvg = stats.getAvgDeviation();
@@ -100,6 +122,7 @@ public class StatsService {
                 winRate,
                 stats.getBestStreak(),
                 stats.getCurrentStreak(),
-                stats.getAvgDeviation());
+                stats.getAvgDeviation(),
+                stats.getAvgScore());
     }
 }

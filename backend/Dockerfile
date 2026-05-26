@@ -22,14 +22,13 @@ FROM eclipse-temurin:25-jdk-alpine AS builder
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y maven && rm -rf /var/lib/apt/lists/*
-
-# Cachear dependencias antes de copiar todo el código
-COPY pom.xml .
-RUN mvn dependency:go-offline -B
+# Usamos el Maven Wrapper del proyecto — no hay apt-get en Alpine
+COPY mvnw pom.xml ./
+COPY .mvn .mvn
+RUN chmod +x mvnw && ./mvnw dependency:go-offline -B
 
 COPY src ./src
-RUN mvn package -DskipTests -B
+RUN ./mvnw package -DskipTests -B
 
 
 # ─────────────────────────────────────────────

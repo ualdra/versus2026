@@ -13,9 +13,13 @@
 | Preguntas | [modules/questions.md](modules/questions.md) | ✅ Sprint 1-2 |
 | Juego singleplayer | [modules/game.md](modules/game.md) | ✅ Sprint 1-2 |
 | WebSocket multijugador | [modules/websocket.md](modules/websocket.md) | ✅ Sprint 3 (PR #89) |
-| Partidas & matchmaking | [modules/match.md](modules/match.md) | ✅ Lobby + matchmaking (PR #90) · 🚧 modos PvP (PR #91-93) |
+| Partidas & matchmaking | [modules/match.md](modules/match.md) | ✅ Lobby + matchmaking (PR #90) |
+| Duelos en vivo (modos PvP) | [modules/duel.md](modules/duel.md) | ✅ Sprint 4 (PRs #91 #92 #93) |
+| Social | [modules/social.md](modules/social.md) | ✅ Amigos e invitaciones (#94) |
 | Estadísticas & ranking | [modules/stats.md](modules/stats.md) | ✅ Sprint 1-2 |
+| Práctica (modo libre) | [modules/practice.md](modules/practice.md) | ✅ implementado |
 | Logros | [modules/achievements.md](modules/achievements.md) | ✅ Sprint 3 |
+| Administración | [modules/admin.md](modules/admin.md) | ✅ implementado |
 | Moderación | [modules/moderation.md](modules/moderation.md) | 🚧 Sprint 4 |
 | Scraping | [modules/scraping.md](modules/scraping.md) | 🚧 Sprint 4 |
 | Multimedia y almacenamiento | [modules/media.md](modules/media.md) | ✅ Dependencia #121 |

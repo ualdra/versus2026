@@ -26,6 +26,10 @@ export class MatchService {
     return this.http.post<LobbyState>(`${this.base}/matches/${matchId}/join`, {});
   }
 
+  joinMatchByCode(roomCode: string): Observable<LobbyState> {
+    return this.http.post<LobbyState>(`${this.base}/matches/join-by-code`, { roomCode });
+  }
+
   abandonMatch(matchId: string): Observable<void> {
     return this.http.delete<void>(`${this.base}/matches/${matchId}/abandon`);
   }

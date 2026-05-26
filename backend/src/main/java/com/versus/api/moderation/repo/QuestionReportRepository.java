@@ -17,4 +17,6 @@ public interface QuestionReportRepository extends JpaRepository<QuestionReport, 
     long countByQuestionIdAndStatus(UUID questionId, ReportStatus status);
 
     boolean existsByQuestionIdAndReportedByAndStatus(UUID questionId, UUID reportedBy, ReportStatus status);
+
+    long countByStatus(ReportStatus status);
 }

@@ -1,0 +1,154 @@
+name: Deploy — Production
+
+# Se dispara automáticamente cuando el workflow de CI pasa en main.
+on:
+  workflow_run:
+    workflows: ["CI — Tests"]
+    branches: [main]
+    types: [completed]
+
+permissions:
+  contents: read
+  packages: write   # necesario para push/pull a GHCR
+
+jobs:
+  # ──────────────────────────────────────────────
+  # Job 1: Construir imágenes y publicarlas en GHCR
+  # ──────────────────────────────────────────────
+  build-and-push:
+    name: Build & push images
+    # Solo corre si el CI pasó Y fue disparado por un push directo a main (nunca por una PR de un fork)
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push backend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          target: production
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/backend:latest
+            ghcr.io/${{ github.repository }}/backend:${{ github.event.workflow_run.head_sha }}
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,scope=backend,mode=max
+
+      - name: Build and push frontend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          target: production
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/frontend:latest
+            ghcr.io/${{ github.repository }}/frontend:${{ github.event.workflow_run.head_sha }}
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,scope=frontend,mode=max
+
+  # ──────────────────────────────────────────────
+  # Job 2: Desplegar en el servidor remoto
+  # ──────────────────────────────────────────────
+  deploy:
+    name: Deploy to server
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    environment: production   # activa environment protection rules en GitHub
+
+    steps:
+      - name: Checkout (para los docker-compose files)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      # Construimos el .env de producción en el runner y lo codificamos en
+      # base64 para transferirlo sin problemas con caracteres especiales.
+      - name: Encode .env as base64
+        id: encode_env
+        run: |
+          cat > /tmp/prod.env << 'ENDOFENV'
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          JWT_EXPIRY=${{ secrets.JWT_EXPIRY }}
+          JWT_REFRESH_EXPIRY=${{ secrets.JWT_REFRESH_EXPIRY }}
+          SMTP_HOST=${{ secrets.SMTP_HOST }}
+          SMTP_PORT=${{ secrets.SMTP_PORT }}
+          SMTP_USER=${{ secrets.SMTP_USER }}
+          SMTP_PASS=${{ secrets.SMTP_PASS }}
+          SMTP_AUTH=${{ secrets.SMTP_AUTH }}
+          SMTP_STARTTLS=${{ secrets.SMTP_STARTTLS }}
+          MAIL_FROM=${{ secrets.MAIL_FROM }}
+          MAIL_FROM_NAME=${{ secrets.MAIL_FROM_NAME }}
+          VERSUS_EMAIL_ENABLED=${{ secrets.VERSUS_EMAIL_ENABLED }}
+          FRONTEND_BASE_URL=${{ secrets.FRONTEND_BASE_URL }}
+          STORAGE_PROVIDER=${{ secrets.STORAGE_PROVIDER }}
+          R2_ENDPOINT=${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET=${{ secrets.R2_BUCKET }}
+          R2_PUBLIC_BASE_URL=${{ secrets.R2_PUBLIC_BASE_URL }}
+          MEDIA_PUBLIC_BASE_URL=${{ secrets.MEDIA_PUBLIC_BASE_URL }}
+          BACKEND_IMAGE=ghcr.io/${{ github.repository }}/backend:${{ github.event.workflow_run.head_sha }}
+          FRONTEND_IMAGE=ghcr.io/${{ github.repository }}/frontend:${{ github.event.workflow_run.head_sha }}
+          ENDOFENV
+          echo "env_b64=$(base64 -w 0 /tmp/prod.env)" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        env:
+          ENV_B64: ${{ steps.encode_env.outputs.env_b64 }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          envs: ENV_B64,GITHUB_TOKEN,GITHUB_ACTOR
+          script: |
+            set -e
+            APP_DIR=/opt/versus
+
+            # Actualizar los ficheros docker-compose desde el repo
+            cd "$APP_DIR"
+            git pull origin main
+
+            # Escribir .env desde el base64 que viene del runner
+            echo "$ENV_B64" | base64 -d > .env
+            chmod 600 .env
+
+            # Autenticarse en GHCR con el token del workflow (válido durante este job)
+            echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+
+            # Descargar las nuevas imágenes
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml pull backend frontend
+
+            # Arrancar/actualizar servicios sin tiempo de caída
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --remove-orphans
+
+            # Comprobación rápida de estado
+            sleep 8
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
+
+            # Limpiar capas antiguas
+            docker image prune -f

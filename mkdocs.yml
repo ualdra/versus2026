@@ -59,6 +59,9 @@ markdown_extensions:
 
 nav:
   - Inicio: index.md
+  - Arquitectura:
+    - Visión general: arquitectura/overview.md
+    - Despliegue: arquitectura/deployment.md
   - Backend:
     - Índice: backend/README.md
     - Arquitectura: backend/architecture.md
@@ -69,6 +72,7 @@ nav:
       - Preguntas: backend/modules/questions.md
       - Juego singleplayer: backend/modules/game.md
       - Partidas & matchmaking: backend/modules/match.md
+      - Social: backend/modules/social.md
       - Estadísticas: backend/modules/stats.md
       - Moderación: backend/modules/moderation.md
       - Scraping: backend/modules/scraping.md
@@ -78,6 +82,10 @@ nav:
     - Sprint 1-2: backend-mvp-sprint-1-2.md
     - Sprint 3: backend-mvp-sprint-3.md
     - Sprint 4: backend-mvp-sprint-4.md
+  - QA:
+    - Estrategia: qa/estrategia.md
+    - Casos por módulo: qa/plan-de-pruebas.md
+    - Plan de integración: qa/plan-integracion.md
   - Guías:
     - Moderación de preguntas: moderation.md
     - Pipeline de scraping: scraping-pipeline.md

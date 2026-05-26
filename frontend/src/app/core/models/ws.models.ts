@@ -9,6 +9,8 @@ export type WsEventType =
   | 'PLAYER_LEFT'
   | 'PLAYER_READY'
   | 'MATCH_FOUND'
+  | 'FRIEND_REQUEST'
+  | 'MATCH_INVITE'
   | 'MATCH_STARTING'
   | 'MATCH_START'
   | 'QUESTION'

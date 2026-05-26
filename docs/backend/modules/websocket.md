@@ -5,7 +5,7 @@ Depende de: `auth` (para validar JWT)
 Estado:
 - ✅ Infraestructura base STOMP + JWT (PR #89, Sprint 3).
 - ✅ Handlers de lobby/matchmaking (PR #90, ver [módulo match](match.md)).
-- 🚧 Handlers de modos multijugador (Binary Duel #91, Precision Duel #92, Sabotaje #93).
+- ✅ Handlers de modos multijugador (Binary Duel #91, Precision Duel #92, Sabotaje #93) — ver [`duel.md`](duel.md). `DuelWebSocketController` expone `/app/match/answer` y `/app/match/sabotage`; los eventos `QUESTION`, `ROUND_RESULT`, `MATCH_END`, `SABOTAGE_ACTIVATED`, `EFFECT_APPLIED`, `SABOTAGE_REJECTED`, `ANSWER_RESULT` viajan envueltos en `MatchEventEnvelope`.
 
 
 ---
@@ -153,6 +153,8 @@ Si el token falta, no es Bearer, está caducado, está firmado con otra clave o 
 |---|---|---|
 | `/app/*` | Mensajes que el **cliente envía al servidor** (despacha a `@MessageMapping`). | `/app/match/answer`, `/app/match/ready` |
 | `/topic/*` | Broadcast a todos los suscriptores. | `/topic/match/{matchId}` (estado compartido) |
+| `/user/queue/achievements` | Mensaje privado de logros desbloqueados para el usuario autenticado. | `ACHIEVEMENT_UNLOCKED` |
+| `/user/queue/social` | Mensaje privado de solicitudes de amistad e invitaciones a partida. | `FRIEND_REQUEST`, `MATCH_INVITE` |
 | `/user/queue/*` | Mensaje **privado** dirigido a un usuario concreto. Spring resuelve `{userId}` desde el `Principal` autenticado. | `/user/queue/match` (notificaciones tipo "te tocó pareja") |
 
 Reglas:
@@ -207,6 +209,18 @@ Características:
 - `publish()` no encola: si no estás conectado, el mensaje se descarta y se loguea un warning. Es responsabilidad del caller llamar `connect()` antes.
 
 URL base configurable en `frontend/src/environments/environment.ts → wsUrl`.
+
+### Centro de notificaciones Angular
+
+`NotificationCenterService` reutiliza `WebSocketService` para mantener un centro de notificaciones transversal en el topbar.
+
+| Canal | Payload | Uso |
+|---|---|---|
+| `/user/queue/match` | `MatchEventEnvelope<MATCH_FOUND>` | Crea una notificacion "Rival encontrado" y enlaza a `/play/lobby/:matchId`. |
+| `/user/queue/achievements` | `{ type: "ACHIEVEMENT_UNLOCKED", achievement }` | Crea una notificacion de logro y enlaza a `/profile`. |
+| `/user/queue/social` | `{ type: "FRIEND_REQUEST" | "MATCH_INVITE", payload }` | Crea notificaciones sociales y enlaza a `/friends`. |
+
+El cliente persiste el historial en `localStorage` por usuario (`vs.notifications.<userId>`) y limita el listado a 30 elementos. Las preferencias de `/settings` se leen de `vs.notificationPrefs`; `matchInvites=false` bloquea eventos `MATCH_FOUND` y `achievements=false` bloquea entradas/toasts de logros.
 
 ---
 
@@ -280,9 +294,7 @@ Sin token o con un token modificado deberías ver el frame ERROR `Missing Author
 ## Trabajo pendiente (PRs siguientes)
 
 - ~~**PR #90 (lobby + matchmaking):** crear `MatchService` + `MatchWebSocketController` con handlers `/app/match/ready` y `/app/match/abandon`; eliminar `EchoController`.~~ ✅ Cerrado.
-- **PR #91 (Binary Duel):** handler `/app/match/answer` y emisor de eventos `QUESTION` / `ROUND_RESULT` / `MATCH_END`.
-- **PR #92 (Precision Duel):** misma estructura adaptada a preguntas numéricas.
-- **PR #93 (Sabotaje):** handler `/app/match/sabotage` y uso de `convertAndSendToUser` para aplicar efectos solo al jugador objetivo.
+- ~~**PRs #91/#92/#93 (modos multijugador):** handlers `/app/match/answer` y `/app/match/sabotage`, emisores de `QUESTION` / `ROUND_RESULT` / `MATCH_END` / `SABOTAGE_*`~~ ✅ Cerrado (módulo [`duel`](duel.md)).
 
 ---
 

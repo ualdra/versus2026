@@ -115,10 +115,32 @@
       <div class="vs-settings__section">
         <div class="vs-section-title">Audio</div>
         <form class="vs-panel" [formGroup]="audioForm">
-          <label>Efectos de sonido <input type="range" min="0" max="100" formControlName="sfx" /></label>
-          <label>Musica de fondo <input type="range" min="0" max="100" formControlName="bgm" /></label>
-          <label class="vs-toggle"><span>Silenciar todo</span><input type="checkbox" formControlName="muted" /></label>
-          <label class="vs-toggle"><span>Feedback reducido</span><input type="checkbox" formControlName="reducedFeedback" /></label>
+          <label class="vs-toggle">
+            <span>Efectos de sonido (SFX)</span>
+            <input type="checkbox" formControlName="sfxEnabled" />
+          </label>
+          <label class="vs-toggle">
+            <span>Musica (BGM)</span>
+            <input type="checkbox" formControlName="bgmEnabled" />
+          </label>
+          <label>
+            <span class="vs-range-label">
+              Volumen SFX
+              <span class="vs-range-value">{{ audioForm.controls.sfxVolume.value }}%</span>
+            </span>
+            <input type="range" min="0" max="100" step="1" formControlName="sfxVolume" />
+          </label>
+          <label>
+            <span class="vs-range-label">
+              Volumen BGM
+              <span class="vs-range-value">{{ audioForm.controls.bgmVolume.value }}%</span>
+            </span>
+            <input type="range" min="0" max="100" step="1" formControlName="bgmVolume" />
+          </label>
+          <div class="vs-audio-actions">
+            <button class="btn btn--ghost btn--sm" type="button" (click)="previewSfx()">Probar SFX</button>
+            <button class="btn btn--ghost btn--sm" type="button" (click)="previewBgm()">Probar BGM</button>
+          </div>
         </form>
       </div>
     </section>

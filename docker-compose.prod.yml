@@ -2,12 +2,15 @@
 # Overrides para producción
 #
 # Características:
-#   - Imágenes buildeadas desde el stage "production" de cada Dockerfile
+#   - Imágenes pre-construidas en CI y publicadas en GHCR
 #   - Sin volúmenes de código fuente
 #   - Sin puertos de debug ni herramientas de administración
 #   - Reinicio automático
 #   - Límites de recursos
-#   - Variables de entorno sensibles desde .env o secretos externos
+#   - Variables de entorno sensibles desde .env
+#
+# SSL: terminar TLS en el host (nginx, Traefik, Caddy…) y hacer proxy
+# hacia el puerto 80 de este frontend. No exponer 443 aquí.
 #
 
 services:
@@ -25,34 +28,59 @@ services:
           memory: 512m
 
   backend:
+    image: ${BACKEND_IMAGE:-ghcr.io/versus2026/versus2026/backend:latest}
     build:
       context: ./backend
       dockerfile: Dockerfile
-      target: production       
+      target: production
     restart: always
     ports:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      DDL_AUTO: validate       
+      DDL_AUTO: validate
+      # JWT
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRY: ${JWT_EXPIRY:-900}
+      JWT_REFRESH_EXPIRY: ${JWT_REFRESH_EXPIRY:-604800}
+      # Mail / SMTP
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      SMTP_AUTH: ${SMTP_AUTH:-true}
+      SMTP_STARTTLS: ${SMTP_STARTTLS:-true}
+      MAIL_FROM: ${MAIL_FROM}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-Versus}
+      VERSUS_EMAIL_ENABLED: ${VERSUS_EMAIL_ENABLED:-true}
+      FRONTEND_BASE_URL: ${FRONTEND_BASE_URL}
+      # Storage
+      STORAGE_PROVIDER: ${STORAGE_PROVIDER:-local}
+      R2_ENDPOINT: ${R2_ENDPOINT:-}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-}
+      R2_BUCKET: ${R2_BUCKET:-versus-media}
+      R2_PUBLIC_BASE_URL: ${R2_PUBLIC_BASE_URL:-}
+      MEDIA_PUBLIC_BASE_URL: ${MEDIA_PUBLIC_BASE_URL:-}
     deploy:
       resources:
         limits:
           memory: 768m
 
   frontend:
+    image: ${FRONTEND_IMAGE:-ghcr.io/versus2026/versus2026/frontend:latest}
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      target: production      
+      target: production
     restart: always
     ports:
-      - "80:8080"
-      - "443:8080"            # SSL
+      - "127.0.0.1:3000:8080"   # solo desde el host — Caddy hace el proxy a este puerto
     deploy:
       resources:
         limits:
           memory: 128m
+
   scraper:
     build:
       context: ./scraper

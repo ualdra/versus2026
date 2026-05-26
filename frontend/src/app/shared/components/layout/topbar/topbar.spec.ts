@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { signal } from '@angular/core';
+import { type Signal, type WritableSignal, computed, signal } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { TopbarComponent } from './topbar';
@@ -9,9 +9,20 @@ import { AchievementService } from '../../../../core/services/achievement.servic
 import { UserService } from '../../../../core/services/user.service';
 import { StatsService } from '../../../../core/services/stats.service';
 import { PlayerStats } from '../../../../core/models/game.models';
+import { NotificationItem } from '../../../../core/models/notification.models';
+import { NotificationCenterService } from '../../../../core/services/notification-center.service';
 
 describe('TopbarComponent', () => {
   let fixture: ComponentFixture<TopbarComponent>;
+  let notificationItems: WritableSignal<NotificationItem[]>;
+  let notificationService: {
+    items: Signal<NotificationItem[]>;
+    unreadCount: Signal<number>;
+    start: ReturnType<typeof vi.fn>;
+    markRead: ReturnType<typeof vi.fn>;
+    markAllRead: ReturnType<typeof vi.fn>;
+    clear: ReturnType<typeof vi.fn>;
+  };
 
   const authUser = signal({
     id: 'user-1',
@@ -29,15 +40,31 @@ describe('TopbarComponent', () => {
       bestStreak: 3,
       currentStreak: 1,
       avgDeviation: null,
+      avgScore: null
     },
   ];
 
   beforeEach(async () => {
+    notificationItems = signal<NotificationItem[]>([]);
+    notificationService = {
+      items: notificationItems,
+      unreadCount: computed(() => notificationItems().filter((item) => !item.read).length),
+      start: vi.fn(),
+      markRead: vi.fn((id: string) => {
+        notificationItems.update((items) =>
+          items.map((item) => (item.id === id ? { ...item, read: true } : item)),
+        );
+      }),
+      markAllRead: vi.fn(() => {
+        notificationItems.update((items) => items.map((item) => ({ ...item, read: true })));
+      }),
+      clear: vi.fn(() => notificationItems.set([])),
+    };
 
     await TestBed.configureTestingModule({
       imports: [TopbarComponent],
       providers: [
-        provideRouter([]),
+        provideRouter([{ path: 'login', children: [] }]),
 
         {
           provide: AuthService,
@@ -45,6 +72,7 @@ describe('TopbarComponent', () => {
             user: authUser,
             isAuthenticated: () => true,
             updateCachedUser: vi.fn(),
+            logout: vi.fn(() => of(undefined)),
           },
         },
         {
@@ -63,10 +91,9 @@ describe('TopbarComponent', () => {
         {
           provide: StatsService,
           useValue: {
-            mine: () => of(stats),
+            mine: () => of({ byMode: stats, favoriteMode: 'SURVIVAL', totalPlayTimeSeconds: 0 }),
           },
         },
-<<<<<<< HEAD
         {
           provide: AchievementService,
           useValue: {
@@ -84,9 +111,7 @@ describe('TopbarComponent', () => {
             ]),
           },
         },
-=======
-
->>>>>>> 4f1ef96b4c35b4922860ddf442521693c19495ce
+        { provide: NotificationCenterService, useValue: notificationService },
       ],
     }).compileComponents();
 
@@ -121,6 +146,53 @@ describe('TopbarComponent', () => {
     expect(text).toContain('override');
     expect(text).toContain('999 XP');
     expect(img?.getAttribute('src')).toBe('https://avatar.test/a.svg');
+  });
 
+  it('should render notification center and mark selected notification as read', () => {
+    notificationItems.set([
+      {
+        id: 'n1',
+        type: 'MATCH_FOUND',
+        title: 'Rival encontrado',
+        message: 'player2 te espera en Duelo binario.',
+        createdAt: new Date().toISOString(),
+        read: false,
+        tone: 'info',
+        sourceId: 'match-found:match-1',
+      },
+    ]);
+    fixture.detectChanges();
+
+    const trigger = fixture.nativeElement.querySelector('.vs-notification-center__trigger') as HTMLButtonElement;
+    expect(fixture.nativeElement.querySelector('.vs-notification-center__badge')?.textContent).toContain('1');
+
+    trigger.click();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Rival encontrado');
+    const item = fixture.nativeElement.querySelector('.vs-notification-item') as HTMLElement;
+    item.click();
+
+    expect(notificationService.markRead).toHaveBeenCalledWith('n1');
+  });
+
+  it('should toggle the account menu and call logout', () => {
+    const auth = TestBed.inject(AuthService) as unknown as { logout: ReturnType<typeof vi.fn> };
+    const trigger = fixture.nativeElement.querySelector('.vs-topbar__user') as HTMLButtonElement;
+
+    expect(fixture.nativeElement.querySelector('.vs-user-menu__dropdown')).toBeNull();
+
+    trigger.click();
+    fixture.detectChanges();
+
+    const dropdown = fixture.nativeElement.querySelector('.vs-user-menu__dropdown');
+    expect(dropdown).not.toBeNull();
+
+    const logoutBtn = fixture.nativeElement.querySelector('.vs-user-menu__item--danger') as HTMLButtonElement;
+    logoutBtn.click();
+    fixture.detectChanges();
+
+    expect(auth.logout).toHaveBeenCalled();
+    expect(fixture.nativeElement.querySelector('.vs-user-menu__dropdown')).toBeNull();
   });
 });
