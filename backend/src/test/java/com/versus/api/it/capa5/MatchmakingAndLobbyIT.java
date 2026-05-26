@@ -175,6 +175,63 @@ class MatchmakingAndLobbyIT extends AbstractIT {
     }
 
     @Nested
+    @DisplayName("POST /api/matches/join-by-code")
+    class JoinMatchByCode {
+
+        @Test
+        @DisplayName("Segundo jugador se une con código de sala normalizado")
+        void unirseConCodigo() {
+            User u1 = factories.user();
+            User u2 = factories.user();
+
+            var created = http.reqAs(u1)
+                    .body(Map.of("mode", "BINARY_DUEL"))
+                    .post("/api/matches")
+                    .then().statusCode(201)
+                    .extract().jsonPath();
+            String matchId = created.getString("matchId");
+            String roomCode = created.getString("roomCode");
+            String formattedCode = roomCode.substring(0, 3).toLowerCase()
+                    + "-" + roomCode.substring(3).toLowerCase();
+
+            http.reqAs(u2)
+                    .body(Map.of("roomCode", formattedCode))
+                    .post("/api/matches/join-by-code")
+                    .then()
+                    .statusCode(200)
+                    .body("matchId", equalTo(matchId))
+                    .body("roomCode", equalTo(roomCode))
+                    .body("players", hasSize(2));
+        }
+
+        @Test
+        @DisplayName("Código inválido → 400 VALIDATION_ERROR")
+        void codigoInvalido() {
+            User u = factories.user();
+
+            http.reqAs(u)
+                    .body(Map.of("roomCode", "abc"))
+                    .post("/api/matches/join-by-code")
+                    .then()
+                    .statusCode(400)
+                    .body("error", equalTo("VALIDATION_ERROR"));
+        }
+
+        @Test
+        @DisplayName("Código válido inexistente → 404 NOT_FOUND")
+        void codigoInexistente() {
+            User u = factories.user();
+
+            http.reqAs(u)
+                    .body(Map.of("roomCode", "ABC234"))
+                    .post("/api/matches/join-by-code")
+                    .then()
+                    .statusCode(404)
+                    .body("error", equalTo("NOT_FOUND"));
+        }
+    }
+
+    @Nested
     @DisplayName("GET /api/matches/{id}/lobby")
     class GetLobby {
 

@@ -35,9 +35,7 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -261,12 +259,10 @@ public class GameService {
     }
 
     private Double averageDeviation(UUID matchId, UUID userId) {
-        Set<UUID> roundIds = matchRounds.findAll().stream()
-                .filter(round -> matchId.equals(round.getMatchId()))
+        List<UUID> roundIds = matchRounds.findByMatchIdOrderByRoundNumber(matchId).stream()
                 .map(MatchRound::getId)
-                .collect(Collectors.toSet());
-        return matchAnswers.findAll().stream()
-                .filter(answer -> roundIds.contains(answer.getRoundId()))
+                .toList();
+        return matchAnswers.findByRoundIdIn(roundIds).stream()
                 .filter(answer -> userId.equals(answer.getUserId()))
                 .map(MatchAnswer::getDeviation)
                 .filter(value -> value != null)

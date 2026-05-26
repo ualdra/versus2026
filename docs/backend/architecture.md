@@ -42,6 +42,7 @@ graph TD
     root --> questions
     root --> game
     root --> match
+    root --> social
     root --> stats
     root --> moderation
     root --> scraping
@@ -67,6 +68,10 @@ graph TD
 
     match --> match_domain["match.domain"]
     match --> match_repo["match.repo"]
+
+    social --> social_domain["social.domain"]
+    social --> social_dto["social.dto"]
+    social --> social_repo["social.repo"]
 
     stats --> stats_domain["stats.domain"]
     stats --> stats_dto["stats.dto"]
@@ -119,6 +124,7 @@ sequenceDiagram
 | `questions` | Acceso a preguntas activas (sin respuestas correctas en la respuesta) |
 | `game` | Lógica de partidas singleplayer: Survival y Precision |
 | `match` | Entidades de partida (usadas por `game` y futuro multiplayer) |
+| `social` | Amigos, solicitudes e invitaciones a lobbies PvP |
 | `stats` | Estadísticas acumuladas por modo de juego |
 | `moderation` | Reportes de preguntas por usuarios |
 | `scraping` | Gestión de spiders y sus ejecuciones |

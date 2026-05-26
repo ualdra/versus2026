@@ -27,8 +27,8 @@ frontend/src/app/
 ├── core/                Capa de infraestructura transversal
 │   ├── guards/          authGuard, adminGuard
 │   ├── interceptors/    AuthInterceptor (Bearer token + refresh)
-│   ├── models/          Interfaces TypeScript (auth, game, websocket)
-│   └── services/        Servicios singleton (Auth, User, Game, Stats, WebSocket)
+│   ├── models/          Interfaces TypeScript (auth, game, social, websocket)
+│   └── services/        Servicios singleton (Auth, User, Game, Social, Stats, WebSocket)
 │
 ├── shared/
 │   ├── components/ui/   Componentes de UI reutilizables (vs-button, vs-card, vs-input…)
@@ -37,7 +37,7 @@ frontend/src/app/
 └── features/            Un módulo por área funcional
     ├── landing/         Página pública
     ├── auth/            Login y registro
-    ├── player/          Dashboard, perfil, selección de modo, lobby, resultado
+    ├── player/          Dashboard, perfil, amigos, selección de modo, lobby, resultado
     ├── survival/        Página + componentes del modo Survival
     ├── precision/       Página del modo Precision
     └── admin/           Panel de administración (ADMIN role)
@@ -89,7 +89,51 @@ El estado se inicializa leyendo `localStorage` al arrancar (`vs.accessToken`, `v
 | `GameService` | Start/answer para Survival y Precision | — |
 | `QuestionService` | Preguntas aleatorias con filtros | — |
 | `StatsService` | Estadísticas del jugador | — |
+| `SocialService` | Amigos, solicitudes e invitaciones a partida | — |
 | `WebSocketService` | Conexión STOMP + eventos de partida | (pendiente Sprint 3) |
+| `NotificationCenterService` | Centro de notificaciones en tiempo real | `items`, `unreadCount` |
+
+## Centro de notificaciones en tiempo real
+
+El centro de notificaciones vive en el `TopbarComponent` y se alimenta desde `NotificationCenterService`.
+
+Ficheros principales:
+
+| Fichero | Responsabilidad |
+|---|---|
+| `core/models/notification.models.ts` | Tipos `NotificationItem`, preferencias y claves de `localStorage`. |
+| `core/services/notification-center.service.ts` | Suscripciones STOMP, normalizacion de eventos, persistencia local y estado de lectura. |
+| `shared/components/layout/topbar/*` | Boton de campana, contador, panel desplegable y acciones de lectura. |
+
+Canales consumidos:
+
+| Canal | Evento | Resultado en UI |
+|---|---|---|
+| `/user/queue/achievements` | `ACHIEVEMENT_UNLOCKED` | Notificacion de logro, ruta a `/profile` y toast global si esta permitido. |
+| `/user/queue/match` | `MATCH_FOUND` | Notificacion de rival encontrado, ruta a `/play/lobby/:matchId`. |
+| `/user/queue/social` | `FRIEND_REQUEST` | Notificacion de solicitud, ruta a `/friends`. |
+| `/user/queue/social` | `MATCH_INVITE` | Notificacion de invitacion, ruta a `/friends`. |
+
+Persistencia y preferencias:
+
+- Las notificaciones se guardan por usuario en `localStorage` con clave `vs.notifications.<userId>`.
+- El historial se limita a las ultimas 30 notificaciones.
+- Las preferencias viven en `vs.notificationPrefs` y se editan desde `/settings`.
+- `achievements=false` desactiva tanto el toast global como la entrada en el centro.
+- `friendRequests=false` oculta las notificaciones de `FRIEND_REQUEST`.
+- `matchInvites=false` oculta las notificaciones de `MATCH_FOUND` y `MATCH_INVITE`.
+- Si cambia el usuario autenticado, el servicio reconecta el WebSocket para evitar reutilizar una sesion STOMP anterior.
+
+## Página social `/friends`
+
+La pantalla de amigos vive en `features/player/pages/friends` y usa solo `SocialService` para hablar con `/api/social`.
+
+Flujos soportados:
+
+- Buscar jugadores por username y ver la relación (`NONE`, `FRIEND`, `REQUEST_SENT`, `REQUEST_RECEIVED`).
+- Enviar, aceptar, rechazar y cancelar solicitudes de amistad.
+- Invitar a amigos a `BINARY_DUEL`, `PRECISION_DUEL` o `SABOTAGE`.
+- Aceptar una invitación y navegar al lobby devuelto por el backend.
 
 ## AuthInterceptor
 

@@ -6,10 +6,10 @@
     <div class="vs-admin__head">
       <div>
         <h1>RESUMEN GENERAL</h1>
-        <div class="vs-admin__head-meta">Plataforma · 28 abr 2026 · 10:32</div>
+        <div class="vs-admin__head-meta">Plataforma · {{ today | date:'d MMM y · HH:mm' }}</div>
       </div>
       <div style="display: flex; gap: 8px">
-        <button class="btn btn--ghost btn--sm">REFRESCAR</button>
+        <button class="btn btn--ghost btn--sm" (click)="reload()">REFRESCAR</button>
         <button class="btn btn--primary btn--sm">EXPORTAR</button>
       </div>
     </div>
@@ -22,10 +22,9 @@
           <div class="vs-kpi__num" [style.color]="k.label === 'Reportes pendientes' ? 'var(--vs-accent-red)' : null">
             {{ k.num }}
           </div>
-          <div class="vs-kpi__delta" [class.up]="k.up" [class.down]="!k.up">{{ k.delta }}</div>
-          <svg class="vs-kpi__spark" viewBox="0 0 80 30" preserveAspectRatio="none">
-            <polyline class="vs-spark-line" [attr.points]="sparkPoints(k.spark)" [style.stroke]="k.color" />
-          </svg>
+          @if (k.delta) {
+            <div class="vs-kpi__delta" [class.up]="k.up" [class.down]="!k.up">{{ k.delta }}</div>
+          }
         </div>
       }
     </div>
@@ -79,10 +78,13 @@
       <div class="vs-run-log" style="border: none; border-radius: 0; max-height: none">
         @for (l of logs; track l.ts) {
           <div>
-            <span class="ts">{{ l.ts }}</span>
-            <span [class]="l.cls">[{{ l.cls.toUpperCase() }}]</span>
-            {{ l.msg }}
+            <span class="ts">{{ l.ts | date:'HH:mm:ss' }}</span>
+            <span [class]="logClass(l.level)">[{{ l.level }}]</span>
+            {{ l.message }}
           </div>
+        }
+        @if (logs.length === 0) {
+          <div style="color: var(--vs-text-muted); padding: 12px 0">Sin eventos recientes.</div>
         }
       </div>
     </div>

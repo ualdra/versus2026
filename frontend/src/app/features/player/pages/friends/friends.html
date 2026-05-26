@@ -1,0 +1,172 @@
+<div class="vs-friends-page">
+  <app-topbar active="friends" />
+
+  <main class="vs-friends">
+    <header class="vs-friends__header">
+      <div>
+        <div class="vs-section-title">Social</div>
+        <h1 class="vs-display">Amigos</h1>
+      </div>
+      <button type="button" class="btn btn--ghost btn--sm" (click)="refresh()" [disabled]="busy()">ACTUALIZAR</button>
+    </header>
+
+    @if (status()) {
+      <div class="vs-alert vs-alert--ok">{{ status() }}</div>
+    }
+    @if (error()) {
+      <div class="vs-alert vs-alert--err">{{ error() }}</div>
+    }
+
+    @if (hasPending()) {
+      <section class="vs-friends__grid">
+        <div class="vs-panel">
+          <div class="vs-section-title">Solicitudes recibidas</div>
+          @if (incomingRequests().length === 0) {
+            <div class="vs-empty">Sin solicitudes pendientes.</div>
+          } @else {
+            <div class="vs-list">
+              @for (request of incomingRequests(); track request.id) {
+                <div class="vs-social-row">
+                  <div class="vs-avatar">{{ initials(request.requester.username) }}</div>
+                  <div class="vs-social-row__body">
+                    <strong>{{ request.requester.username }}</strong>
+                    <span>Quiere agregarte a amigos.</span>
+                  </div>
+                  <button type="button" class="btn btn--primary btn--sm" (click)="acceptRequest(request)" [disabled]="busy()">ACEPTAR</button>
+                  <button type="button" class="btn btn--ghost btn--sm" (click)="declineRequest(request)" [disabled]="busy()">RECHAZAR</button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="vs-panel">
+          <div class="vs-section-title">Invitaciones a partida</div>
+          @if (incomingInvites().length === 0) {
+            <div class="vs-empty">Sin invitaciones pendientes.</div>
+          } @else {
+            <div class="vs-list">
+              @for (invite of incomingInvites(); track invite.id) {
+                <div class="vs-social-row">
+                  <div class="vs-avatar">{{ initials(invite.from.username) }}</div>
+                  <div class="vs-social-row__body">
+                    <strong>{{ invite.from.username }}</strong>
+                    <span>{{ modeLabels[invite.mode] }}</span>
+                  </div>
+                  <button type="button" class="btn btn--gold btn--sm" (click)="acceptInvite(invite)" [disabled]="busy()">ENTRAR</button>
+                  <button type="button" class="btn btn--ghost btn--sm" (click)="declineInvite(invite)" [disabled]="busy()">RECHAZAR</button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <section class="vs-friends__grid">
+      <div class="vs-panel">
+        <div class="vs-section-title">Buscar jugadores</div>
+        <form class="vs-search" (submit)="search(); $event.preventDefault()">
+          <input
+            #searchInput
+            class="vs-input"
+            placeholder="Username"
+            autocomplete="off"
+            [value]="searchTerm()"
+            (input)="onSearchInput(searchInput.value)" />
+          <button type="submit" class="btn btn--primary" [disabled]="busy() || searchTerm().trim().length < 2">BUSCAR</button>
+        </form>
+
+        <div class="vs-list">
+          @for (user of searchResults(); track user.userId) {
+            <div class="vs-social-row">
+              <div class="vs-avatar">{{ initials(user.username) }}</div>
+              <div class="vs-social-row__body">
+                <strong>{{ user.username }}</strong>
+                <span>{{ relationLabel(user.relation) }}</span>
+              </div>
+              <button
+                type="button"
+                class="btn btn--ghost btn--sm"
+                [disabled]="busy() || user.relation !== 'NONE'"
+                (click)="sendRequest(user)">
+                {{ relationLabel(user.relation) }}
+              </button>
+            </div>
+          } @empty {
+            <div class="vs-empty">Busca por al menos 2 caracteres.</div>
+          }
+        </div>
+      </div>
+
+      <div class="vs-panel">
+        <div class="vs-section-title">Mis amigos</div>
+        <div class="vs-invite-tools">
+          <label>
+            Modo de invitacion
+            <select class="vs-input" [value]="selectedInviteMode()" (change)="setInviteMode($event)">
+              @for (mode of inviteModes; track mode) {
+                <option [value]="mode">{{ modeLabels[mode] }}</option>
+              }
+            </select>
+          </label>
+        </div>
+
+        <div class="vs-list">
+          @for (friend of friends(); track friend.userId) {
+            <div class="vs-social-row">
+              <div class="vs-avatar">{{ initials(friend.username) }}</div>
+              <div class="vs-social-row__body">
+                <strong>{{ friend.username }}</strong>
+                <span>Disponible para invitacion.</span>
+              </div>
+              <button type="button" class="btn btn--gold btn--sm" (click)="invite(friend)" [disabled]="busy()">INVITAR</button>
+            </div>
+          } @empty {
+            <div class="vs-empty">Todavia no tienes amigos.</div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="vs-panel">
+      <div class="vs-section-title">Pendientes enviadas</div>
+      <div class="vs-pending-grid">
+        <div>
+          <h2 class="vs-display">Solicitudes</h2>
+          <div class="vs-list">
+            @for (request of outgoingRequests(); track request.id) {
+              <div class="vs-social-row">
+                <div class="vs-avatar">{{ initials(request.addressee.username) }}</div>
+                <div class="vs-social-row__body">
+                  <strong>{{ request.addressee.username }}</strong>
+                  <span>Pendiente de respuesta.</span>
+                </div>
+                <button type="button" class="btn btn--ghost btn--sm" (click)="cancelRequest(request)" [disabled]="busy()">CANCELAR</button>
+              </div>
+            } @empty {
+              <div class="vs-empty">No hay solicitudes enviadas.</div>
+            }
+          </div>
+        </div>
+
+        <div>
+          <h2 class="vs-display">Invitaciones</h2>
+          <div class="vs-list">
+            @for (invite of outgoingInvites(); track invite.id) {
+              <div class="vs-social-row">
+                <div class="vs-avatar">{{ initials(invite.to.username) }}</div>
+                <div class="vs-social-row__body">
+                  <strong>{{ invite.to.username }}</strong>
+                  <span>{{ modeLabels[invite.mode] }} · {{ invite.status }}</span>
+                </div>
+              </div>
+            } @empty {
+              <div class="vs-empty">No hay invitaciones recientes.</div>
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

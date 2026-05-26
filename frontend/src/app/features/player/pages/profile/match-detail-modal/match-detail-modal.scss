@@ -1,0 +1,82 @@
+.vs-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 24px;
+}
+
+.vs-modal {
+  width: 100%;
+  max-width: 800px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.vs-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--vs-border);
+  flex-shrink: 0;
+}
+
+.vs-modal__players {
+  display: flex;
+  gap: 12px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--vs-border);
+  flex-shrink: 0;
+}
+
+.vs-player-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--vs-bg-elevated);
+  border: 1px solid var(--vs-border);
+  border-radius: var(--vs-radius-sm);
+  padding: 8px 14px;
+
+  &--winner {
+    border-color: var(--vs-accent-green);
+  }
+}
+
+.vs-modal__table-wrap {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.vs-modal__empty {
+  padding: 32px;
+  text-align: center;
+  color: var(--vs-text-muted);
+}
+
+.vs-question-cell {
+  max-width: 320px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+}
+
+.vs-result-icon {
+  font-size: 16px;
+  text-align: center;
+}
+
+.vs-row--correct .vs-result-icon {
+  color: var(--vs-accent-green);
+}
+
+.vs-row--wrong .vs-result-icon {
+  color: var(--vs-accent-red);
+}

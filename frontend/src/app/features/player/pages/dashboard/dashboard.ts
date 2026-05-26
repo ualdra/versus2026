@@ -55,7 +55,7 @@ export class Dashboard implements OnInit {
     }
     this.statsApi.mine().subscribe({
       next: (list) => {
-        this.statsList.set(list ?? []);
+        this.statsList.set(list?.byMode ?? []);
         this.loading.set(false);
       },
       error: () => this.loading.set(false),

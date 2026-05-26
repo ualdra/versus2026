@@ -6,20 +6,20 @@ import { TopbarComponent } from '../../../../shared/components/layout/topbar/top
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserService } from '../../../../core/services/user.service';
 import { UserMe } from '../../../../core/models/auth.models';
+import { AudioSettings, audioService } from '../../../../core/services/AudioService';
+import {
+  DEFAULT_NOTIFICATION_PREFS,
+  NOTIFICATION_PREFS_KEY,
+} from '../../../../core/models/notification.models';
 
-type AudioPrefs = { sfx: number; bgm: number; muted: boolean; reducedFeedback: boolean };
-type NotificationPrefs = { friendRequests: boolean; matchInvites: boolean; achievements: boolean };
+type AudioFormValue = { sfxEnabled: boolean; bgmEnabled: boolean; sfxVolume: number; bgmVolume: number };
 
-const AUDIO_KEY = 'vs.audioPrefs';
-const NOTIFICATION_KEY = 'vs.notificationPrefs';
-
-const DEFAULT_AUDIO: AudioPrefs = { sfx: 75, bgm: 45, muted: false, reducedFeedback: false };
-const DEFAULT_NOTIFICATIONS: NotificationPrefs = {
-  friendRequests: true,
-  matchInvites: true,
-  achievements: true,
+const DEFAULT_AUDIO_FORM: AudioFormValue = {
+  sfxEnabled: true,
+  bgmEnabled: true,
+  sfxVolume: 80,
+  bgmVolume: 40,
 };
-
 @Component({
   selector: 'app-settings',
   standalone: true,
@@ -58,8 +58,8 @@ export class Settings implements OnInit {
     y: [0, [Validators.min(-50), Validators.max(50)]],
   });
 
-  readonly notificationsForm = this.fb.nonNullable.group(DEFAULT_NOTIFICATIONS);
-  readonly audioForm = this.fb.nonNullable.group(DEFAULT_AUDIO);
+  readonly notificationsForm = this.fb.nonNullable.group(DEFAULT_NOTIFICATION_PREFS);
+  readonly audioForm = this.fb.nonNullable.group(DEFAULT_AUDIO_FORM);
   readonly deleteForm = this.fb.nonNullable.group({ username: ['', Validators.required] });
 
   readonly topbarUser = computed(() => ({
@@ -93,15 +93,13 @@ export class Settings implements OnInit {
       error: () => this.error.set('No se pudo cargar tu cuenta.'),
     });
 
-    this.notificationsForm.patchValue(this.readPrefs(NOTIFICATION_KEY, DEFAULT_NOTIFICATIONS));
-    this.audioForm.patchValue(this.readPrefs(AUDIO_KEY, DEFAULT_AUDIO));
+    this.notificationsForm.patchValue(this.readPrefs(NOTIFICATION_PREFS_KEY, DEFAULT_NOTIFICATION_PREFS));
+    this.audioForm.patchValue(this.toAudioForm(audioService.getSettings()), { emitEvent: false });
 
     this.notificationsForm.valueChanges.subscribe((value) =>
-      localStorage.setItem(NOTIFICATION_KEY, JSON.stringify(value))
+      localStorage.setItem(NOTIFICATION_PREFS_KEY, JSON.stringify(value))
     );
-    this.audioForm.valueChanges.subscribe((value) =>
-      localStorage.setItem(AUDIO_KEY, JSON.stringify(value))
-    );
+    this.audioForm.valueChanges.subscribe(() => this.applyAudioSettings());
   }
 
   saveAccount(): void {
@@ -202,6 +200,14 @@ export class Settings implements OnInit {
     });
   }
 
+  previewSfx(): void {
+    audioService.play('correct');
+  }
+
+  previewBgm(): void {
+    audioService.playBgm('bgm_menu');
+  }
+
   private applyUser(u: UserMe, message: string): void {
     this.me.set(u);
     this.auth.updateCachedUser({ username: u.username, avatarUrl: u.avatarUrl, role: u.role });
@@ -218,6 +224,27 @@ export class Settings implements OnInit {
     } catch {
       return fallback;
     }
+  }
+
+  private applyAudioSettings(): void {
+    const value = this.audioForm.getRawValue();
+    audioService.setSfxEnabled(value.sfxEnabled);
+    audioService.setBgmEnabled(value.bgmEnabled);
+    audioService.setVolume(value.sfxVolume / 100, value.bgmVolume / 100);
+  }
+
+  private toAudioForm(settings: AudioSettings): AudioFormValue {
+    return {
+      sfxEnabled: settings.sfxEnabled,
+      bgmEnabled: settings.bgmEnabled,
+      sfxVolume: this.toPercent(settings.sfxVolume),
+      bgmVolume: this.toPercent(settings.bgmVolume),
+    };
+  }
+
+  private toPercent(value: number): number {
+    if (!Number.isFinite(value)) return 0;
+    return Math.round(Math.max(0, Math.min(1, value)) * 100);
   }
 
   private cropToBlob(src: string): Promise<Blob> {

@@ -57,3 +57,46 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## Modos multijugador (Sprint 4 — PRs #91 #92 #93)
+
+Los tres modos PvP comparten la misma infraestructura de WebSocket (`@stomp/stompjs` sobre SockJS) y conviven con los modos single-player ya existentes.
+
+### Estructura
+
+```
+src/app/
+├── core/
+│   ├── models/duel.models.ts          ← payloads tipados + DuelEvent (discriminated union)
+│   └── services/duel.service.ts        ← multicast WS, sendAnswer*, sendSabotage
+├── shared/components/ui/
+│   └── numeric-input/                  ← extraído de Precision single-player y compartido
+└── features/
+    ├── binary-duel/pages/binary-duel/
+    ├── precision-duel/pages/precision-duel/
+    └── sabotage/
+        ├── components/sabotage-panel/
+        ├── components/effect-indicator/
+        └── pages/sabotage/
+```
+
+### Rutas (lazy)
+
+| Ruta | Componente |
+|---|---|
+| `/play/binary-duel/:matchId` | `BinaryDuel` |
+| `/play/precision-duel/:matchId` | `PrecisionDuel` |
+| `/play/sabotage/:matchId` | `Sabotage` |
+
+El componente `Lobby` navega automáticamente a la ruta del modo correspondiente cuando recibe `MATCH_START`.
+
+### Patrón de implementación
+
+Cada página de duelo:
+
+1. Inyecta `DuelService.duelEvents$(matchId)` (multicast con `shareReplay`) y se suscribe en `ngOnInit`.
+2. Mantiene su estado en signals locales (`selfRuntime`, `oppRuntime`, `currentQuestion`, `phase`, `secondsLeft`). No usa un store global.
+3. Alinea el timer del round con `serverNow` recibido en cada `QUESTION` (autoridad sigue siendo el servidor).
+4. Al recibir `MATCH_END` navega a `/play/result` con `multiplayer: true`, `outcome` y `opponent`.
+
+Contrato completo de eventos y reglas por modo en [`docs/guia-de-coordinación-técnica.md`](../docs/guia-de-coordinación-técnica.md) y [`docs/backend/modules/duel.md`](../docs/backend/modules/duel.md).

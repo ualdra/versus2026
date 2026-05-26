@@ -6,31 +6,28 @@
     <div class="vs-admin__head">
       <div>
         <h1>USUARIOS</h1>
-        <div class="vs-admin__head-meta">14 287 usuarios · 312 baneados · 8 moderadores</div>
-      </div>
-      <div style="display: flex; gap: 8px">
-        <button class="btn btn--ghost btn--sm">EXPORTAR CSV</button>
-        <button class="btn btn--primary btn--sm">+ INVITAR</button>
+        <div class="vs-admin__head-meta">{{ totalElements() }} usuarios</div>
       </div>
     </div>
 
     <!-- Filtros -->
     <div style="display: flex; gap: 10px; align-items: center">
       <input class="vs-input" placeholder="Buscar por usuario o email…"
-             style="flex: 1; max-width: 360px; font-size: 13px" />
-      <select class="vs-input" style="width: 150px; font-size: 12px">
-        <option>Todos los roles</option>
-        <option>Jugador</option>
-        <option>Moderador</option>
-        <option>Admin</option>
+             style="flex: 1; max-width: 360px; font-size: 13px"
+             (input)="onSearch($event)" />
+      <select class="vs-input" style="width: 150px; font-size: 12px" (change)="onRoleFilter($event)">
+        <option value="">Todos los roles</option>
+        <option value="PLAYER">Jugador</option>
+        <option value="MODERATOR">Moderador</option>
+        <option value="ADMIN">Admin</option>
       </select>
-      <select class="vs-input" style="width: 150px; font-size: 12px">
-        <option>Cualquier estado</option>
-        <option>Activo</option>
-        <option>Baneado</option>
+      <select class="vs-input" style="width: 150px; font-size: 12px" (change)="onActiveFilter($event)">
+        <option value="">Cualquier estado</option>
+        <option value="true">Activo</option>
+        <option value="false">Baneado</option>
       </select>
       <div style="flex: 1"></div>
-      <span class="vs-pill vs-pill--mute">6 / 14 287</span>
+      <span class="vs-pill vs-pill--mute">{{ users().length }} / {{ totalElements() }}</span>
     </div>
 
     <!-- Tabla -->
@@ -38,64 +35,87 @@
       <table class="vs-table">
         <thead>
           <tr>
-            <th><input type="checkbox" /></th>
             <th>Usuario</th>
+            <th>Email</th>
             <th>Rol</th>
-            <th>Nivel</th>
-            <th>Partidas</th>
             <th>Alta</th>
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          @for (u of users; track u.name) {
+          @for (u of users(); track u.id) {
             <tr>
-              <td><input type="checkbox" /></td>
               <td>
                 <div class="vs-user-cell">
                   <div class="vs-avatar" style="width: 30px; height: 30px; font-size: 11px">
-                    {{ initials(u.name) }}
+                    {{ initials(u.username) }}
                   </div>
-                  <div>
-                    <div style="font-weight: 600; font-size: 13px">{{ u.name }}</div>
-                    <div style="font-size: 11px; color: var(--vs-text-muted)">{{ u.email }}</div>
-                  </div>
+                  <div style="font-weight: 600; font-size: 13px">{{ u.username }}</div>
                 </div>
               </td>
+              <td style="font-size: 12px; color: var(--vs-text-muted)">{{ u.email }}</td>
               <td>
-                <span class="vs-pill"
-                      [style.color]="roleColor(u.role)"
-                      [style.background]="roleBg(u.role)">
-                  <span class="vs-pill__dot"></span>{{ u.role.toUpperCase() }}
-                </span>
+                @if (editingRoleId() === u.id) {
+                  <select class="vs-input" style="font-size: 12px; padding: 4px 8px"
+                          (change)="applyRole(u, $event)"
+                          (blur)="cancelEditRole()">
+                    <option value="PLAYER" [selected]="u.role === 'PLAYER'">Jugador</option>
+                    <option value="MODERATOR" [selected]="u.role === 'MODERATOR'">Moderador</option>
+                    <option value="ADMIN" [selected]="u.role === 'ADMIN'">Admin</option>
+                  </select>
+                } @else {
+                  <span class="vs-pill"
+                        [style.color]="roleColor(u.role)"
+                        [style.background]="roleBg(u.role)"
+                        style="cursor: pointer"
+                        (click)="startEditRole(u.id)"
+                        title="Click para cambiar rol">
+                    <span class="vs-pill__dot"></span>{{ u.role }}
+                  </span>
+                }
               </td>
-              <td class="vs-mono">{{ u.level }}</td>
-              <td class="vs-mono">{{ u.games }}</td>
-              <td style="color: var(--vs-text-muted); font-size: 12px">{{ u.joined }}</td>
+              <td style="color: var(--vs-text-muted); font-size: 12px">{{ u.createdAt | slice:0:10 }}</td>
               <td>
-                @if (u.state === 'ok') {
+                @if (u.isActive) {
                   <span class="vs-pill vs-pill--ok"><span class="vs-pill__dot"></span>ACTIVO</span>
-                }
-                @if (u.state === 'warn') {
-                  <span class="vs-pill vs-pill--warn"><span class="vs-pill__dot"></span>AVISO</span>
-                }
-                @if (u.state === 'banned') {
+                } @else {
                   <span class="vs-pill vs-pill--err"><span class="vs-pill__dot"></span>BANEADO</span>
                 }
               </td>
               <td>
-                <div style="display: flex; gap: 6px">
-                  <button class="btn btn--ghost btn--sm" style="padding: 4px 10px; font-size: 10px">VER</button>
-                  <button class="btn btn--ghost btn--sm" style="padding: 4px 10px; font-size: 10px">EDITAR</button>
-                  <button class="btn btn--danger btn--sm" style="padding: 4px 10px; font-size: 10px">BAN</button>
-                </div>
+                <button class="btn btn--danger btn--sm"
+                        style="padding: 4px 10px; font-size: 10px"
+                        (click)="toggleStatus(u)">
+                  {{ u.isActive ? 'BAN' : 'ACTIVAR' }}
+                </button>
+              </td>
+            </tr>
+          }
+          @if (users().length === 0) {
+            <tr>
+              <td colspan="6" style="text-align: center; color: var(--vs-text-muted); padding: 24px">
+                Sin resultados.
               </td>
             </tr>
           }
         </tbody>
       </table>
     </div>
+
+    <!-- Paginación -->
+    @if (totalPages() > 1) {
+      <div style="display: flex; gap: 6px; justify-content: center; margin-top: 12px">
+        @for (p of pages; track p) {
+          <button class="btn btn--sm"
+                  [class.btn--primary]="page() === p"
+                  [class.btn--ghost]="page() !== p"
+                  (click)="goToPage(p)">
+            {{ p + 1 }}
+          </button>
+        }
+      </div>
+    }
 
   </div>
 </div>

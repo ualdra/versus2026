@@ -14,6 +14,9 @@ public class TestDatabaseCleaner {
 
     private static final List<String> TABLES = List.of(
             "user_achievements",
+            "match_invites",
+            "friend_requests",
+            "friendships",
             "match_answers",
             "match_rounds",
             "match_players",

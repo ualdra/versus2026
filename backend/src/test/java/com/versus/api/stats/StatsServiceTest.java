@@ -4,7 +4,9 @@ import com.versus.api.match.GameMode;
 import com.versus.api.match.MatchResult;
 import com.versus.api.match.domain.MatchPlayer;
 import com.versus.api.match.domain.MatchPlayerId;
+import com.versus.api.match.repo.MatchRepository;
 import com.versus.api.stats.domain.PlayerStats;
+import com.versus.api.stats.dto.PlayerStatsOverviewResponse;
 import com.versus.api.stats.dto.PlayerStatsResponse;
 import com.versus.api.stats.repo.PlayerStatsRepository;
 
@@ -30,6 +32,7 @@ import static org.mockito.Mockito.*;
 class StatsServiceTest {
 
     @Mock PlayerStatsRepository playerStats;
+    @Mock MatchRepository matches;
     @InjectMocks StatsService statsService;
 
     private static final UUID USER_ID = UUID.fromString("aaaa0000-0000-0000-0000-000000000001");
@@ -63,15 +66,15 @@ class StatsServiceTest {
         @Test
         void devuelveEntryPorCadaGameMode() {
             when(playerStats.findByUserIdAndMode(any(), any())).thenReturn(Optional.empty());
-            List<PlayerStatsResponse> list = statsService.getMine(USER_ID);
-            assertThat(list).hasSize(GameMode.values().length);
+            PlayerStatsOverviewResponse overview = statsService.getMine(USER_ID);
+            assertThat(overview.byMode()).hasSize(GameMode.values().length);
         }
 
         @DisplayName("Sin stats previas los valores son cero")
         @Test
         void sinStats_valoresEnCero() {
             when(playerStats.findByUserIdAndMode(any(), any())).thenReturn(Optional.empty());
-            List<PlayerStatsResponse> list = statsService.getMine(USER_ID);
+            List<PlayerStatsResponse> list = statsService.getMine(USER_ID).byMode();
             assertThat(list).allSatisfy(s -> {
                 assertThat(s.gamesPlayed()).isZero();
                 assertThat(s.gamesWon()).isZero();

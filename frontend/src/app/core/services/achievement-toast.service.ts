@@ -1,5 +1,9 @@
 import { Injectable, signal } from '@angular/core';
 import { Achievement } from '../models/achievement.models';
+import {
+  DEFAULT_NOTIFICATION_PREFS,
+  NOTIFICATION_PREFS_KEY,
+} from '../models/notification.models';
 
 export interface AchievementToast {
   id: number;
@@ -21,6 +25,7 @@ export class AchievementToastService {
 
   show(achievement: Achievement): void {
     if (!achievement.unlocked) return;
+    if (!this.achievementNotificationsEnabled()) return;
 
     const now = Date.now();
     const lastSeen = this.recentKeys.get(achievement.key);
@@ -34,5 +39,15 @@ export class AchievementToastService {
 
   dismiss(id: number): void {
     this.items.update((items) => items.filter((item) => item.id !== id));
+  }
+
+  private achievementNotificationsEnabled(): boolean {
+    const raw = localStorage.getItem(NOTIFICATION_PREFS_KEY);
+    if (!raw) return DEFAULT_NOTIFICATION_PREFS.achievements;
+    try {
+      return { ...DEFAULT_NOTIFICATION_PREFS, ...JSON.parse(raw) }.achievements;
+    } catch {
+      return DEFAULT_NOTIFICATION_PREFS.achievements;
+    }
   }
 }

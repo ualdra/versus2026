@@ -1,4 +1,4 @@
-# Stack de tests de integración — parte del proyecto `versus`.
+# Stack de tests de integración.
 #
 # Comparte espacio de nombres con docker-compose.yml + docker-compose.dev.yml
 # (mismo `name: versus`), por lo que reutiliza por nombre:
@@ -61,16 +61,16 @@ services:
       IT_DB_NAME: versus_test
       IT_DB_USER: versus_test
       IT_DB_PASSWORD: versus_test_pass
+      SPRING_PROFILES_ACTIVE: test
+      JWT_SECRET: test-secret-test-secret-test-secret-test-secret-test-secret-test-secret-aaaa
+      STORAGE_PROVIDER: local
+      STORAGE_LOCAL_ROOT: target/local-storage
     volumes:
       - ./backend:/app
       - maven_cache:/root/.m2
     working_dir: /app
     networks:
       - app-network
-    # `verify` invoca compile + test-compile + surefire + failsafe.
-    # Surefire (perfil `test`, H2 en memoria) y failsafe (perfil `it`,
-    # postgres de db-test vía IT_DB_*) corren con configuraciones aisladas.
-    # Hacemos chmod y ejecutamos mvnw en un solo comando de shell.
     command: >
       sh -c "chmod +x /app/mvnw && ./mvnw verify --batch-mode -Dstyle.color=never"
 
