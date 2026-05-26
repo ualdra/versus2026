@@ -30,8 +30,10 @@ class SurvivalGameIT extends AbstractIT {
 
     @BeforeEach
     void setupPlayer() {
+        // Necesitamos varios pares para que getRandomPairForSurvival siempre
+        // encuentre uno con el mismo categoria/subcategoria y valor distinto.
         for (int i = 0; i < 8; i++)
-            factories.binaryQuestion();
+            factories.binaryCardPair();
         player = factories.user();
     }
 
@@ -79,7 +81,7 @@ class SurvivalGameIT extends AbstractIT {
             JsonPath start = startSurvival();
             UUID sessionId = UUID.fromString(start.getString("sessionId"));
             UUID questionId = UUID.fromString(start.getString("question.id"));
-            UUID correctId = testQuery.correctOptionFor(questionId);
+            UUID correctId = testQuery.winningCardIdForSession(sessionId, player.getId());
 
             answer(sessionId, questionId, correctId)
                     .statusCode(200)
@@ -95,7 +97,7 @@ class SurvivalGameIT extends AbstractIT {
             JsonPath start = startSurvival();
             UUID sessionId = UUID.fromString(start.getString("sessionId"));
             UUID questionId = UUID.fromString(start.getString("question.id"));
-            UUID wrongId = testQuery.wrongOptionFor(questionId);
+            UUID wrongId = testQuery.losingCardIdForSession(sessionId, player.getId());
 
             answer(sessionId, questionId, wrongId)
                     .statusCode(200)
@@ -115,7 +117,7 @@ class SurvivalGameIT extends AbstractIT {
             int totalScore = 0;
             for (int i = 0; i < 3; i++) {
                 UUID questionId = UUID.fromString(currentQuestionId);
-                UUID correctId = testQuery.correctOptionFor(questionId);
+                UUID correctId = testQuery.winningCardIdForSession(sessionId, player.getId());
                 JsonPath resp = answer(sessionId, questionId, correctId)
                         .statusCode(200)
                         .extract().jsonPath();
@@ -137,7 +139,7 @@ class SurvivalGameIT extends AbstractIT {
             JsonPath lastResp = null;
             for (int i = 0; i < 3; i++) {
                 UUID questionId = UUID.fromString(currentQuestionId);
-                UUID wrongId = testQuery.wrongOptionFor(questionId);
+                UUID wrongId = testQuery.losingCardIdForSession(sessionId, player.getId());
                 lastResp = answer(sessionId, questionId, wrongId)
                         .statusCode(200)
                         .extract().jsonPath();
@@ -165,7 +167,7 @@ class SurvivalGameIT extends AbstractIT {
             JsonPath start = startSurvival();
             UUID sessionId = UUID.fromString(start.getString("sessionId"));
             UUID questionId = UUID.fromString(start.getString("question.id"));
-            UUID anyOption = testQuery.correctOptionFor(questionId);
+            UUID anyOption = testQuery.winningCardIdForSession(sessionId, player.getId());
 
             User other = factories.user();
             http.reqAs(other)

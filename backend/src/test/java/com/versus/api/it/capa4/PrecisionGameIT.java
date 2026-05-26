@@ -30,8 +30,9 @@ class PrecisionGameIT extends AbstractIT {
 
     @BeforeEach
     void setup() {
+        // Cartas numéricas con valor=100; las aserciones de lifeDelta dependen de ese valor.
         for (int i = 0; i < 8; i++)
-            factories.numericQuestion();
+            factories.numericCard();
         player = factories.user();
     }
 

@@ -19,7 +19,7 @@
 		<springdoc.version>2.7.0</springdoc.version>
 		<aws.sdk.version>2.30.31</aws.sdk.version>
 		<lombok.version>1.18.42</lombok.version>
-		<jacoco.version>0.8.12</jacoco.version>
+		<jacoco.version>0.8.13</jacoco.version>
 	</properties>
 	<dependencies>
 
@@ -43,6 +43,10 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-json</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

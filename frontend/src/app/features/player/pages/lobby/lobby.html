@@ -77,7 +77,7 @@
       <div class="vs-lobby__duel">
         @if (selfPlayer(); as me) {
           <div class="vs-lobby__player" [class.is-ready]="me.ready">
-            <div class="vs-avatar vs-avatar--xl">{{ me.username.slice(0, 2).toUpperCase() }}</div>
+            <vs-avatar size="xl" [name]="me.username" [avatarUrl]="me.avatarUrl" />
             <div class="vs-display" style="font-size: 24px; margin-top: 10px">{{ me.username }}</div>
             @if (me.ready) {
               <span class="vs-pill vs-pill--ok" style="margin-top: 10px">
@@ -95,7 +95,7 @@
 
         @if (opponentSlot(); as opp) {
           <div class="vs-lobby__player" [class.is-ready]="opp.ready">
-            <div class="vs-avatar vs-avatar--xl">{{ opp.username.slice(0, 2).toUpperCase() }}</div>
+            <vs-avatar size="xl" [name]="opp.username" [avatarUrl]="opp.avatarUrl" />
             <div class="vs-display" style="font-size: 24px; margin-top: 10px">{{ opp.username }}</div>
             @if (opp.ready) {
               <span class="vs-pill vs-pill--ok" style="margin-top: 10px">

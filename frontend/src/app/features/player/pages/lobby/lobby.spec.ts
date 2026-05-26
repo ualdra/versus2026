@@ -118,6 +118,24 @@ describe('Lobby', () => {
     expect(component.lobby()?.players.length).toBe(2);
   });
 
+  it('renders custom player avatars in the lobby', () => {
+    component.lobby.set({
+      ...structuredClone(initialLobby),
+      players: [
+        { userId: SELF_ID, username: 'me', avatarUrl: 'data:image/png;base64,self', ready: false },
+        { userId: OPP_ID, username: 'opp', avatarUrl: 'data:image/png;base64,opp', ready: false },
+      ],
+    });
+    fixture.detectChanges();
+
+    const imgs = fixture.nativeElement.querySelectorAll('.vs-lobby__player .vs-avatar img') as NodeListOf<HTMLImageElement>;
+
+    expect([...imgs].map((img) => img.getAttribute('src'))).toEqual([
+      'data:image/png;base64,self',
+      'data:image/png;base64,opp',
+    ]);
+  });
+
   it('redirects when matchId is missing', async () => {
     TestBed.resetTestingModule();
     await TestBed.configureTestingModule({

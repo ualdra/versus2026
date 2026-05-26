@@ -10,6 +10,7 @@ import {
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TopbarComponent } from '../../../../shared/components/layout/topbar/topbar';
+import { AvatarComponent } from '../../../../shared/components/ui/avatar/avatar.component';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserService } from '../../../../core/services/user.service';
 import { StatsService } from '../../../../core/services/stats.service';
@@ -37,7 +38,7 @@ const MULTIPLAYER_MODES: GameMode[] = ['BINARY_DUEL', 'PRECISION_DUEL', 'SABOTAG
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [RouterLink, TopbarComponent, MatchDetailModal, DatePipe],
+  imports: [RouterLink, TopbarComponent, MatchDetailModal, DatePipe, AvatarComponent],
   templateUrl: './profile.html',
   styleUrl: './profile.scss',
 })
@@ -60,11 +61,6 @@ export class Profile implements OnInit {
   readonly achievements = signal<Achievement[]>([]);
 
   private chartDrawn = false;
-
-  readonly initials = computed(() => {
-    const u = this.me()?.username ?? this.auth.user()?.username ?? '';
-    return u.slice(0, 2).toUpperCase() || '??';
-  });
 
   readonly username = computed(() => this.me()?.username ?? this.auth.user()?.username ?? '—');
 

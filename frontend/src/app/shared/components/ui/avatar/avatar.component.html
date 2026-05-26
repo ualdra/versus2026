@@ -1,0 +1,16 @@
+<span
+  class="vs-avatar"
+  [class.vs-avatar--sm]="size() === 'sm'"
+  [class.vs-avatar--lg]="size() === 'lg'"
+  [class.vs-avatar--xl]="size() === 'xl'"
+  [style.width.px]="sizePx()"
+  [style.height.px]="sizePx()"
+  [style.font-size.px]="fontSizePx()"
+>
+  @if (imageUrl(); as url) {
+    <img [src]="url" [alt]="alt()" (error)="markImageFailed(url)" />
+  } @else {
+    {{ initials() }}
+  }
+  <ng-content />
+</span>

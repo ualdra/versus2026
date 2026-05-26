@@ -17,7 +17,9 @@ import com.versus.api.match.repo.MatchAnswerRepository;
 import com.versus.api.match.repo.MatchPlayerRepository;
 import com.versus.api.match.repo.MatchRepository;
 import com.versus.api.match.repo.MatchRoundRepository;
+import com.versus.api.stats.RankingService;
 import com.versus.api.stats.StatsService;
+import com.versus.api.stats.dto.EloChangeResponse;
 import com.versus.api.users.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +42,7 @@ public class DuelPersistenceService {
     private final MatchAnswerRepository matchAnswers;
     private final UserRepository users;
     private final StatsService statsService;
+    private final RankingService rankingService;
     private final AchievementService achievementService;
 
     /**
@@ -90,7 +93,7 @@ public class DuelPersistenceService {
      * y dispara stats + logros (mismo flujo que GameService.finishMatch + recordFinishedGame).
      */
     @Transactional
-    public Map<UUID, List<AchievementResponse>> finalizeMatch(
+    public DuelFinalizationResult finalizeMatch(
             UUID matchId,
             GameMode mode,
             Map<UUID, MatchResult> results,
@@ -103,6 +106,7 @@ public class DuelPersistenceService {
             matches.save(m);
         });
 
+        Map<UUID, EloChangeResponse> eloChanges = rankingService.recordPvpResult(mode, results);
         java.util.Map<UUID, List<AchievementResponse>> unlocked = new java.util.HashMap<>();
         runtimes.values().forEach(runtime -> {
             MatchPlayerId id = new MatchPlayerId(matchId, runtime.getUserId());
@@ -126,7 +130,7 @@ public class DuelPersistenceService {
             unlocked.put(runtime.getUserId(), achievements == null ? List.of() : achievements);
         });
 
-        return unlocked;
+        return new DuelFinalizationResult(unlocked, eloChanges);
     }
 
     public String resolveUsername(UUID userId) {
