@@ -1,0 +1,37 @@
+<div class="vs-invite-toasts" aria-live="polite" aria-atomic="false">
+  @for (toast of toasts.items(); track toast.id) {
+    <article class="vs-invite-toast">
+      <div class="vs-invite-toast__icon">VS</div>
+      <div class="vs-invite-toast__body">
+        <div class="vs-invite-toast__eyebrow">{{ toast.title }}</div>
+        <div class="vs-invite-toast__message">{{ toast.message }}</div>
+        <div class="vs-invite-toast__actions">
+          <button
+            type="button"
+            class="vs-invite-toast__btn vs-invite-toast__btn--accept"
+            [disabled]="toast.accepting"
+            (click)="toasts.accept(toast.id)"
+          >
+            {{ toast.accepting ? 'Entrando…' : 'Aceptar' }}
+          </button>
+          <button
+            type="button"
+            class="vs-invite-toast__btn vs-invite-toast__btn--decline"
+            [disabled]="toast.accepting"
+            (click)="toasts.dismiss(toast.id)"
+          >
+            Ignorar
+          </button>
+        </div>
+      </div>
+      <button
+        type="button"
+        class="vs-invite-toast__close"
+        aria-label="Cerrar"
+        (click)="toasts.dismiss(toast.id)"
+      >
+        x
+      </button>
+    </article>
+  }
+</div>

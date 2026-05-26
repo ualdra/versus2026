@@ -298,6 +298,17 @@ $mode-colors: (
 
 Si `avatarUrl` es `null`, el componente muestra las iniciales del usuario sobre el fondo de gradiente.
 
+### Invite Toasts (pop-up de invitaciones)
+
+Pop-ups en esquina inferior-derecha para invitaciones a partida. Se apilan encima de los achievement toasts (`bottom: 108px`). Auto-desaparecen a los 8 segundos. Gestionados por `InviteToastService` y `<app-invite-toasts />` en `app.html`.
+
+```html
+<!-- montado globalmente en app.html -->
+<app-invite-toasts />
+```
+
+Botones en el toast y en el panel de notificaciones del topbar permiten Aceptar (navega al lobby) o Rechazar directamente, sin ir a /friends.
+
 ### Temporizador
 
 ```scss

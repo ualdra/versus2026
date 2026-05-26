@@ -76,7 +76,38 @@
           } @else {
             <div class="vs-notification-center__list vs-scroll">
               @for (notification of notificationItems(); track notification.id) {
-                @if (notification.route) {
+                @if (notification.type === 'MATCH_INVITE' && notification.inviteId) {
+                  <div
+                    class="vs-notification-item"
+                    [class.is-unread]="!notification.read"
+                    [class.tone-warning]="true"
+                  >
+                    <span class="vs-notification-item__icon">{{ notificationIcon(notification) }}</span>
+                    <span class="vs-notification-item__body">
+                      <span class="vs-notification-item__title">{{ notification.title }}</span>
+                      <span class="vs-notification-item__message">{{ notification.message }}</span>
+                      <span class="vs-notification-item__time">{{ notificationTime(notification) }}</span>
+                      <span class="vs-notification-item__invite-actions">
+                        <button
+                          type="button"
+                          class="vs-notification-item__invite-btn vs-notification-item__invite-btn--accept"
+                          [disabled]="isInviteActioning(notification.id)"
+                          (click)="acceptInvite(notification, $event)"
+                        >
+                          {{ isInviteActioning(notification.id) ? 'Entrando…' : 'Aceptar' }}
+                        </button>
+                        <button
+                          type="button"
+                          class="vs-notification-item__invite-btn vs-notification-item__invite-btn--decline"
+                          [disabled]="isInviteActioning(notification.id)"
+                          (click)="declineInvite(notification, $event)"
+                        >
+                          Rechazar
+                        </button>
+                      </span>
+                    </span>
+                  </div>
+                } @else if (notification.route) {
                   <a
                     class="vs-notification-item"
                     [class.is-unread]="!notification.read"

@@ -41,6 +41,39 @@
         </div>
       }
 
+      @if (canInviteFriends()) {
+        <form class="vs-lobby__invite" (submit)="inviteSelectedFriend(); $event.preventDefault()">
+          <div class="vs-stat-label">Invitar amigo</div>
+          @if (availableInviteFriends().length > 0) {
+            <div class="vs-lobby__invite-row">
+              <select
+                class="vs-input"
+                aria-label="Amigo para invitar"
+                [value]="selectedFriendId()"
+                [disabled]="inviteBusy()"
+                (change)="onFriendSelect($any($event.target).value)">
+                @for (friend of availableInviteFriends(); track friend.userId) {
+                  <option [value]="friend.userId">{{ friend.username }}</option>
+                }
+              </select>
+              <button type="submit" class="btn btn--gold" [disabled]="inviteBusy() || !selectedFriendId()">
+                @if (inviteStatus() === 'sending') { ENVIANDO... } @else { INVITAR }
+              </button>
+            </div>
+          } @else {
+            <div class="vs-lobby__invite-empty">
+              @if (inviteStatus() === 'loading') { Cargando amigos... } @else { No hay amigos disponibles. }
+            </div>
+          }
+          @if (inviteMessage()) {
+            <div class="vs-lobby__invite-feedback vs-lobby__invite-feedback--ok">{{ inviteMessage() }}</div>
+          }
+          @if (inviteError()) {
+            <div class="vs-lobby__invite-feedback vs-lobby__invite-feedback--err">{{ inviteError() }}</div>
+          }
+        </form>
+      }
+
       <div class="vs-lobby__duel">
         @if (selfPlayer(); as me) {
           <div class="vs-lobby__player" [class.is-ready]="me.ready">

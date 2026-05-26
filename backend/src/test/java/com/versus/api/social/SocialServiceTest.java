@@ -9,6 +9,7 @@ import com.versus.api.match.MatchService;
 import com.versus.api.match.MatchStatus;
 import com.versus.api.match.dto.LobbyStateDto;
 import com.versus.api.match.state.LiveMatchState;
+import com.versus.api.match.state.LivePlayerState;
 import com.versus.api.social.domain.FriendRequest;
 import com.versus.api.social.domain.Friendship;
 import com.versus.api.social.domain.MatchInvite;
@@ -185,6 +186,37 @@ class SocialServiceTest {
             ArgumentCaptor<SocialEventEnvelope> event = ArgumentCaptor.forClass(SocialEventEnvelope.class);
             verify(messaging).convertAndSendToUser(eq(FRIEND_ID.toString()), eq("/queue/social"), event.capture());
             assertThat(event.getValue().type()).isEqualTo("MATCH_INVITE");
+        }
+
+        @Test
+        @DisplayName("usa una sala privada existente para invitar al amigo")
+        void usaSalaPrivadaExistente() {
+            when(friendships.existsByUserLowIdAndUserHighId(any(), any())).thenReturn(true);
+            LiveMatchState state = LiveMatchState.builder()
+                    .matchId(MATCH_ID)
+                    .mode(GameMode.BINARY_DUEL)
+                    .roomCode("ABC123")
+                    .status(MatchStatus.WAITING)
+                    .createdAt(Instant.now())
+                    .build();
+            state.getPlayers().put(USER_ID, LivePlayerState.builder()
+                    .userId(USER_ID)
+                    .username("self")
+                    .ready(false)
+                    .build());
+            when(matchService.requireLive(MATCH_ID)).thenReturn(state);
+
+            var result = socialService.inviteToMatch(
+                    USER_ID,
+                    new CreateMatchInviteRequest(FRIEND_ID, GameMode.BINARY_DUEL, MATCH_ID));
+
+            assertThat(result.matchId()).isEqualTo(MATCH_ID);
+            verify(matchService, never()).createMatch(any(), any());
+            verify(matchService, never()).addPlayer(MATCH_ID, USER_ID);
+            verify(matchInvites).save(argThat(invite ->
+                    MATCH_ID.equals(invite.getMatchId())
+                            && FRIEND_ID.equals(invite.getToUserId())
+                            && invite.getMode() == GameMode.BINARY_DUEL));
         }
 
         @Test

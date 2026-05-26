@@ -140,6 +140,10 @@ Flujos soportados:
 - Invitar a amigos a `BINARY_DUEL`, `PRECISION_DUEL` o `SABOTAGE`.
 - Aceptar una invitación y navegar al lobby devuelto por el backend.
 
+## Invitaciones desde lobby privado
+
+La pantalla `features/player/pages/lobby` muestra un selector de amigos cuando la sala privada esta en `WAITING`, tiene `roomCode` y aun queda hueco. El envio reutiliza `SocialService.inviteFriend(friendUserId, mode, matchId)` para crear una invitacion sobre el match actual sin abrir una sala nueva.
+
 ## AuthInterceptor
 
 Inyectado globalmente en `app.config.ts`. Actúa en todas las peticiones a `/api/**`:

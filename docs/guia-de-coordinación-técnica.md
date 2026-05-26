@@ -184,7 +184,7 @@ Gestiona busqueda de jugadores, solicitudes de amistad e invitaciones a partidas
 | `POST` | `/api/social/friend-requests/{id}/accept` | Acepta una solicitud recibida. |
 | `POST` | `/api/social/friend-requests/{id}/decline` | Rechaza una solicitud recibida. |
 | `DELETE` | `/api/social/friend-requests/{id}` | Cancela una solicitud enviada. |
-| `POST` | `/api/social/match-invites` | Crea lobby PvP e invita a `{ friendUserId, mode }`. |
+| `POST` | `/api/social/match-invites` | Crea lobby PvP o reutiliza sala privada e invita a `{ friendUserId, mode, matchId? }`. |
 | `GET` | `/api/social/match-invites/incoming` | Invitaciones recibidas pendientes. |
 | `GET` | `/api/social/match-invites/outgoing` | Invitaciones enviadas recientes. |
 | `POST` | `/api/social/match-invites/{id}/accept` | Acepta invitación y devuelve `LobbyStateDto`. |
@@ -210,10 +210,11 @@ POST /api/social/friend-requests
 
 ```json
 POST /api/social/match-invites
-{ "friendUserId": "uuid", "mode": "BINARY_DUEL" }
+{ "friendUserId": "uuid", "mode": "BINARY_DUEL", "matchId": "uuid-opcional" }
 ```
 
 `mode` debe ser multijugador: `BINARY_DUEL`, `PRECISION_DUEL` o `SABOTAGE`.
+Si `matchId` se envia, debe ser una sala privada viva en `WAITING`, con el emisor dentro, mismo modo y espacio disponible.
 
 ### Eventos WebSocket
 
@@ -417,6 +418,8 @@ Detalles de la capa de transport (envelope, autenticación, reconexión) en [`do
 ```
 
 ### Flujo de partida privada con código (issue #105)
+
+Desde el lobby privado, el host tambien puede invitar a un amigo con `POST /api/social/match-invites` enviando `{ friendUserId, mode, matchId }`.
 
 ```
 1. Host: POST /api/matches {mode}              → crea sala y recibe {matchId, roomCode}

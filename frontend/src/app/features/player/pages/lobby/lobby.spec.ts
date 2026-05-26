@@ -6,12 +6,15 @@ import { describe, beforeEach, afterEach, it, expect, vi } from 'vitest';
 import { Lobby } from './lobby';
 import { AuthService } from '../../../../core/services/auth.service';
 import { MatchService } from '../../../../core/services/match.service';
+import { SocialService } from '../../../../core/services/social.service';
 import { WebSocketService } from '../../../../core/services/websocket.service';
 import { LobbyState } from '../../../../core/models/match.models';
+import { Friend } from '../../../../core/models/social.models';
 import { MatchEvent } from '../../../../core/models/ws.models';
 
 const SELF_ID = 'user-self';
 const OPP_ID = 'user-opponent';
+const FRIEND_ID = 'user-friend';
 
 const initialLobby: LobbyState = {
   matchId: 'match-1',
@@ -25,6 +28,10 @@ const initialLobby: LobbyState = {
   ],
 };
 
+const availableFriends: Friend[] = [
+  { userId: FRIEND_ID, username: 'friend', avatarUrl: null, friendsSince: '2026-01-01T00:00:00Z' },
+];
+
 describe('Lobby', () => {
   let component: Lobby;
   let fixture: ComponentFixture<Lobby>;
@@ -35,6 +42,10 @@ describe('Lobby', () => {
     sendReady: ReturnType<typeof vi.fn>;
     sendUnready: ReturnType<typeof vi.fn>;
     abandonMatch: ReturnType<typeof vi.fn>;
+  };
+  let socialSpy: {
+    friends: ReturnType<typeof vi.fn>;
+    inviteFriend: ReturnType<typeof vi.fn>;
   };
   let wsSpy: { connect: ReturnType<typeof vi.fn> };
   let routerSpy: {
@@ -50,6 +61,19 @@ describe('Lobby', () => {
       sendReady: vi.fn(),
       sendUnready: vi.fn(),
       abandonMatch: vi.fn(() => of(void 0)),
+    };
+    socialSpy = {
+      friends: vi.fn(() => of(availableFriends)),
+      inviteFriend: vi.fn(() => of({
+        id: 'invite-1',
+        matchId: 'match-1',
+        mode: 'BINARY_DUEL',
+        from: { userId: SELF_ID, username: 'me', avatarUrl: null, relation: 'SELF' },
+        to: { userId: FRIEND_ID, username: 'friend', avatarUrl: null, relation: 'FRIEND' },
+        status: 'PENDING',
+        createdAt: '2026-01-01T00:00:00Z',
+        respondedAt: null,
+      })),
     };
     wsSpy = { connect: vi.fn() };
     routerSpy = {
@@ -70,6 +94,7 @@ describe('Lobby', () => {
         { provide: Router, useValue: routerSpy },
         { provide: AuthService, useValue: authStub },
         { provide: MatchService, useValue: matchSpy },
+        { provide: SocialService, useValue: socialSpy },
         { provide: WebSocketService, useValue: wsSpy },
       ],
     }).compileComponents();
@@ -102,6 +127,7 @@ describe('Lobby', () => {
         { provide: Router, useValue: routerSpy },
         { provide: AuthService, useValue: { user: () => null, isAuthenticated: () => false, updateCachedUser: vi.fn() } },
         { provide: MatchService, useValue: matchSpy },
+        { provide: SocialService, useValue: socialSpy },
         { provide: WebSocketService, useValue: wsSpy },
       ],
     }).compileComponents();
@@ -157,6 +183,7 @@ describe('Lobby', () => {
         { provide: Router, useValue: routerSpy },
         { provide: AuthService, useValue: { user: () => null, isAuthenticated: () => false, updateCachedUser: vi.fn() } },
         { provide: MatchService, useValue: matchSpy },
+        { provide: SocialService, useValue: socialSpy },
         { provide: WebSocketService, useValue: wsSpy },
       ],
     }).compileComponents().then(async () => {
@@ -180,6 +207,7 @@ describe('Lobby', () => {
         { provide: Router, useValue: routerSpy },
         { provide: AuthService, useValue: { user: () => null, isAuthenticated: () => false, updateCachedUser: vi.fn() } },
         { provide: MatchService, useValue: matchSpy },
+        { provide: SocialService, useValue: socialSpy },
         { provide: WebSocketService, useValue: wsSpy },
       ],
     }).compileComponents().then(async () => {
@@ -205,6 +233,19 @@ describe('Lobby', () => {
     });
     component.toggleReady();
     expect(matchSpy.sendUnready).toHaveBeenCalledWith('match-1');
+  });
+
+  it('invites a friend to the current private lobby', () => {
+    component.lobby.set({
+      ...structuredClone(initialLobby),
+      players: [{ userId: SELF_ID, username: 'me', avatarUrl: null, ready: false }],
+    });
+    fixture.detectChanges();
+
+    component.inviteSelectedFriend();
+
+    expect(socialSpy.inviteFriend).toHaveBeenCalledWith(FRIEND_ID, 'BINARY_DUEL', 'match-1');
+    expect(component.inviteMessage()).toContain('friend');
   });
 
   it('cancel calls abandonMatch and navigates to /play/select', async () => {
