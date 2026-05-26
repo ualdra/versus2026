@@ -1,3 +1,4 @@
+// TODO: wire to /api/admin/spiders when Pipeline Scrapy feature is done (#45-#50)
 import { Component, signal } from '@angular/core';
 import { AdminSidebarComponent } from '../../components/sidebar/sidebar';
 

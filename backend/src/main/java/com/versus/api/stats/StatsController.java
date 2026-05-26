@@ -1,6 +1,8 @@
 package com.versus.api.stats;
 
 import com.versus.api.match.GameMode;
+import com.versus.api.stats.dto.PlayerStatsOverviewResponse;
+import com.versus.api.stats.dto.PlayerStatsResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -24,17 +26,19 @@ public class StatsController {
 
     private final StatsService statsService;
 
-    @Operation(summary = "Get the authenticated player's stats",
-            parameters = @Parameter(name = "mode",
-                    description = "Filter by game mode (SURVIVAL, PRECISION, BINARY_DUEL, PRECISION_DUEL, SABOTAGE). " +
-                                  "Omit to get aggregated stats across all modes."),
-            responses = @ApiResponse(responseCode = "200", description = "Stats returned"))
-    @GetMapping("/me")
-    public Object mine(@AuthenticationPrincipal UUID userId,
-                       @RequestParam(required = false) GameMode mode) {
-        if (mode != null) {
-            return statsService.getMine(userId, mode);
-        }
+    @Operation(summary = "Get the authenticated player's stats across all modes",
+            responses = @ApiResponse(responseCode = "200", description = "Overview returned"))
+    @GetMapping(value = "/me", params = "!mode")
+    public PlayerStatsOverviewResponse mine(@AuthenticationPrincipal UUID userId) {
         return statsService.getMine(userId);
+    }
+
+    @Operation(summary = "Get the authenticated player's stats for a specific mode",
+            parameters = @Parameter(name = "mode", description = "Game mode (SURVIVAL, PRECISION, BINARY_DUEL, PRECISION_DUEL, SABOTAGE)"),
+            responses = @ApiResponse(responseCode = "200", description = "Stats returned"))
+    @GetMapping(value = "/me", params = "mode")
+    public PlayerStatsResponse mineByMode(@AuthenticationPrincipal UUID userId,
+                                          @RequestParam GameMode mode) {
+        return statsService.getMine(userId, mode);
     }
 }

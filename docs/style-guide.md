@@ -243,6 +243,61 @@ $mode-colors: (
 // Uso: <span class="vs-badge" [style.color]="modeColor">SABOTAJE</span>
 ```
 
+### Avatar
+
+```scss
+.vs-avatar {
+  width: 32px;
+  height: 32px;
+  position: relative;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--vs-accent-red), var(--vs-accent-purple));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  border: 1px solid var(--vs-border-strong);
+  flex-shrink: 0;
+  color: #fff;
+  overflow: hidden; // clips custom image to circle
+
+  // Fills the container and crops the image to the circular shape
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+  }
+
+  &--lg { width: 56px; height: 56px; font-size: 22px; }
+  &--xl { width: 88px; height: 88px; font-size: 32px; }
+}
+
+// Achievement badge overlay
+.vs-avatar__achievement {
+  position: absolute;
+  right: -7px;
+  bottom: -7px;
+  background: var(--vs-accent-gold);
+  border-radius: 999px;
+}
+```
+
+**Uso con imagen personalizada** (Cloudflare/URL):
+```html
+<div class="vs-avatar">
+  @if (user.avatarUrl) {
+    <img [src]="user.avatarUrl" alt="" />
+  } @else {
+    {{ initials }}
+  }
+</div>
+```
+
+Si `avatarUrl` es `null`, el componente muestra las iniciales del usuario sobre el fondo de gradiente.
+
 ### Temporizador
 
 ```scss

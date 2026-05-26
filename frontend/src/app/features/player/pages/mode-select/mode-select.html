@@ -7,6 +7,65 @@
       <h1 class="vs-display" style="font-size: 48px; margin-top: 6px">ELIGE TU INFIERNO</h1>
     </div>
 
+    <section class="vs-private-room">
+      <div class="vs-private-room__head">
+        <div>
+          <div class="vs-q-label">PARTIDA PRIVADA</div>
+          <h2 class="vs-display vs-private-room__title">CÓDIGO DE SALA</h2>
+        </div>
+        <span class="vs-pill vs-pill--info">2J · Invitación</span>
+      </div>
+
+      <div class="vs-private-room__content">
+        <div class="vs-private-room__create">
+          <div class="vs-stat-label">Crear sala</div>
+          <div class="vs-private-room__modes" role="group" aria-label="Modo de la sala privada">
+            @for (m of multiplayerModes; track m.key) {
+              <button
+                type="button"
+                class="vs-private-room__mode"
+                [class.is-active]="selectedPrivateMode() === m.mode"
+                [style.--mode-color]="m.color"
+                [disabled]="privateBusy()"
+                (click)="selectPrivateMode(m.mode)">
+                <span class="vs-private-room__mode-icon">{{ m.icon }}</span>
+                <span>{{ m.name }}</span>
+              </button>
+            }
+          </div>
+          <button
+            type="button"
+            class="btn btn--gold vs-private-room__action"
+            [disabled]="privateBusy()"
+            (click)="createPrivateRoom()">
+            @if (privateStatus() === 'creating') { CREANDO... } @else { CREAR PRIVADA }
+          </button>
+        </div>
+
+        <form class="vs-private-room__join" (submit)="joinPrivateRoom(); $event.preventDefault()">
+          <div class="vs-stat-label">Unirse por código</div>
+          <div class="vs-private-room__join-row">
+            <input
+              #roomCodeInput
+              class="vs-input vs-input--numeric vs-private-room__input"
+              [value]="roomCode()"
+              maxlength="8"
+              autocomplete="off"
+              placeholder="ABC234"
+              aria-label="Código de sala"
+              [disabled]="privateBusy()"
+              (input)="onRoomCodeInput(roomCodeInput.value)" />
+            <button type="submit" class="btn btn--primary" [disabled]="privateBusy()">
+              @if (privateStatus() === 'joining') { ENTRANDO... } @else { UNIRSE }
+            </button>
+          </div>
+          @if (privateError()) {
+            <div class="vs-private-room__error">{{ privateError() }}</div>
+          }
+        </form>
+      </div>
+    </section>
+
     <div class="vs-modesel__grid">
       @for (m of modes; track m.key) {
         <a [routerLink]="m.route"

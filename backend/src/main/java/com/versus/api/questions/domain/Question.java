@@ -60,6 +60,9 @@ public class Question {
     @Column(name = "text_hash", length = 64, unique = true)
     private String textHash;
 
+    @Column(columnDefinition = "TEXT")
+    private String explanation;
+
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<QuestionOption> options = new ArrayList<>();

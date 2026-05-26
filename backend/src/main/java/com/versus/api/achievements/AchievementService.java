@@ -75,6 +75,22 @@ public class AchievementService {
         return unlocked;
     }
 
+    @Transactional
+    public Optional<AchievementResponse> unlockByKey(UUID userId, String key) {
+        Achievement achievement = achievements.findByKey(key)
+                .orElse(null);
+        if (achievement == null
+                || userAchievements.existsByIdUserIdAndIdAchievementId(userId, achievement.getId())) {
+            return Optional.empty();
+        }
+        AchievementResponse unlocked = unlock(userId, achievement);
+        messaging.convertAndSendToUser(
+                userId.toString(),
+                "/queue/achievements",
+                AchievementUnlockedEvent.of(unlocked));
+        return Optional.of(unlocked);
+    }
+
     private Set<String> keysUnlockedByGame(UUID userId,
                                            GameMode mode,
                                            MatchPlayer matchPlayer,

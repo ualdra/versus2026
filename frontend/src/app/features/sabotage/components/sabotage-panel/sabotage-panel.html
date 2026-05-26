@@ -1,0 +1,21 @@
+<aside class="vs-sabotage-panel">
+  <div class="vs-sabotage-panel__header">
+    <span class="vs-q-label">SABOTAJES</span>
+    <span class="vs-mono vs-sabotage-panel__tokens">{{ tokens }} ⚡</span>
+  </div>
+  <div class="vs-sabotage-panel__list">
+    @for (item of catalog(); track item.type) {
+      <button
+        type="button"
+        class="vs-sabotage-btn"
+        [disabled]="isLocked()"
+        (click)="click(item.type)">
+        <div class="vs-sabotage-btn__label">{{ item.label }}</div>
+        <div class="vs-sabotage-btn__desc">{{ item.description }}</div>
+      </button>
+    }
+  </div>
+  @if (tokens <= 0) {
+    <div class="vs-sabotage-panel__hint">Gana tokens encadenando 3 aciertos.</div>
+  }
+</aside>

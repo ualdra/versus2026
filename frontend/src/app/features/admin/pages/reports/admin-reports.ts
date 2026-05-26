@@ -1,3 +1,4 @@
+// TODO: wire to moderation endpoints when feature Moderación is done (#80-#81)
 import { Component } from '@angular/core';
 import { AdminSidebarComponent } from '../../components/sidebar/sidebar';
 

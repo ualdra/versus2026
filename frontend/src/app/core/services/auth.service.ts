@@ -6,6 +6,9 @@ import {
   AuthResponse,
   AuthUser,
   LoginRequest,
+  MessageResponse,
+  PasswordResetConfirmRequest,
+  PasswordResetRequest,
   RegisterRequest,
 } from '../models/auth.models';
 
@@ -28,10 +31,22 @@ export class AuthService {
       .pipe(tap((res) => this.persist(res)));
   }
 
-  register(req: RegisterRequest): Observable<AuthResponse> {
-    return this.http
-      .post<AuthResponse>(`${this.base}/auth/register`, req)
-      .pipe(tap((res) => this.persist(res)));
+  register(req: RegisterRequest): Observable<MessageResponse> {
+    return this.http.post<MessageResponse>(`${this.base}/auth/register`, req);
+  }
+
+  verifyEmail(token: string): Observable<MessageResponse> {
+    return this.http.get<MessageResponse>(`${this.base}/auth/verify`, {
+      params: { token },
+    });
+  }
+
+  requestPasswordReset(req: PasswordResetRequest): Observable<MessageResponse> {
+    return this.http.post<MessageResponse>(`${this.base}/auth/password-reset/request`, req);
+  }
+
+  confirmPasswordReset(req: PasswordResetConfirmRequest): Observable<MessageResponse> {
+    return this.http.post<MessageResponse>(`${this.base}/auth/password-reset/confirm`, req);
   }
 
   refresh(): Observable<AuthResponse> {

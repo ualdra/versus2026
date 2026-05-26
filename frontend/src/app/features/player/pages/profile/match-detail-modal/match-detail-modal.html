@@ -1,0 +1,65 @@
+@if (matchId) {
+  <div class="vs-modal-backdrop" (click)="close()">
+    <div class="vs-modal vs-card" (click)="$event.stopPropagation()">
+
+      <div class="vs-modal__header">
+        <span class="vs-display" style="font-size: 22px">
+          @if (detail()) { Detalle · {{ modeLabel(detail()!.mode) }} }
+          @else { Cargando... }
+        </span>
+        <button class="btn btn--ghost btn--sm" (click)="close()">✕</button>
+      </div>
+
+      @if (loading()) {
+        <div class="vs-modal__empty">Cargando rounds...</div>
+      }
+
+      @if (detail(); as d) {
+        @if (d.players.length > 1) {
+          <div class="vs-modal__players">
+            @for (p of d.players; track p.userId) {
+              <div class="vs-player-chip" [class.vs-player-chip--winner]="p.result === 'WIN'">
+                <span class="vs-mono" style="font-size: 13px">{{ p.username }}</span>
+                <span class="vs-mono" style="color: var(--vs-accent-gold)">{{ p.score }} pts</span>
+                <span class="vs-mono" style="font-size: 11px; color: var(--vs-text-muted)">{{ p.result }}</span>
+              </div>
+            }
+          </div>
+        }
+
+        @if (d.rounds.length === 0) {
+          <div class="vs-modal__empty">No hay rounds registrados.</div>
+        } @else {
+          <div class="vs-modal__table-wrap">
+            <table class="vs-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Pregunta</th>
+                  <th>Respuesta</th>
+                  <th>Correcto</th>
+                  <th>Desviación</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (r of d.rounds; track r.roundNumber) {
+                  <tr [class.vs-row--correct]="r.correct" [class.vs-row--wrong]="!r.correct">
+                    <td class="vs-mono">{{ r.roundNumber }}</td>
+                    <td class="vs-question-cell">{{ r.questionText }}</td>
+                    <td class="vs-mono">{{ r.answerGiven || '—' }}</td>
+                    <td class="vs-result-icon">{{ r.correct ? '✓' : '✗' }}</td>
+                    <td class="vs-mono">
+                      @if (r.deviation !== null) { {{ r.deviation | number:'1.1-1' }}% }
+                      @else { — }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      }
+
+    </div>
+  </div>
+}

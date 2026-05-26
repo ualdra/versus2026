@@ -1,0 +1,82 @@
+# Stack de tests de integración.
+#
+# Comparte espacio de nombres con docker-compose.yml + docker-compose.dev.yml
+# (mismo `name: versus`), por lo que reutiliza por nombre:
+#   - la red `app-network`
+#   - el volumen `maven_cache` del entorno de desarrollo (sin re-descarga
+#     de dependencias si ya levantaste el devcontainer alguna vez)
+#
+# Servicios bajo el perfil `test` para que un `up` sin perfil sea no-op.
+#
+# Uso 1) Suite completa dentro de contenedores (idéntico a CI):
+#   docker compose -f docker-compose.test.yml --profile test \
+#     up --build --abort-on-container-exit \
+#     --exit-code-from backend-test backend-test
+#
+# Uso 2) Solo Postgres en contenedor, tests desde IDE/host:
+#   docker compose -f docker-compose.test.yml --profile test up -d db-test
+#   cd backend && ./mvnw verify
+#
+# `application-it.properties` apunta a localhost:5433 por defecto (uso 2).
+# Dentro de `backend-test` (uso 1) las env vars IT_DB_* sobrescriben los
+# placeholders para apuntar a `db-test:5432`. Usamos IT_DB_* en lugar de
+# SPRING_DATASOURCE_* a propósito: estas últimas se aplicarían a todo el
+# contenedor y contaminarían las pruebas unitarias de surefire (perfil
+# `test` con H2), provocando un mismatch driver/URL que rompe
+# ApiApplicationTests.contextLoads.
+
+name: versus
+
+services:
+
+  db-test:
+    image: postgres:18-alpine
+    profiles: ["test"]
+    environment:
+      POSTGRES_DB: versus_test
+      POSTGRES_USER: versus_test
+      POSTGRES_PASSWORD: versus_test_pass
+    ports:
+      - "5433:5432"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U versus_test -d versus_test"]
+      interval: 3s
+      timeout: 2s
+      retries: 20
+
+  backend-test:
+    profiles: ["test"]
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    depends_on:
+      db-test:
+        condition: service_healthy
+    environment:
+      IT_DB_HOST: db-test
+      IT_DB_PORT: "5432"
+      IT_DB_NAME: versus_test
+      IT_DB_USER: versus_test
+      IT_DB_PASSWORD: versus_test_pass
+      SPRING_PROFILES_ACTIVE: test
+      JWT_SECRET: test-secret-test-secret-test-secret-test-secret-test-secret-test-secret-aaaa
+      STORAGE_PROVIDER: local
+      STORAGE_LOCAL_ROOT: target/local-storage
+    volumes:
+      - ./backend:/app
+      - maven_cache:/root/.m2
+    working_dir: /app
+    networks:
+      - app-network
+    command: >
+      sh -c "chmod +x /app/mvnw && ./mvnw verify --batch-mode -Dstyle.color=never"
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  maven_cache:

@@ -1,6 +1,9 @@
 package com.versus.api.users;
 
 import com.versus.api.common.dto.ErrorResponse;
+import com.versus.api.match.GameMode;
+import com.versus.api.match.MatchService;
+import com.versus.api.match.dto.MatchHistoryItemResponse;
 import com.versus.api.users.dto.ChangePasswordRequest;
 import com.versus.api.users.dto.UpdateMeRequest;
 import com.versus.api.users.dto.UpdateAvatarRequest;
@@ -14,12 +17,12 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -31,6 +34,7 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+    private final MatchService matchService;
 
     @Operation(summary = "Get the authenticated user's full profile",
             responses = @ApiResponse(responseCode = "200", description = "Profile returned"))
@@ -53,6 +57,17 @@ public class UserController {
         return userService.updateMe(userId, req);
     }
 
+    @Operation(summary = "Get the authenticated user's match history (paginated)",
+            responses = @ApiResponse(responseCode = "200", description = "History returned"))
+    @GetMapping("/me/history")
+    public Page<MatchHistoryItemResponse> history(
+            @AuthenticationPrincipal UUID userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) GameMode mode) {
+        return matchService.getHistory(userId, page, size, mode);
+    }
+
     @Operation(summary = "Change the authenticated user's password",
             responses = {
                     @ApiResponse(responseCode = "204", description = "Password changed"),
@@ -65,7 +80,7 @@ public class UserController {
                                @Valid @RequestBody ChangePasswordRequest req) {
         userService.changePassword(userId, req);
     }
-  
+
     @Operation(summary = "Select a predefined avatar URL",
             responses = @ApiResponse(responseCode = "200", description = "Avatar updated"))
     @PutMapping(value = "/me/avatar", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -81,7 +96,7 @@ public class UserController {
     public void deleteMe(@AuthenticationPrincipal UUID userId) {
         userService.deleteMe(userId);
     }
-  
+
     @Operation(summary = "Upload and set the authenticated user's avatar",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Avatar updated"),

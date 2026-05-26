@@ -4,19 +4,20 @@ Paquete raíz: `com.versus.api.match`
 Depende de: `users`, `questions`, `websocket`
 Estado:
 - ✅ **Lobby + matchmaking** (PR #90, Sprint 3) — REST de salas, scheduler de emparejamiento, lobby en tiempo real con countdown.
-- 🚧 **Modos multijugador**: lógica de partida (`BINARY_DUEL`, `PRECISION_DUEL`, `SABOTAGE`) pendiente de PRs #91/#92/#93.
+- ✅ **Modos multijugador**: la lógica de partida (`BINARY_DUEL` #91, `PRECISION_DUEL` #92, `SABOTAGE` #93) vive ahora en el módulo [`duel`](duel.md) (Sprint 4). `MatchService` publica `MatchStartedEvent` y el `DuelOrchestrator` arranca el ciclo de rondas.
+- ✅ **Partidas privadas con código de sala** (issue #105) — el host crea una sala privada, comparte un `roomCode` de 6 caracteres y el invitado se une sin pasar por matchmaking.
 
 ---
 
 ## Responsabilidad
 
-Define el ciclo de vida completo de una partida multijugador: creación de la sala, emparejamiento por modo, lobby con jugadores marcando "listo", countdown sincronizado, transición a `IN_PROGRESS`. La lógica concreta de cada modo (preguntas, daño, sabotaje) la añaden los PRs siguientes encima de esta base.
+Define el ciclo de vida completo de una partida multijugador: creación de la sala, emparejamiento por modo, unión privada por `roomCode`, lobby con jugadores marcando "listo", countdown sincronizado, transición a `IN_PROGRESS`. La lógica concreta de cada modo (preguntas, daño, sabotaje) la añaden los PRs siguientes encima de esta base.
 
 Ámbito explícitamente fuera (queda para PRs siguientes):
 
 - Emisión de preguntas y evaluación de respuestas (PR #91 en adelante).
 - Persistencia de `match_rounds` / `match_answers` (sucede en `endMatch`, lógica futura).
-- Salas privadas con `roomCode` para invitar amigos (issue #105).
+- Entrada por código de sala privado (issue #105). Las invitaciones entre amigos viven en el módulo [`social`](social.md) (issue #94).
 
 ---
 
@@ -129,6 +130,7 @@ classDiagram
         <<RestController>>
         +create(userId, CreateMatchRequest) MatchCreatedResponse
         +join(userId, matchId) LobbyStateDto
+        +joinByCode(userId, JoinMatchByCodeRequest) LobbyStateDto
         +abandon(userId, matchId) 204
         +lobby(matchId) LobbyStateDto
     }
@@ -159,6 +161,7 @@ classDiagram
         -ScheduledExecutorService scheduler
         +createMatch(mode, ownerUserId) LiveMatchState
         +addPlayer(matchId, userId) LiveMatchState
+        +joinByRoomCode(roomCode, userId) LiveMatchState
         +markReady(matchId, userId, ready)
         +removePlayer(matchId, userId)
         +requireLive(matchId) LiveMatchState
@@ -256,6 +259,35 @@ sequenceDiagram
 
 ---
 
+## Flujo end-to-end (sala privada → lobby → start)
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant A as Host
+    participant B as Invitado
+    participant M as MatchService
+    participant Br as STOMP broker
+    participant DB as PostgreSQL
+
+    A->>M: POST /api/matches {mode}
+    M->>DB: INSERT matches (status=WAITING, room_code=ABC234)
+    M-->>A: 201 { matchId, mode, roomCode }
+    Note over A,B: A comparte el roomCode fuera de la app
+    B->>M: POST /api/matches/join-by-code {roomCode}
+    M->>DB: SELECT matches WHERE room_code=ABC234
+    M->>M: addPlayer(matchId, B)
+    M->>Br: PLAYER_JOINED en /topic/match/{matchId}
+    M-->>B: 200 LobbyStateDto
+    A->>Br: SEND /app/match/ready
+    B->>Br: SEND /app/match/ready
+    M->>Br: MATCH_STARTING + MATCH_START
+```
+
+El backend normaliza el código recibido a mayúsculas y elimina espacios o guiones (`abc-234` → `ABC234`). Si el formato no encaja con el alfabeto de códigos, devuelve `400 VALIDATION_ERROR`; si no existe una sala viva en `WAITING`, devuelve `404 NOT_FOUND` o `409 CONFLICT` según corresponda.
+
+---
+
 ## Endpoints REST
 
 `MatchController` (`/api/matches`):
@@ -264,6 +296,7 @@ sequenceDiagram
 |---|---|---|---|---|
 | `POST` | `/api/matches` | `{ mode: GameMode }` | `201 { matchId, mode, roomCode }` | Crea sala y añade al creador como primer player. Rechaza modos solo. |
 | `POST` | `/api/matches/{id}/join` | — | `200 LobbyStateDto` | Falla con `409` si llena o `status≠WAITING`. |
+| `POST` | `/api/matches/join-by-code` | `{ roomCode: string }` | `200 LobbyStateDto` | Une al usuario autenticado a una sala privada viva. Acepta minúsculas, espacios y guiones. |
 | `DELETE` | `/api/matches/{id}/abandon` | — | `204` | Si la sala queda vacía y aún en `WAITING`, se cierra. |
 | `GET` | `/api/matches/{id}/lobby` | — | `200 LobbyStateDto` | Snapshot inicial usado tras un refresh de la pestaña. |
 
@@ -344,10 +377,10 @@ Razones:
 
 | Pieza | Fichero | Rol |
 |---|---|---|
-| `MatchService` (TS) | `frontend/src/app/core/services/match.service.ts` | REST + suscripción a `/topic/match/{id}` y `/user/queue/match`; helpers `sendReady`, `sendUnready`, `sendAbandon`. |
+| `MatchService` (TS) | `frontend/src/app/core/services/match.service.ts` | REST + suscripción a `/topic/match/{id}` y `/user/queue/match`; crea sala privada, une por código y expone helpers `sendReady`, `sendUnready`, `sendAbandon`. |
 | Página `Queue` | `frontend/src/app/features/player/pages/queue/queue.ts` | Pulsa `joinQueue(mode)`, espera `MATCH_FOUND`, redirige a `/play/lobby/:matchId`. |
 | Página `Lobby` | `frontend/src/app/features/player/pages/lobby/lobby.ts` | Carga estado vía `getLobby`, suscribe a `lobbyEvents$`, máquina de estados `loading → lobby → starting → started/left/error`, botón ready, countdown sincronizado. |
-| `mode-select` | `frontend/src/app/features/player/pages/mode-select/mode-select.ts` | Cards multijugador rutean a `/play/queue/{key}` (`binary`, `pduel`, `sabotage`). |
+| `mode-select` | `frontend/src/app/features/player/pages/mode-select/mode-select.ts` | Cards multijugador rutean a `/play/queue/{key}` (`binary`, `pduel`, `sabotage`) y el panel de partida privada permite crear sala o entrar con `roomCode`. |
 
 Estado del componente `Lobby` (signals):
 
@@ -434,7 +467,7 @@ Tabla: matchmaking_queue
 
 | Fichero | Cobertura |
 |---|---|
-| `MatchServiceTest.java` | `createMatch`, `addPlayer` (idempotente / sala llena), `markReady`, broadcast de countdown cuando todos listos, `removePlayer` (limpieza al vaciar), `notifyMatchFound`. |
+| `MatchServiceTest.java` | `createMatch`, `addPlayer` (idempotente / sala llena), `joinByRoomCode` (normalización / errores), `markReady`, broadcast de countdown cuando todos listos, `removePlayer` (limpieza al vaciar), `notifyMatchFound`. |
 | `MatchmakingServiceTest.java` | `joinQueue` (idempotencia y cambio de modo), `leaveQueue`, `pollAndMatch` con 2 y 4 jugadores → 1 y 2 partidas creadas y colas vaciadas. |
 | `JwtChannelInterceptorTest.java` | (en módulo websocket) auth STOMP. |
 
@@ -454,6 +487,13 @@ Dos navegadores logueados como `playerA` y `playerB`:
 4. Tras el countdown ambos ven banner "¡PARTIDA INICIADA!" (la UI del modo es trabajo de PR #91).
 5. Si A pulsa CANCELAR antes del countdown, B ve "El rival ha abandonado" y vuelve a `/play/select` tras 2 s.
 6. Refrescar la pestaña de A en `/play/lobby/:id` reconstruye el estado vía `GET /api/matches/{id}/lobby` + reconexión WS, sin afectar a B.
+
+Sala privada:
+
+1. A va a `/play/select`, elige modo en "PARTIDA PRIVADA" y pulsa "CREAR PRIVADA".
+2. A llega a `/play/lobby/<uuid>` y ve un `roomCode` de 6 caracteres.
+3. B va a `/play/select`, introduce el código y pulsa "UNIRSE".
+4. B llega al mismo lobby; ambos ven `PLAYER_JOINED`, marcan listo y arrancan la partida con el flujo normal.
 
 ## WebSocket
 
@@ -484,8 +524,7 @@ Los handlers concretos (`MatchWebSocketController`) se añaden a este módulo en
 
 ## Trabajo pendiente (PRs siguientes)
 
-- **PR #91 (Binary Duel):** lógica de juego — emitir `QUESTION`, recibir respuestas vía `/app/match/answer`, evaluar, emitir `ROUND_RESULT` y al final `MATCH_END`. Persistir `match_rounds`, `match_answers`, `match_players.result` en `endMatch()`.
-- **PR #92 (Precision Duel):** misma estructura adaptada a preguntas numéricas. Extracción previa de la fórmula de Precision a `match.logic.PrecisionDamageCalculator`.
-- **PR #93 (Sabotaje):** handler `/app/match/sabotage`, tokens, efectos `TIME_BOMB` / `OBFUSCATE` / `LIFE_STEAL`, `convertAndSendToUser` para payloads que solo debe ver el receptor del efecto.
-- **Frontend:** páginas `binary-duel`, `precision-duel`, `sabotage` y extensión multiplayer de `result.ts` con vista comparativa head-to-head.
-- **Salas privadas con `roomCode`:** issue #105, fuera del Sprint 3.
+- ✅ **PRs #91/#92/#93** (Sprint 4): la lógica de los 3 modos multijugador vive en el módulo [`duel`](duel.md). `MatchService.startMatch()` publica `MatchStartedEvent` y el `DuelOrchestrator` toma el relevo.
+
+- **Entrada por código de sala privado:** issue #105, fuera del Sprint 4. Las invitaciones entre amigos se documentan en [`social.md`](social.md).
+- **Persistencia del runtime para sobrevivir reinicios** (Redis): seguimiento futuro; ver [`duel.md`](duel.md#trabajo-de-follow-up-fuera-del-sprint-4).

@@ -23,6 +23,7 @@ public class UserService {
 
     private final UserRepository users;
     private final PasswordEncoder passwordEncoder;
+
     private final MediaService mediaService;
 
 
@@ -70,20 +71,18 @@ public class UserService {
         u.setAvatarUrl(avatarUrl);
         users.save(u);
         return toMe(u);
+
     }  
 
     @Transactional
     public UserMeResponse updateAvatar(UUID userId, MultipartFile file) {
-        User u = users.findById(userId)
-                .orElseThrow(() -> ApiException.notFound("User not found"));
+        User u = activeUser(userId);
         MediaAssetResponse avatar = mediaService.uploadAvatar(userId, file);
         u.setAvatarUrl(avatar.url());
         users.save(u);
         return toMe(u);
     }
 
-
-    /** DEAD CODE: Comprobar validaciones para aplicar guards de imágenes
     @Transactional
     public UserMeResponse updateAvatarUpload(UUID userId, byte[] bytes, String contentType) {
         User u = activeUser(userId);
@@ -101,7 +100,7 @@ public class UserService {
         users.save(u);
         return toMe(u);
     }
-    */
+
 
     @Transactional
     public void deleteMe(UUID userId) {

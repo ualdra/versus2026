@@ -16,8 +16,14 @@
         <div class="vs-display" style="font-size: 42px; line-height: 1">{{ username() }}</div>
         <div style="color: var(--vs-text-secondary); margin-top: 6px; font-size: 13px">
           Se unió en {{ joined() }} · <strong>{{ totalGames() }}</strong> partidas ·
-          <strong style="color: var(--vs-accent-gold)">mejor racha {{ bestStreakOverall() }}</strong> Â·
+          <strong style="color: var(--vs-accent-gold)">mejor racha {{ bestStreakOverall() }}</strong> ·
           <strong>{{ unlockedCount() }}/{{ totalAchievements() }}</strong> logros
+        </div>
+        <div class="vs-profile__meta">
+          @if (favoriteMode()) {
+            <span class="vs-meta-chip">Modo favorito: <strong>{{ favoriteMode() }}</strong></span>
+          }
+          <span class="vs-meta-chip">Tiempo jugado: <strong>{{ totalPlayTime() }}</strong></span>
         </div>
       </div>
       <div style="display: flex; flex-direction: column; gap: 8px">
@@ -28,12 +34,95 @@
     <!-- Columnas -->
     <div class="vs-profile__cols">
 
-      <!-- Columna izquierda -->
-      <div style="flex: 1; display: flex; flex-direction: column; gap: 24px">
+      <!-- Columna izquierda: estadísticas -->
+      <div class="vs-profile__left">
+
+        <!-- Singleplayer -->
         <div>
-          <div class="vs-section-title">Estadísticas por modo</div>
+          <div class="vs-section-title">Singleplayer</div>
           <div class="vs-card" style="padding: 0">
-            @if (modeStats().length === 0) {
+            <table class="vs-table">
+              <thead>
+                <tr>
+                  <th>Modo</th><th>Partidas</th><th>Victorias</th><th>% Acierto</th><th>Mejor racha</th><th>Punt. media</th><th>Desv. media</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (s of singleplayerStats(); track s.mode) {
+                  <tr>
+                    <td style="font-weight: 600">{{ s.mode }}</td>
+                    <td class="vs-mono">{{ s.games }}</td>
+                    <td class="vs-mono">{{ s.wins }}</td>
+                    <td class="vs-mono" style="color: var(--vs-accent-green)">{{ s.acc }}</td>
+                    <td class="vs-mono" style="color: var(--vs-accent-gold)">{{ s.best }}</td>
+                    <td class="vs-mono">{{ s.avgScore }}</td>
+                    <td class="vs-mono" style="color: var(--vs-text-muted)">{{ s.avgDev }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Multijugador -->
+        <div>
+          <div class="vs-section-title">Multijugador</div>
+          <div class="vs-card" style="padding: 0">
+            <table class="vs-table">
+              <thead>
+                <tr>
+                  <th>Modo</th><th>Partidas</th><th>Victorias</th><th>% Acierto</th><th>Mejor racha</th><th>Punt. media</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (s of multiplayerStats(); track s.mode) {
+                  <tr>
+                    <td style="font-weight: 600">{{ s.mode }}</td>
+                    <td class="vs-mono">{{ s.games }}</td>
+                    <td class="vs-mono">{{ s.wins }}</td>
+                    <td class="vs-mono" style="color: var(--vs-accent-green)">{{ s.acc }}</td>
+                    <td class="vs-mono" style="color: var(--vs-accent-gold)">{{ s.best }}</td>
+                    <td class="vs-mono">{{ s.avgScore }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Columna derecha: historial + logros -->
+      <div class="vs-profile__right">
+
+        <!-- Gráfica de progresión -->
+        @if (chartScores().length >= 2) {
+          <div>
+            <div class="vs-section-title">Progresión de puntuación</div>
+            <div class="vs-card vs-chart-card">
+              <canvas #chartCanvas class="vs-chart-canvas"></canvas>
+              <div class="vs-chart-labels">
+                <span class="vs-mono" style="font-size: 11px; color: var(--vs-text-muted)">más antiguo</span>
+                <span class="vs-mono" style="font-size: 11px; color: var(--vs-text-muted)">más reciente</span>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Historial de partidas -->
+        <div>
+          <div class="vs-section-title" style="display: flex; align-items: center; justify-content: space-between">
+            <span>Historial de partidas</span>
+            <div class="vs-filter-chips">
+              <button class="vs-chip" [class.vs-chip--active]="modeFilter() === undefined" (click)="applyFilter(undefined)">Todos</button>
+              <button class="vs-chip" [class.vs-chip--active]="modeFilter() === 'SURVIVAL'" (click)="applyFilter('SURVIVAL')">Supervivencia</button>
+              <button class="vs-chip" [class.vs-chip--active]="modeFilter() === 'PRECISION'" (click)="applyFilter('PRECISION')">Precisión</button>
+              <button class="vs-chip" [class.vs-chip--active]="modeFilter() === 'BINARY_DUEL'" (click)="applyFilter('BINARY_DUEL')">Duelo</button>
+            </div>
+          </div>
+
+          <div class="vs-card" style="padding: 0">
+            @if (history().length === 0 && !historyLoading()) {
               <div style="padding: 1.25rem; color: var(--vs-text-muted); text-align: center">
                 Aún no has jugado ninguna partida.
               </div>
@@ -41,25 +130,52 @@
               <table class="vs-table">
                 <thead>
                   <tr>
-                    <th>Modo</th><th>Partidas</th><th>Victorias</th><th>% Acierto</th><th>Mejor racha</th>
+                    <th>Modo</th>
+                    <th>Fecha</th>
+                    <th>Resultado</th>
+                    <th>Puntuación</th>
+                    <th>Rival</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
-                  @for (s of modeStats(); track s.mode) {
+                  @for (h of history(); track h.id) {
                     <tr>
-                      <td style="font-weight: 600">{{ s.mode }}</td>
-                      <td class="vs-mono">{{ s.games }}</td>
-                      <td class="vs-mono">{{ s.wins }}</td>
-                      <td class="vs-mono" style="color: var(--vs-accent-green)">{{ s.acc }}</td>
-                      <td class="vs-mono" style="color: var(--vs-accent-gold)">{{ s.best }}</td>
+                      <td style="font-weight: 600; font-size: 12px">{{ modeLabel(h.mode) }}</td>
+                      <td class="vs-mono" style="font-size: 12px; color: var(--vs-text-muted)">
+                        {{ h.finishedAt | date:'dd/MM/yy HH:mm' }}
+                      </td>
+                      <td>
+                        <span class="vs-result-badge" [class]="resultClass(h.result)">
+                          {{ h.result ?? '—' }}
+                        </span>
+                      </td>
+                      <td class="vs-mono" style="color: var(--vs-accent-gold)">{{ h.score }}</td>
+                      <td style="font-size: 12px; color: var(--vs-text-secondary)">
+                        {{ h.opponent?.username ?? '—' }}
+                      </td>
+                      <td>
+                        <button class="btn btn--ghost btn--xs" (click)="openDetail(h.id)">Ver</button>
+                      </td>
                     </tr>
                   }
                 </tbody>
               </table>
+
+              @if (historyLoading()) {
+                <div style="padding: 12px; text-align: center; color: var(--vs-text-muted); font-size: 13px">Cargando...</div>
+              }
+
+              @if (historyHasMore() && !historyLoading()) {
+                <div style="padding: 12px; text-align: center">
+                  <button class="btn btn--ghost btn--sm" (click)="loadMore()">Cargar más</button>
+                </div>
+              }
             }
           </div>
         </div>
 
+        <!-- Logros -->
         <div>
           <div class="vs-section-title vs-section-title--with-count">
             <span>Logros</span>
@@ -67,7 +183,7 @@
           </div>
           @if (achievements().length === 0) {
             <div class="vs-card" style="color: var(--vs-text-muted); text-align: center">
-              Aun no hay logros disponibles.
+              Aún no hay logros disponibles.
             </div>
           } @else {
             <div class="vs-achievements-grid">
@@ -85,8 +201,14 @@
             </div>
           }
         </div>
-      </div>
 
+      </div>
     </div>
   </div>
+
+  <!-- Modal de detalle de partida -->
+  <app-match-detail-modal
+    [matchId]="selectedMatchId()"
+    (closed)="closeDetail()"
+  />
 </div>
