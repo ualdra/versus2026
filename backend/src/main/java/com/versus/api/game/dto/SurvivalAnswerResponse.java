@@ -15,6 +15,7 @@ public record SurvivalAnswerResponse(
         int scoreDelta,
         QuestionResponse nextQuestion,
         boolean gameOver,
-        List<AchievementResponse> achievementsUnlocked
+        List<AchievementResponse> achievementsUnlocked,
+        java.util.Map<String, Number> revealedValues
 ) {
 }

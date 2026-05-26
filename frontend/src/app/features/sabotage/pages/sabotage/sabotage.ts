@@ -225,6 +225,9 @@ export class Sabotage implements OnInit, OnDestroy {
         sabotagesUsed: self?.sabotagesUsed ?? 0,
         won: outcome === 'WIN',
         reason: payload.reason,
+        eloDelta: self?.eloDelta ?? null,
+        previousRating: self?.previousRating ?? null,
+        currentRating: self?.currentRating ?? null,
         opponent: opp ? {
           username: opp.username,
           avatarUrl: null,

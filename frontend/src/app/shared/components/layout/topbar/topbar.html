@@ -165,18 +165,13 @@
           <div style="font-weight: 600; font-size: 13px">{{ displayUser().name }}</div>
           <div class="vs-mono" style="font-size: 11px; color: var(--vs-text-muted)">{{ displayUser().xp }} XP</div>
         </div>
-        <div class="vs-avatar">
-          @if (displayUser().avatarUrl) {
-            <img [src]="displayUser().avatarUrl" alt="" />
-          } @else {
-            {{ initials() }}
-          }
+        <vs-avatar [name]="displayUser().name" [avatarUrl]="displayUser().avatarUrl">
           @if (latestAchievement(); as achievement) {
             <span class="vs-avatar__achievement" [title]="achievement.name">
               {{ achievementLabel(achievement) }}
             </span>
           }
-        </div>
+        </vs-avatar>
       </button>
 
       @if (menuOpen()) {

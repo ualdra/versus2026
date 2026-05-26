@@ -1,0 +1,572 @@
+[
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "La Liga",
+    "carta": "Real Madrid",
+    "valor": 36
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa del Rey",
+    "carta": "Real Madrid",
+    "valor": 20
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa de la Liga",
+    "carta": "Real Madrid",
+    "valor": 1
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Supercopa de España",
+    "carta": "Real Madrid",
+    "valor": 14
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Total Nacionales",
+    "carta": "Real Madrid",
+    "valor": 71
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "La Liga",
+    "carta": "Barcelona",
+    "valor": 29
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa del Rey",
+    "carta": "Barcelona",
+    "valor": 32
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa de la Liga",
+    "carta": "Barcelona",
+    "valor": 2
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Supercopa de España",
+    "carta": "Barcelona",
+    "valor": 19
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Total Nacionales",
+    "carta": "Barcelona",
+    "valor": 82
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "La Liga",
+    "carta": "Athletic Club",
+    "valor": 8
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa del Rey",
+    "carta": "Athletic Club",
+    "valor": 24
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa de la Liga",
+    "carta": "Athletic Club",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Supercopa de España",
+    "carta": "Athletic Club",
+    "valor": 4
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Total Nacionales",
+    "carta": "Athletic Club",
+    "valor": 36
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "La Liga",
+    "carta": "Atlético  Madrid",
+    "valor": 11
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa del Rey",
+    "carta": "Atlético  Madrid",
+    "valor": 10
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa de la Liga",
+    "carta": "Atlético  Madrid",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Supercopa de España",
+    "carta": "Atlético  Madrid",
+    "valor": 4
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Total Nacionales",
+    "carta": "Atlético  Madrid",
+    "valor": 25
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "La Liga",
+    "carta": "Valencia",
+    "valor": 6
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa del Rey",
+    "carta": "Valencia",
+    "valor": 8
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa de la Liga",
+    "carta": "Valencia",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Supercopa de España",
+    "carta": "Valencia",
+    "valor": 2
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Total Nacionales",
+    "carta": "Valencia",
+    "valor": 16
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "La Liga",
+    "carta": "Sevilla",
+    "valor": 1
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa del Rey",
+    "carta": "Sevilla",
+    "valor": 5
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa de la Liga",
+    "carta": "Sevilla",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Supercopa de España",
+    "carta": "Sevilla",
+    "valor": 1
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Total Nacionales",
+    "carta": "Sevilla",
+    "valor": 7
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "La Liga",
+    "carta": "Real Zaragoza",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa del Rey",
+    "carta": "Real Zaragoza",
+    "valor": 6
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa de la Liga",
+    "carta": "Real Zaragoza",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Supercopa de España",
+    "carta": "Real Zaragoza",
+    "valor": 1
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Total Nacionales",
+    "carta": "Real Zaragoza",
+    "valor": 7
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "La Liga",
+    "carta": "Real Sociedad",
+    "valor": 2
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa del Rey",
+    "carta": "Real Sociedad",
+    "valor": 4
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa de la Liga",
+    "carta": "Real Sociedad",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Supercopa de España",
+    "carta": "Real Sociedad",
+    "valor": 1
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Total Nacionales",
+    "carta": "Real Sociedad",
+    "valor": 7
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "La Liga",
+    "carta": "Deportivo La Coruña",
+    "valor": 1
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa del Rey",
+    "carta": "Deportivo La Coruña",
+    "valor": 3
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa de la Liga",
+    "carta": "Deportivo La Coruña",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Supercopa de España",
+    "carta": "Deportivo La Coruña",
+    "valor": 3
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Total Nacionales",
+    "carta": "Deportivo La Coruña",
+    "valor": 7
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "La Liga",
+    "carta": "Real Betis",
+    "valor": 1
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa del Rey",
+    "carta": "Real Betis",
+    "valor": 3
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa de la Liga",
+    "carta": "Real Betis",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Supercopa de España",
+    "carta": "Real Betis",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Total Nacionales",
+    "carta": "Real Betis",
+    "valor": 4
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "La Liga",
+    "carta": "Espanyol",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa del Rey",
+    "carta": "Espanyol",
+    "valor": 4
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa de la Liga",
+    "carta": "Espanyol",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Supercopa de España",
+    "carta": "Espanyol",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Total Nacionales",
+    "carta": "Espanyol",
+    "valor": 4
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "La Liga",
+    "carta": "Real Unión",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa del Rey",
+    "carta": "Real Unión",
+    "valor": 4
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa de la Liga",
+    "carta": "Real Unión",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Supercopa de España",
+    "carta": "Real Unión",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Total Nacionales",
+    "carta": "Real Unión",
+    "valor": 4
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "La Liga",
+    "carta": "Villarreal",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa del Rey",
+    "carta": "Villarreal",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa de la Liga",
+    "carta": "Villarreal",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Supercopa de España",
+    "carta": "Villarreal",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Total Nacionales",
+    "carta": "Villarreal",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "La Liga",
+    "carta": "Mallorca",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa del Rey",
+    "carta": "Mallorca",
+    "valor": 1
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa de la Liga",
+    "carta": "Mallorca",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Supercopa de España",
+    "carta": "Mallorca",
+    "valor": 1
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Total Nacionales",
+    "carta": "Mallorca",
+    "valor": 2
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "La Liga",
+    "carta": "Arenas",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa del Rey",
+    "carta": "Arenas",
+    "valor": 1
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa de la Liga",
+    "carta": "Arenas",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Supercopa de España",
+    "carta": "Arenas",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Total Nacionales",
+    "carta": "Arenas",
+    "valor": 1
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "La Liga",
+    "carta": "Levante",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa del Rey",
+    "carta": "Levante",
+    "valor": 1
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa de la Liga",
+    "carta": "Levante",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Supercopa de España",
+    "carta": "Levante",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Total Nacionales",
+    "carta": "Levante",
+    "valor": 1
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "La Liga",
+    "carta": "Real Valladolid",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa del Rey",
+    "carta": "Real Valladolid",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa de la Liga",
+    "carta": "Real Valladolid",
+    "valor": 1
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Supercopa de España",
+    "carta": "Real Valladolid",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Total Nacionales",
+    "carta": "Real Valladolid",
+    "valor": 1
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "La Liga",
+    "carta": "Málaga",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa del Rey",
+    "carta": "Málaga",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa de la Liga",
+    "carta": "Málaga",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Supercopa de España",
+    "carta": "Málaga",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Total Nacionales",
+    "carta": "Málaga",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "La Liga",
+    "carta": "Celta Vigo",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa del Rey",
+    "carta": "Celta Vigo",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Copa de la Liga",
+    "carta": "Celta Vigo",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Supercopa de España",
+    "carta": "Celta Vigo",
+    "valor": 0
+  },
+  {
+    "categoria": "Títulos de Clubes Nacionales",
+    "subcategoria": "Total Nacionales",
+    "carta": "Celta Vigo",
+    "valor": 0
+  }
+]

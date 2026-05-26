@@ -25,8 +25,14 @@ public class MatchRound {
     @Column(name = "match_id", nullable = false)
     private UUID matchId;
 
-    @Column(name = "question_id", nullable = false)
+    @Column(name = "question_id", nullable = true)
     private UUID questionId;
+
+    @Column(name = "card_a_id")
+    private UUID cardAId;
+
+    @Column(name = "card_b_id")
+    private UUID cardBId;
 
     @Column(name = "round_number", nullable = false)
     private Integer roundNumber;

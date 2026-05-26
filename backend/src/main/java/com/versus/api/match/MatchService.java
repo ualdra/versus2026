@@ -168,12 +168,23 @@ public class MatchService {
 
     @Transactional
     public LiveMatchState createMatch(GameMode mode, UUID ownerUserId) {
+        return createMatch(mode, ownerUserId, MatchAccessType.PRIVATE_ROOM);
+    }
+
+    @Transactional
+    public LiveMatchState createPublicMatchmakingMatch(GameMode mode, UUID ownerUserId) {
+        return createMatch(mode, ownerUserId, MatchAccessType.PUBLIC_MATCHMAKING);
+    }
+
+    @Transactional
+    public LiveMatchState createMatch(GameMode mode, UUID ownerUserId, MatchAccessType accessType) {
         if (!mode.isMultiplayer()) {
             throw ApiException.validation("Cannot create multiplayer match for solo mode " + mode);
         }
         Match persisted = matchRepository.save(Match.builder()
                 .mode(mode)
                 .status(MatchStatus.WAITING)
+                .accessType(accessType)
                 .roomCode(generateUniqueRoomCode())
                 .ownerUserId(ownerUserId)
                 .build());
@@ -181,6 +192,7 @@ public class MatchService {
         LiveMatchState state = LiveMatchState.builder()
                 .matchId(persisted.getId())
                 .mode(mode)
+                .accessType(persisted.getAccessType())
                 .roomCode(persisted.getRoomCode())
                 .createdAt(persisted.getCreatedAt())
                 .build();

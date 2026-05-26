@@ -23,6 +23,7 @@
   font-size: 13px;
   color: var(--vs-text-secondary);
   cursor: pointer;
+  text-decoration: none;
   transition: background 150ms, color 150ms;
 
   &:hover { background: rgba(255,255,255,0.04); color: var(--vs-text-primary); }
@@ -32,6 +33,12 @@
     color: var(--vs-text-primary);
     border-left: 2px solid var(--vs-accent-blue);
     padding-left: 10px;
+  }
+
+  &--disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
   }
 }
 
@@ -149,3 +156,53 @@
 }
 
 .vs-report-opt__num { font-family: 'IBM Plex Mono', monospace; color: var(--vs-text-secondary); }
+
+// ─── Report grid ───────────────────────────────────────────────────────────
+
+.vs-reports-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 16px;
+}
+
+.vs-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.vs-report-card__deleted {
+  font-size: 12px;
+  color: var(--vs-text-muted);
+  font-style: italic;
+}
+
+// ─── Mobile breakpoint ─────────────────────────────────────────────────────
+
+@media (max-width: 768px) {
+  .vs-admin {
+    grid-template-columns: 1fr;
+  }
+
+  .vs-admin__side {
+    border-right: none;
+    border-bottom: 1px solid var(--vs-border);
+    padding: 16px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .vs-admin__main {
+    padding: 20px 16px;
+  }
+
+  .vs-admin__kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .vs-reports-grid {
+    grid-template-columns: 1fr;
+  }
+}

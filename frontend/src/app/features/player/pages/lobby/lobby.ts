@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TopbarComponent } from '../../../../shared/components/layout/topbar/topbar';
+import { AvatarComponent } from '../../../../shared/components/ui/avatar/avatar.component';
 import { AuthService } from '../../../../core/services/auth.service';
 import { MatchService } from '../../../../core/services/match.service';
 import { SocialService } from '../../../../core/services/social.service';
@@ -24,7 +25,7 @@ type InviteStatus = 'idle' | 'loading' | 'sending';
 @Component({
   selector: 'app-lobby',
   standalone: true,
-  imports: [RouterLink, TopbarComponent],
+  imports: [RouterLink, TopbarComponent, AvatarComponent],
   templateUrl: './lobby.html',
   styleUrl: './lobby.scss',
 })

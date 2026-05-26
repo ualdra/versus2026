@@ -163,7 +163,7 @@ Respuesta: `204 No Content`. En frontend se exige doble confirmacion escribiendo
 - Centro de notificaciones: desplegable en el topbar con contador de no leidas, historial local por usuario (`vs.notifications.<userId>`) y acciones de marcar leidas/vaciar.
 - Audio: controles `Efectos de sonido`, `Musica de fondo`, silenciar todo y feedback reducido guardados en `localStorage`.
 - Zona de peligro: borrar cuenta exige escribir el username.
-- Topbar: muestra username/avatar reales y XP calculado desde `/api/stats/me` mientras no exista campo `xp` dedicado.
+- Topbar: muestra username/avatar reales con `shared/components/ui/avatar` y XP calculado desde `/api/stats/me` mientras no exista campo `xp` dedicado.
  
 ---
 
@@ -782,6 +782,7 @@ Authorization: Bearer <admin-token>
       "id": "bbbb0000-0000-0000-0000-000000000002",
       "username": "alice",
       "email": "alice@versus.com",
+      "avatarUrl": "https://api.dicebear.com/...",
       "role": "PLAYER",
       "isActive": true,
       "createdAt": "2025-03-15T10:00:00Z"
@@ -796,6 +797,7 @@ Authorization: Bearer <admin-token>
  
 > Todos los query params son opcionales. `search` hace coincidencia parcial case-insensitive sobre username y email.  
 > `role` debe ser uno de `PLAYER`, `MODERATOR`, `ADMIN`. Resultados ordenados por `createdAt` descendente.  
+> `avatarUrl` se propaga al panel admin y se renderiza con el mismo componente compartido que topbar, perfil, lobby y amigos.
 > Errores: `401` token inválido · `403` usuario no es ADMIN.
  
 ### Contrato PUT /api/admin/users/{id}/role
@@ -812,6 +814,7 @@ Content-Type: application/json
   "id": "bbbb0000-0000-0000-0000-000000000002",
   "username": "alice",
   "email": "alice@versus.com",
+  "avatarUrl": "https://api.dicebear.com/...",
   "role": "MODERATOR",
   "isActive": true,
   "createdAt": "2025-03-15T10:00:00Z"
@@ -834,6 +837,7 @@ Content-Type: application/json
   "id": "bbbb0000-0000-0000-0000-000000000002",
   "username": "alice",
   "email": "alice@versus.com",
+  "avatarUrl": "https://api.dicebear.com/...",
   "role": "PLAYER",
   "isActive": false,
   "createdAt": "2025-03-15T10:00:00Z"

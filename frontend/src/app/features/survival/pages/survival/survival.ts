@@ -7,15 +7,17 @@ import { NotificationCenterService } from '../../../../core/services/notificatio
 import { audioService } from '../../../../core/services/AudioService';
 import {
   QuestionBinary,
+  QuestionOption,
   SurvivalAnswerResponse,
 } from '../../../../core/models/game.models';
+import { CompareCardComponent, CardItem, CardState } from '../../components/compare-card/compare-card';
 
 type Phase = 'idle' | 'correct' | 'wrong' | 'loading';
 
 @Component({
   selector: 'app-survival',
   standalone: true,
-  imports: [RouterLink, UpperCasePipe],
+  imports: [RouterLink, UpperCasePipe, CompareCardComponent],
   templateUrl: './survival.html',
   styleUrl: './survival.scss',
 })
@@ -37,6 +39,7 @@ export class Survival implements OnInit, OnDestroy {
   question = signal<QuestionBinary | null>(null);
   pickedOptionId = signal<string | null>(null);
   correctOptionId = signal<string | null>(null);
+  revealedValues = signal<Record<string, number>>({});
 
   sessionId = signal<string | null>(null);
   private pendingNext: QuestionBinary | null = null;
@@ -54,24 +57,25 @@ export class Survival implements OnInit, OnDestroy {
 
   fmt(n: number): string { return n.toLocaleString('es-ES'); }
 
-  optionState(optionId: string): 'idle' | 'correct' | 'wrong' | 'muted' {
+  cardItem(opt: QuestionOption): CardItem {
+    const q = this.question();
+    return {
+      label: opt.text,
+      sub: opt.sub ?? '',
+      value: this.revealedValues()[opt.id] ?? 0,
+      unit: opt.unit ?? '',
+      cat: q?.category ?? '',
+      stub: '',
+    };
+  }
+
+  cardState(optId: string): CardState {
     if (this.phase() === 'idle' || this.phase() === 'loading') return 'idle';
     const correct = this.correctOptionId();
     const picked = this.pickedOptionId();
-    if (correct && optionId === correct) return 'correct';
-    if (picked === optionId) return 'wrong';
-    return 'muted';
-  }
-
-  optionClass(optionId: string): string {
-    const state = this.optionState(optionId);
-    return [
-      'vs-bopt',
-      state === 'idle' ? 'vs-bopt--idle' : '',
-      state === 'correct' ? 'vs-bopt--correct' : '',
-      state === 'wrong' ? 'vs-bopt--wrong' : '',
-      state === 'muted' ? 'vs-bopt--muted' : '',
-    ].filter(Boolean).join(' ');
+    if (correct && optId === correct) return 'correct';
+    if (picked === optId) return 'wrong';
+    return 'idle';
   }
 
   pick(optionId: string): void {
@@ -105,6 +109,7 @@ export class Survival implements OnInit, OnDestroy {
     this.feedback.set(null);
     this.pickedOptionId.set(null);
     this.correctOptionId.set(null);
+    this.revealedValues.set({});
     this.qIdx.update(i => i + 1);
   }
 
@@ -132,6 +137,7 @@ export class Survival implements OnInit, OnDestroy {
         this.streak.set(0);
         this.score.set(0);
         this.qIdx.set(0);
+        this.revealedValues.set({});
         this.phase.set('idle');
         audioService.playBgm('bgm_game');
       },
@@ -155,6 +161,10 @@ export class Survival implements OnInit, OnDestroy {
       ? pickedId
       : current.options.find((o) => o.id !== pickedId)?.id ?? null;
     this.correctOptionId.set(correctId);
+
+    if (res.revealedValues) {
+      this.revealedValues.set(res.revealedValues);
+    }
 
     this.lives.set(res.livesRemaining);
     this.streak.set(res.streak);

@@ -141,7 +141,7 @@ class MatchmakingServiceTest {
                 }
             }
             LiveMatchState state = liveStateWithPlayers(GameMode.BINARY_DUEL, a, b);
-            when(matchService.createMatch(GameMode.BINARY_DUEL, a)).thenReturn(state);
+            when(matchService.createPublicMatchmakingMatch(GameMode.BINARY_DUEL, a)).thenReturn(state);
             when(matchService.toDto(any())).thenAnswer(inv -> {
                 LivePlayerState p = inv.getArgument(0);
                 return new PlayerInLobbyDto(p.getUserId(), p.getUsername(), null, false);
@@ -149,7 +149,7 @@ class MatchmakingServiceTest {
 
             matchmakingService.pollAndMatch();
 
-            verify(matchService).createMatch(GameMode.BINARY_DUEL, a);
+            verify(matchService).createPublicMatchmakingMatch(GameMode.BINARY_DUEL, a);
             verify(matchService).addPlayer(state.getMatchId(), a);
             verify(matchService).addPlayer(state.getMatchId(), b);
             verify(matchService).notifyMatchFound(eq(a), any(MatchFoundEvent.class));
@@ -171,7 +171,7 @@ class MatchmakingServiceTest {
 
             matchmakingService.pollAndMatch();
 
-            verify(matchService, never()).createMatch(any(), any());
+            verify(matchService, never()).createPublicMatchmakingMatch(any(), any());
             verify(queueRepository, never()).deleteAll(any());
         }
 
@@ -192,13 +192,13 @@ class MatchmakingServiceTest {
                     when(queueRepository.findByModeOrderByEnteredAtAsc(m)).thenReturn(List.of());
                 }
             }
-            when(matchService.createMatch(eq(GameMode.BINARY_DUEL), any()))
+            when(matchService.createPublicMatchmakingMatch(eq(GameMode.BINARY_DUEL), any()))
                     .thenAnswer(inv -> liveStateWithPlayers(GameMode.BINARY_DUEL,
                             (UUID) inv.getArgument(1)));
 
             matchmakingService.pollAndMatch();
 
-            verify(matchService, times(2)).createMatch(eq(GameMode.BINARY_DUEL), any());
+            verify(matchService, times(2)).createPublicMatchmakingMatch(eq(GameMode.BINARY_DUEL), any());
         }
     }
 }

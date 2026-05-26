@@ -10,13 +10,14 @@ import {
 } from '../../../../core/models/social.models';
 import { SocialService } from '../../../../core/services/social.service';
 import { TopbarComponent } from '../../../../shared/components/layout/topbar/topbar';
+import { AvatarComponent } from '../../../../shared/components/ui/avatar/avatar.component';
 
 type SocialMode = 'idle' | 'loading' | 'working';
 
 @Component({
   selector: 'app-friends',
   standalone: true,
-  imports: [TopbarComponent],
+  imports: [TopbarComponent, AvatarComponent],
   templateUrl: './friends.html',
   styleUrl: './friends.scss',
 })
@@ -193,10 +194,6 @@ export class Friends implements OnInit {
   setInviteMode(event: Event): void {
     const value = (event.target as HTMLSelectElement).value as GameMode;
     this.selectedInviteMode.set(value);
-  }
-
-  initials(name: string): string {
-    return name.slice(0, 2).toUpperCase();
   }
 
   relationLabel(relation: SocialRelation): string {

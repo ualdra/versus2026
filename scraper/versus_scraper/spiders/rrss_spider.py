@@ -14,7 +14,7 @@ class RrssPider(scrapy.Spider):
             "https://socialblade.com/twitch/lists/top/100/followers",
         ]
 
-    def start_requests(self):
+    async def start(self):
         for url in self.start_urls:
             yield scrapy.Request(
                 url,
