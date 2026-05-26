@@ -19,6 +19,7 @@
 		<springdoc.version>2.7.0</springdoc.version>
 		<aws.sdk.version>2.30.31</aws.sdk.version>
 		<lombok.version>1.18.42</lombok.version>
+		<jacoco.version>0.8.12</jacoco.version>
 	</properties>
 	<dependencies>
 
@@ -164,12 +165,40 @@
 						<include>**/*IT.java</include>
 						<include>**/it/**/*Test.java</include>
 					</includes>
+					<!-- @{argLine} se resuelve en tiempo de ejecución e incluye el
+					     agente de JaCoCo inyectado por jacoco:prepare-agent, de modo
+					     que las pruebas de integración también cuentan para la cobertura. -->
 					<argLine>
+						@{argLine}
 						--add-opens java.base/java.lang=ALL-UNNAMED
 						--add-opens java.base/java.lang.reflect=ALL-UNNAMED
 						--add-opens java.base/java.util=ALL-UNNAMED
 					</argLine>
 				</configuration>
+			</plugin>
+			<!-- Cobertura de código. El agente se inyecta vía la propiedad argLine,
+			     que Surefile (unit) y Failsafe (integración) incorporan en su JVM.
+			     Ambas suites escriben en target/jacoco.exec (append) y el informe
+			     agregado se genera en target/site/jacoco/jacoco.xml. -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

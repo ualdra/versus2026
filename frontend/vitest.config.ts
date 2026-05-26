@@ -1,10 +1,8 @@
 import { defineConfig } from 'vitest/config';
 
-const isCI = !!process.env['CI'];
-
+// El builder @angular/build:unit-test gestiona reporters y cobertura a través
+// de las opciones declaradas en angular.json (ver target "test"). Este fichero
+// queda para configuración propia de vitest que el builder sí respeta.
 export default defineConfig({
-  test: {
-    reporters: isCI ? ['verbose', 'junit'] : ['default'],
-    outputFile: isCI ? 'test-results/junit.xml' : undefined,
-  },
+  test: {},
 });
