@@ -173,8 +173,8 @@ public class GameService {
 
         Card card = cards.getById(player.getCurrentCardAId());
         BigDecimal correctValue = card.getValor();
-        if (BigDecimal.ZERO.compareTo(correctValue) == 0) {
-            throw ApiException.validation("Card has invalid value (zero)");
+        if (correctValue == null || BigDecimal.ZERO.compareTo(correctValue) == 0) {
+            throw ApiException.validation("Card has invalid value (zero or null)");
         }
 
         BigDecimal tolerance = new BigDecimal("5");
