@@ -33,6 +33,7 @@ services:
     volumes:
       - ./backend:/app         # Monta el código fuente del host
       - maven_cache:/root/.m2  # Caché de Maven entre reinicios
+      - ./scraper/output:/scraper-output:ro  # JSON de cartas disponible para el seed
     depends_on:
       - mailhog
     environment:

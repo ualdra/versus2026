@@ -12,4 +12,5 @@ public interface MatchInviteRepository extends JpaRepository<MatchInvite, UUID> 
     List<MatchInvite> findByToUserIdAndStatusOrderByCreatedAtDesc(UUID toUserId, SocialStatus status);
     List<MatchInvite> findByFromUserIdOrderByCreatedAtDesc(UUID fromUserId);
     Optional<MatchInvite> findByIdAndToUserId(UUID id, UUID toUserId);
+    boolean existsByMatchIdAndToUserIdAndStatus(UUID matchId, UUID toUserId, SocialStatus status);
 }

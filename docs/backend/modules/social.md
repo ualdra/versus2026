@@ -48,7 +48,7 @@ Base path: `/api/social`. Todos requieren Bearer token.
 | `POST` | `/friend-requests/{id}/accept` | - | `FriendRequestResponse` |
 | `POST` | `/friend-requests/{id}/decline` | - | `FriendRequestResponse` |
 | `DELETE` | `/friend-requests/{id}` | - | `204` (cancela una solicitud enviada) |
-| `POST` | `/match-invites` | `{ "friendUserId": "uuid", "mode": "BINARY_DUEL" }` | `201 MatchInviteResponse` |
+| `POST` | `/match-invites` | `{ "friendUserId": "uuid", "mode": "BINARY_DUEL", "matchId": "uuid?" }` | `201 MatchInviteResponse` |
 | `GET` | `/match-invites/incoming` | - | `MatchInviteResponse[]` pendientes |
 | `GET` | `/match-invites/outgoing` | - | `MatchInviteResponse[]` recientes |
 | `POST` | `/match-invites/{id}/accept` | - | `LobbyStateDto` |
@@ -59,6 +59,9 @@ Validaciones principales:
 - No se permite enviarse solicitud a uno mismo.
 - No se permite duplicar amistad ni solicitud pendiente en ningún sentido.
 - Las invitaciones a partida solo aceptan modos multijugador.
+- Si `matchId` no se envia, el backend crea un lobby PvP nuevo y agrega al emisor.
+- Si `matchId` se envia, se reutiliza una sala privada viva: el emisor debe estar dentro, el modo debe coincidir, la sala debe seguir en `WAITING` y no puede estar llena.
+- No se permite duplicar una invitacion pendiente para el mismo amigo y match.
 - Solo se puede invitar a usuarios que ya son amigos.
 - Aceptar una invitación une al jugador al lobby y devuelve el snapshot de sala.
 
@@ -94,6 +97,7 @@ El frontend los consume desde `NotificationCenterService`, respeta las preferenc
 
 | Pieza | Fichero | Rol |
 |---|---|---|
+| Lobby privado | `frontend/src/app/features/player/pages/lobby/*` | Invita amigos disponibles a la sala privada actual usando `matchId`. |
 | `SocialService` | `frontend/src/app/core/services/social.service.ts` | Cliente HTTP de `/api/social`. |
 | Modelos TS | `frontend/src/app/core/models/social.models.ts` | Contratos usados por la página y notificaciones. |
 | Página `/friends` | `frontend/src/app/features/player/pages/friends/*` | Búsqueda, solicitudes, lista de amigos e invitaciones. |

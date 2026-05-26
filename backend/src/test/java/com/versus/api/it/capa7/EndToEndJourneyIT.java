@@ -96,17 +96,13 @@ class EndToEndJourneyIT extends AbstractIT {
         return queue;
     }
 
-    private UUID wrongOptionFor(UUID questionId) {
-        return testQuery.wrongOptionFor(questionId);
-    }
-
     // ── J1 — Vida de un jugador ───────────────────────────────────────────────
 
     @Test
     @DisplayName("J1 — Registro → login → Survival hasta gameOver → stats y achievements")
     void J1_vidaDeUnJugador() {
         for (int i = 0; i < 8; i++)
-            factories.binaryQuestion();
+            factories.binaryCardPair();
 
         // Register
         http.req()
@@ -135,7 +131,7 @@ class EndToEndJourneyIT extends AbstractIT {
         boolean gameOver = false;
         for (int i = 0; i < 3 && !gameOver; i++) {
             UUID questionId = UUID.fromString(currentQuestionId);
-            UUID wrongId = wrongOptionFor(questionId);
+            UUID wrongId = testQuery.losingCardIdForSession(sessionId);
             JsonPath resp = http.req()
                     .header("Authorization", "Bearer " + accessToken)
                     .body(Map.of(

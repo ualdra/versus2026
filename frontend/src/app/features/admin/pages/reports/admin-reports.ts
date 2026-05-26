@@ -1,30 +1,70 @@
-// TODO: wire to moderation endpoints when feature Moderación is done (#80-#81)
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { DatePipe, SlicePipe } from '@angular/common';
 import { AdminSidebarComponent } from '../../components/sidebar/sidebar';
+import { AdminService } from '../../../../core/services/admin.service';
+import { AdminReport, PageResponse } from '../../../../core/models/admin.models';
+
+type StatusFilter = 'PENDING' | 'DISMISSED' | 'RESOLVED' | '';
 
 @Component({
   selector: 'app-admin-reports',
   standalone: true,
-  imports: [AdminSidebarComponent],
+  imports: [AdminSidebarComponent, DatePipe, SlicePipe],
   templateUrl: './admin-reports.html',
   styleUrl: '../dashboard/admin-dashboard.scss',
 })
-export class AdminReports {
-  reports = [
-    {
-      id: 1, reason: 'Datos desactualizados', reporter: 'numerito', when: 'hace 12 min', count: 4,
-      q: '¿Quién tiene MÁS seguidores en Instagram, Cristiano o Messi?',
-      opts: [{ name: 'Cristiano Ronaldo', num: '638M', ok: true }, { name: 'Lionel Messi', num: '503M', ok: false }],
-    },
-    {
-      id: 2, reason: 'Respuesta incorrecta', reporter: 'kil4_max', when: 'hace 1 h', count: 12,
-      q: '¿Qué película recaudó más, Avatar 2 o Endgame?',
-      opts: [{ name: 'Avatar: el sentido del agua', num: '2 320M$', ok: false }, { name: 'Vengadores: Endgame', num: '2 799M$', ok: true }],
-    },
-    {
-      id: 3, reason: 'Pregunta ambigua', reporter: 'tucanela', when: 'hace 2 h', count: 2,
-      q: '¿Capital con más habitantes, Tokio o Delhi?',
-      opts: [{ name: 'Tokio', num: '37.4M (área metropolitana)', ok: true }, { name: 'Delhi', num: '32.9M (área metropolitana)', ok: false }],
-    },
-  ];
+export class AdminReports implements OnInit {
+  private readonly adminSvc = inject(AdminService);
+
+  page = signal<PageResponse<AdminReport> | null>(null);
+  statusFilter = signal<StatusFilter>('PENDING');
+  loading = signal(true);
+
+  ngOnInit(): void {
+    this.load();
+  }
+
+  setFilter(s: StatusFilter): void {
+    this.statusFilter.set(s);
+    this.load();
+  }
+
+  private load(): void {
+    this.loading.set(true);
+    const s = this.statusFilter();
+    this.adminSvc.getReports(s || undefined).subscribe({
+      next: (p) => {
+        this.page.set(p);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
+    });
+  }
+
+  dismiss(id: string): void {
+    this.adminSvc.resolveReport(id, 'DISMISS').subscribe({
+      next: () => this.load(),
+    });
+  }
+
+  deleteQuestion(id: string): void {
+    this.adminSvc.resolveReport(id, 'DELETE_QUESTION').subscribe({
+      next: () => this.load(),
+    });
+  }
+
+  reasonLabel(r: string): string {
+    return (
+      {
+        WRONG_ANSWER: 'Respuesta incorrecta',
+        OUTDATED: 'Datos desactualizados',
+        OFFENSIVE: 'Contenido ofensivo',
+        OTHER: 'Otro motivo',
+      }[r] ?? r
+    );
+  }
+
+  filterPillClass(target: StatusFilter): string {
+    return this.statusFilter() === target ? 'vs-pill--err' : 'vs-pill--mute';
+  }
 }

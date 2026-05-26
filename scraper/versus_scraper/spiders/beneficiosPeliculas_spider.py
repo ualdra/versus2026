@@ -24,7 +24,7 @@ class BoxOfficeMojoSpider(scrapy.Spider):
         "FEED_EXPORT_ENCODING": "utf-8",
     }
 
-    def start_requests(self):
+    async def start(self):
         for year in self.years:
             url = f"https://www.boxofficemojo.com/year/world/{year}/"
             yield scrapy.Request(

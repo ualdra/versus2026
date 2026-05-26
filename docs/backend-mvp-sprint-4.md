@@ -103,6 +103,8 @@ com.versus.api/
 | `DELETE` | `/api/admin/users/{id}` | ADMIN | **Soft delete:** `is_active=false`, no borra histórico. 403 si intenta borrarse a sí mismo. Audit log. |
 | `PUT` | `/api/admin/questions/{id}/status` | ADMIN/MOD | Body: `{ "status": "ACTIVE" \| "INACTIVE" }`. Transiciones permitidas: `PENDING_REVIEW → ACTIVE/INACTIVE`, `ACTIVE → INACTIVE`, `INACTIVE → ACTIVE`. Audit log. |
 
+> `AdminUserResponse` incluye `avatarUrl`; el panel admin debe renderizarlo con el mismo componente de avatar compartido que perfil/topbar.
+
 ### Scraping (ADMIN)
 
 > En este sprint solo implementamos los endpoints REST de gestión. La ejecución real de los spiders Python se conectará después; aquí, "lanzar" un spider crea un `SpiderRun` con `status=RUNNING` y devuelve. El proceso real lo cerrará el orquestador Scrapy llamando a un endpoint interno.

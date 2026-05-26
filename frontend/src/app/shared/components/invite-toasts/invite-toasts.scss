@@ -1,0 +1,141 @@
+.vs-invite-toasts {
+  position: fixed;
+  right: 24px;
+  bottom: 108px;
+  z-index: 80;
+  display: grid;
+  gap: 12px;
+  width: min(360px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+.vs-invite-toast {
+  display: grid;
+  grid-template-columns: 46px 1fr auto;
+  align-items: start;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(230, 57, 70, 0.45);
+  border-radius: var(--vs-radius-md);
+  background:
+    linear-gradient(135deg, rgba(230, 57, 70, 0.12), rgba(67, 97, 238, 0.08)),
+    var(--vs-bg-elevated);
+  box-shadow: var(--vs-shadow-card), var(--vs-shadow-glow-red);
+  animation: vs-invite-toast-in 260ms ease forwards;
+  pointer-events: auto;
+}
+
+.vs-invite-toast__icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--vs-accent-red);
+  color: #fff;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.vs-invite-toast__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.vs-invite-toast__eyebrow {
+  color: var(--vs-accent-red);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.vs-invite-toast__message {
+  color: var(--vs-text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.vs-invite-toast__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.vs-invite-toast__btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: var(--vs-radius-sm);
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: opacity var(--vs-transition);
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  &--accept {
+    background: var(--vs-accent-red);
+    color: #fff;
+
+    &:not(:disabled):hover {
+      opacity: 0.85;
+    }
+  }
+
+  &--decline {
+    background: transparent;
+    color: var(--vs-text-secondary);
+    border: 1px solid var(--vs-border);
+
+    &:not(:disabled):hover {
+      color: var(--vs-text-primary);
+      border-color: var(--vs-border-focus);
+    }
+  }
+}
+
+.vs-invite-toast__close {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--vs-border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--vs-text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &:hover {
+    color: var(--vs-text-primary);
+    border-color: var(--vs-border-focus);
+  }
+}
+
+@keyframes vs-invite-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .vs-invite-toasts {
+    right: 16px;
+    bottom: 100px;
+  }
+}

@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { SlicePipe } from '@angular/common';
 import { AdminSidebarComponent } from '../../components/sidebar/sidebar';
+import { AvatarComponent } from '../../../../shared/components/ui/avatar/avatar.component';
 import { AdminService } from '../../../../core/services/admin.service';
 import { AdminUser } from '../../../../core/models/admin.models';
 import { Role } from '../../../../core/models/auth.models';
@@ -8,7 +9,7 @@ import { Role } from '../../../../core/models/auth.models';
 @Component({
   selector: 'app-admin-users',
   standalone: true,
-  imports: [AdminSidebarComponent, SlicePipe],
+  imports: [AdminSidebarComponent, SlicePipe, AvatarComponent],
   templateUrl: './admin-users.html',
   styleUrl: '../dashboard/admin-dashboard.scss',
 })
@@ -92,8 +93,6 @@ export class AdminUsers implements OnInit {
     const bgs: Partial<Record<Role, string>> = { ADMIN: 'rgba(230,57,70,0.12)', MODERATOR: 'rgba(244,197,66,0.12)' };
     return bgs[r] ?? 'rgba(67,97,238,0.12)';
   }
-
-  initials(name: string): string { return name.slice(0, 2).toUpperCase(); }
 
   get pages(): number[] {
     return Array.from({ length: this.totalPages() }, (_, i) => i);

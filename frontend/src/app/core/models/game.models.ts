@@ -11,6 +11,8 @@ export type GameMode =
 export interface QuestionOption {
   id: string;
   text: string;
+  sub?: string | null;
+  unit?: string | null;
 }
 
 export interface QuestionBinary {
@@ -53,6 +55,7 @@ export interface SurvivalAnswerResponse {
   nextQuestion?: Question | null;
   gameOver: boolean;
   achievementsUnlocked?: Achievement[];
+  revealedValues?: Record<string, number>;
 }
 
 export interface PrecisionAnswerRequest {
