@@ -5,10 +5,21 @@
     [class.is-negative]="negative()"
   >
     <div class="vs-elo-change__label">Cambio ELO</div>
-    <div class="vs-elo-change__delta vs-mono">{{ formattedDelta() }} ELO</div>
+    <div class="vs-elo-change__delta vs-mono">
+      <span class="vs-elo-change__arrow">{{ positive() ? 'UP' : negative() ? 'DOWN' : '-' }}</span>
+      {{ formattedDelta() }} ELO
+    </div>
     @if (previousRating() !== null && previousRating() !== undefined && currentRating() !== null && currentRating() !== undefined) {
-      <div class="vs-elo-change__ratings vs-mono">
-        {{ previousRating() }} -> {{ currentRating() }}
+      <div class="vs-elo-change__ratings">
+        <span>
+          <strong class="vs-mono">{{ previousRating() }}</strong>
+          <small>Previo</small>
+        </span>
+        <span class="vs-elo-change__rating-sep">-></span>
+        <span>
+          <strong class="vs-mono">{{ currentRating() }}</strong>
+          <small>Nuevo</small>
+        </span>
       </div>
     }
   </section>

@@ -90,6 +90,43 @@
           </div>
         </div>
 
+        <!-- Competitive / Rankings -->
+        <div>
+          <div class="vs-section-title">Competitive / Rankings</div>
+          <div class="vs-card vs-competitive-card">
+            @if (competitiveLoading()) {
+              <div class="vs-competitive-empty">Cargando ranking competitivo...</div>
+            } @else if (competitiveRows().length === 0) {
+              <div class="vs-competitive-empty">Aun no hay datos competitivos.</div>
+            } @else {
+              @for (row of competitiveRows(); track row.mode) {
+                <div class="vs-competitive-row">
+                  <div>
+                    <div class="vs-competitive-row__mode">{{ row.mode }}</div>
+                    <div class="vs-competitive-row__meta">
+                      Rank #{{ row.rank || '-' }} - W/L {{ row.record }}
+                    </div>
+                  </div>
+                  <div class="vs-competitive-row__stats">
+                    <div>
+                      <div class="vs-competitive-row__value vs-mono">{{ row.rating }}</div>
+                      <div class="vs-competitive-row__label">ELO</div>
+                    </div>
+                    <div>
+                      <div class="vs-competitive-row__value vs-mono">{{ row.winRate }}</div>
+                      <div class="vs-competitive-row__label">Win rate</div>
+                    </div>
+                    <div>
+                      <div class="vs-competitive-row__value vs-mono">{{ row.winStreak }}</div>
+                      <div class="vs-competitive-row__label">Racha</div>
+                    </div>
+                  </div>
+                </div>
+              }
+            }
+          </div>
+        </div>
+
       </div>
 
       <!-- Columna derecha: historial + logros -->
