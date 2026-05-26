@@ -57,7 +57,7 @@ export class TopbarComponent implements OnInit {
   private routes: Record<NavKey, string | null> = {
     home: '/dashboard',
     play: '/play/select',
-    ranking: null,
+    ranking: '/rankings',
     friends: '/friends',
     profile: '/profile',
     settings: '/settings',

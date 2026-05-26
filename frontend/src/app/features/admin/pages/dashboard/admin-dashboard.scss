@@ -23,6 +23,7 @@
   font-size: 13px;
   color: var(--vs-text-secondary);
   cursor: pointer;
+  text-decoration: none;
   transition: background 150ms, color 150ms;
 
   &:hover { background: rgba(255,255,255,0.04); color: var(--vs-text-primary); }
@@ -32,6 +33,12 @@
     color: var(--vs-text-primary);
     border-left: 2px solid var(--vs-accent-blue);
     padding-left: 10px;
+  }
+
+  &--disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
   }
 }
 

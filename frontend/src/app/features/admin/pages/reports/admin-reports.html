@@ -6,58 +6,86 @@
     <div class="vs-admin__head">
       <div>
         <h1>MODERACIÓN DE PREGUNTAS</h1>
-        <div class="vs-admin__head-meta">27 reportes pendientes · 9 nuevos en las últimas 24h</div>
+        <div class="vs-admin__head-meta">
+          @if (page()) {
+            {{ page()!.totalElements }} reportes en vista actual
+          }
+        </div>
       </div>
-      <button class="btn btn--ghost btn--sm">BATCH RESOLVER</button>
     </div>
 
     <!-- Filtros -->
     <div style="display: flex; gap: 10px; align-items: center">
-      <span class="vs-pill vs-pill--err" style="cursor: pointer"><span class="vs-pill__dot"></span>PENDIENTES · 27</span>
-      <span class="vs-pill vs-pill--mute" style="cursor: pointer">EN REVISIÓN · 4</span>
-      <span class="vs-pill vs-pill--mute" style="cursor: pointer">RESUELTAS · 312</span>
-      <span class="vs-pill vs-pill--mute" style="cursor: pointer">DESCARTADAS · 88</span>
-      <div style="flex: 1"></div>
-      <select class="vs-input" style="width: 200px; padding: 7px 10px; font-size: 12px">
-        <option>Ordenar: más reportada</option>
-        <option>Ordenar: más reciente</option>
-      </select>
+      <span class="vs-pill" [class]="filterPillClass('PENDING')"
+            style="cursor: pointer"
+            (click)="setFilter('PENDING')">
+        <span class="vs-pill__dot"></span>PENDIENTES
+      </span>
+      <span class="vs-pill" [class]="filterPillClass('RESOLVED')"
+            style="cursor: pointer"
+            (click)="setFilter('RESOLVED')">
+        RESUELTAS
+      </span>
+      <span class="vs-pill" [class]="filterPillClass('DISMISSED')"
+            style="cursor: pointer"
+            (click)="setFilter('DISMISSED')">
+        DESCARTADAS
+      </span>
+      <span class="vs-pill" [class]="filterPillClass('')"
+            style="cursor: pointer"
+            (click)="setFilter('')">
+        TODAS
+      </span>
     </div>
 
+    @if (loading()) {
+      <div style="color: var(--vs-text-muted); font-size: 13px">Cargando reportes…</div>
+    }
+
     <!-- Cards de reportes -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px">
-      @for (r of reports; track r.id) {
-        <div class="vs-report-card">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px">
-            <span class="vs-pill vs-pill--err">
-              <span class="vs-pill__dot"></span>{{ r.reason.toUpperCase() }}
-            </span>
-            <div style="font-size: 11px; color: var(--vs-text-muted)">×{{ r.count }} reportes · {{ r.when }}</div>
-          </div>
+    @if (!loading() && page()) {
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px">
+        @for (r of page()!.content; track r.id) {
+          <div class="vs-report-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px">
+              <span class="vs-pill vs-pill--err">
+                <span class="vs-pill__dot"></span>{{ reasonLabel(r.reason) }}
+              </span>
+              <div style="font-size: 11px; color: var(--vs-text-muted)">
+                {{ r.status }} · {{ r.createdAt | date:'dd/MM HH:mm' }}
+              </div>
+            </div>
 
-          <div class="vs-report-card__q">{{ r.q }}</div>
+            @if (r.questionText) {
+              <div class="vs-report-card__q">{{ r.questionText }}</div>
+            } @else {
+              <div style="font-size: 12px; color: var(--vs-text-muted); font-family: 'IBM Plex Mono', monospace">
+                Pregunta ID: {{ r.questionId | slice:0:8 }}…
+              </div>
+            }
 
-          <div class="vs-report-card__opts">
-            @for (opt of r.opts; track opt.name) {
-              <div class="vs-report-opt" [class.is-correct]="opt.ok">
-                <span>{{ opt.name }}</span>
-                <span class="vs-report-opt__num">{{ opt.num }}</span>
+            @if (r.comment) {
+              <div style="font-size: 12px; color: var(--vs-text-secondary); border-left: 2px solid var(--vs-border); padding-left: 10px">
+                "{{ r.comment }}"
+              </div>
+            }
+
+            @if (r.status === 'PENDING') {
+              <div style="display: flex; gap: 8px">
+                <button class="btn btn--ghost btn--sm" (click)="dismiss(r.id)">DESCARTAR</button>
+                <button class="btn btn--danger btn--sm" style="margin-left: auto" (click)="deleteQuestion(r.id)">ELIMINAR PREGUNTA</button>
               </div>
             }
           </div>
+        }
+      </div>
 
-          <div style="font-size: 11px; color: var(--vs-text-muted); border-top: 1px solid var(--vs-border); padding-top: 10px">
-            Reportado por <strong style="color: var(--vs-text-secondary)">&#64;{{ r.reporter }}</strong> · fuente: transfermarkt.es · scrapeada hace 3 días
-          </div>
-
-          <div style="display: flex; gap: 8px">
-            <button class="btn btn--ghost btn--sm">DESCARTAR</button>
-            <button class="btn btn--gold btn--sm">CORREGIR</button>
-            <button class="btn btn--danger btn--sm" style="margin-left: auto">ELIMINAR</button>
-          </div>
+      @if (page()!.content.length === 0) {
+        <div style="color: var(--vs-text-muted); font-size: 13px; padding: 20px 0">
+          No hay reportes con este filtro.
         </div>
       }
-    </div>
+    }
 
   </div>
 </div>

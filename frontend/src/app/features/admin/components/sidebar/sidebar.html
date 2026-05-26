@@ -6,20 +6,29 @@
   @for (section of sections; track section.label) {
     <div class="vs-admin__nav-section">{{ section.label }}</div>
     @for (item of section.items; track item.key) {
-      <div class="vs-admin__nav-item" [class.active]="active() === item.key">
-        <span class="vs-status-dot idle"></span>{{ item.label }}
-      </div>
+      @if (route(item.key); as r) {
+        <a class="vs-admin__nav-item"
+           [routerLink]="r"
+           routerLinkActive="active">
+          {{ item.label }}
+        </a>
+      } @else {
+        <div class="vs-admin__nav-item vs-admin__nav-item--disabled">
+          {{ item.label }}
+        </div>
+      }
     }
   }
 
   <div style="flex: 1"></div>
 
   <div style="padding: 12px; border-top: 1px solid var(--vs-border); display: flex; align-items: center; gap: 10px">
-    <div class="vs-avatar" style="width: 28px; height: 28px; font-size: 11px; background: linear-gradient(135deg, var(--vs-accent-blue), var(--vs-accent-purple))">
-      AD
+    <div class="vs-avatar"
+         style="width: 28px; height: 28px; font-size: 11px; background: linear-gradient(135deg, var(--vs-accent-blue), var(--vs-accent-purple))">
+      {{ initials(auth.user()?.username ?? 'AD') }}
     </div>
     <div style="flex: 1">
-      <div style="font-size: 12px; font-weight: 600">admin_root</div>
+      <div style="font-size: 12px; font-weight: 600">{{ auth.user()?.username ?? '—' }}</div>
       <div style="font-size: 10px; color: var(--vs-text-muted)">Administrador</div>
     </div>
   </div>

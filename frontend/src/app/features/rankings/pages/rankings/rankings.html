@@ -1,0 +1,111 @@
+<div class="vs-rankings-page">
+  @if (isAuthenticated()) {
+    <app-topbar active="ranking" />
+  } @else {
+    <header class="vs-topbar vs-rankings-topbar">
+      <a routerLink="/landing" class="vs-mark">VER<span class="vs-mark__slash">/</span>SUS</a>
+      <nav class="vs-topbar__nav">
+        <a routerLink="/landing">Inicio</a>
+        <a class="active">Ranking</a>
+      </nav>
+      <div class="vs-rankings-topbar__actions">
+        <a routerLink="/login" class="btn btn--ghost btn--sm">LOGIN</a>
+        <a routerLink="/register" class="btn btn--danger btn--sm">REGISTRO</a>
+      </div>
+    </header>
+  }
+
+  <main class="vs-rankings">
+    <section class="vs-rankings__head">
+      <div>
+        <div class="vs-q-label">LEADERBOARD</div>
+        <h1 class="vs-display vs-rankings__title">CLASIFICACION ELO</h1>
+      </div>
+      <div class="vs-rankings__meta">
+        <span class="vs-pill vs-pill--info"><span class="vs-pill__dot"></span>K=32</span>
+        <span class="vs-pill vs-pill--mute">Rating inicial 1000</span>
+      </div>
+    </section>
+
+    <div class="vs-rankings__tabs" role="tablist" aria-label="Modos de juego">
+      @for (item of modes; track item.mode) {
+        <button
+          type="button"
+          class="vs-rankings__tab"
+          [class.is-active]="activeMode() === item.mode"
+          (click)="selectMode(item.mode)"
+        >
+          {{ item.label }}
+        </button>
+      }
+    </div>
+
+    <section class="vs-rankings__table-wrap">
+      @if (loading()) {
+        <div class="vs-rankings__state">Cargando ranking...</div>
+      } @else if (error()) {
+        <div class="vs-rankings__state is-error">{{ error() }}</div>
+      } @else if (rows().length === 0) {
+        <div class="vs-rankings__state">Sin jugadores clasificados.</div>
+      } @else {
+        <table class="vs-table vs-rankings__table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Jugador</th>
+              <th>ELO</th>
+              <th>W/L</th>
+              <th>Racha</th>
+              <th>Ultimo</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (entry of rows(); track entry.userId) {
+              <tr [class.is-current]="entry.currentUser">
+                <td class="vs-mono vs-rankings__rank">#{{ entry.rank }}</td>
+                <td>
+                  <div class="vs-user-cell">
+                    <div class="vs-avatar">
+                      @if (entry.avatarUrl) {
+                        <img [src]="entry.avatarUrl" alt="" />
+                      } @else {
+                        {{ initials(entry) }}
+                      }
+                    </div>
+                    <div>
+                      <div class="vs-rankings__name">
+                        {{ entry.username }}
+                        @if (entry.currentUser) {
+                          <span class="vs-rankings__you">TU</span>
+                        }
+                      </div>
+                      <div class="vs-rankings__mode">{{ entry.mode }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="vs-mono vs-rankings__rating">{{ entry.rating }}</td>
+                <td class="vs-mono">{{ entry.wins }}/{{ entry.losses }}</td>
+                <td class="vs-mono">{{ entry.winStreak }}</td>
+                <td>
+                  <span class="vs-rankings__delta" [class]="deltaClass(entry.lastDelta)">
+                    {{ signed(entry.lastDelta) }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </section>
+
+    <footer class="vs-rankings__pager">
+      <button type="button" class="btn btn--ghost btn--sm" [disabled]="!canGoBack()" (click)="previousPage()">
+        ANTERIOR
+      </button>
+      <span class="vs-mono">Pagina {{ page() + 1 }} / {{ totalPages() || 1 }}</span>
+      <button type="button" class="btn btn--ghost btn--sm" [disabled]="!canGoNext()" (click)="nextPage()">
+        SIGUIENTE
+      </button>
+    </footer>
+  </main>
+</div>

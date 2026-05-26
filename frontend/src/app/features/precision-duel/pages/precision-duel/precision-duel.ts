@@ -175,6 +175,9 @@ export class PrecisionDuel implements OnInit, OnDestroy {
         avgDeviation: self?.avgDeviation ?? null,
         won: outcome === 'WIN',
         reason: payload.reason,
+        eloDelta: self?.eloDelta ?? null,
+        previousRating: self?.previousRating ?? null,
+        currentRating: self?.currentRating ?? null,
         opponent: opp ? {
           username: opp.username,
           avatarUrl: null,
