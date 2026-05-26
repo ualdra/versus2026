@@ -125,3 +125,44 @@ jobs:
           path: backend/target/failsafe-reports/
           retention-days: 7
 
+  # ──────────────────────────────────────────────
+  # Job 3: Verificar la build de producción
+  # Garantiza que las imágenes de producción compilan ANTES de poder
+  # mergear a main, evitando builds rotas en main que bloquean el deploy.
+  # No se publican imágenes aquí — solo se valida que la build pasa.
+  # Reutiliza los mismos scopes de caché gha que el workflow de deploy,
+  # de forma que el build posterior al merge arranca con caché caliente.
+  # ──────────────────────────────────────────────
+  build-verification:
+    name: Verificar build de producción
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend (production target)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          target: production
+          push: false
+          load: false
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,scope=backend,mode=max
+
+      - name: Build frontend (production target)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          target: production
+          push: false
+          load: false
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,scope=frontend,mode=max
+
