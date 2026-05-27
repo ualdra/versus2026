@@ -79,6 +79,13 @@ public class AdminController {
         return adminService.getStats();
     }
 
+    @Operation(summary = "Get finished-match distribution by game mode",
+            responses = @ApiResponse(responseCode = "200", description = "Mode distribution returned"))
+    @GetMapping("/stats/modes")
+    public List<ModeDistributionResponse> modeDistribution() {
+        return adminService.getModeDistribution();
+    }
+
     @Operation(summary = "Get recent activity log entries",
             responses = @ApiResponse(responseCode = "200", description = "Log entries returned"))
     @GetMapping("/logs")

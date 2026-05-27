@@ -2,6 +2,7 @@ package com.versus.api.admin;
 
 import com.versus.api.admin.dto.*;
 import com.versus.api.common.exception.ApiException;
+import com.versus.api.match.GameMode;
 import com.versus.api.match.repo.MatchRepository;
 import com.versus.api.moderation.ReportStatus;
 import com.versus.api.moderation.domain.QuestionReport;
@@ -24,8 +25,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -82,6 +86,18 @@ public class AdminService {
                 spiders.countByStatus(SpiderStatus.RUNNING),
                 reports.countByStatus(ReportStatus.PENDING)
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<ModeDistributionResponse> getModeDistribution() {
+        Map<String, Long> counts = new HashMap<>();
+        for (Object[] row : matches.countFinishedByMode()) {
+            counts.put(((GameMode) row[0]).name(), (Long) row[1]);
+        }
+        // Always return all game modes so the dashboard renders every bar (0 when absent).
+        return Arrays.stream(GameMode.values())
+                .map(mode -> new ModeDistributionResponse(mode.name(), counts.getOrDefault(mode.name(), 0L)))
+                .toList();
     }
 
     @Transactional(readOnly = true)

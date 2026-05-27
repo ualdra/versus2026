@@ -1,6 +1,7 @@
 import { Component, inject, input } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
+import { Role } from '../../../../core/models/auth.models';
 import { AvatarComponent } from '../../../../shared/components/ui/avatar/avatar.component';
 
 export type AdminNavKey =
@@ -31,7 +32,6 @@ const ROUTES: Partial<Record<AdminNavKey, string>> = {
 export class AdminSidebarComponent {
   active = input<AdminNavKey>('dash');
 
-  private readonly router = inject(Router);
   readonly auth = inject(AuthService);
 
   get sections() {
@@ -75,13 +75,16 @@ export class AdminSidebarComponent {
     ];
   }
 
-  route(key: string): string | null {
-    return ROUTES[key as AdminNavKey] ?? null;
+  roleLabel(role: Role | undefined): string {
+    const labels: Record<Role, string> = {
+      ADMIN: 'Administrador',
+      MODERATOR: 'Moderador',
+      PLAYER: 'Jugador',
+    };
+    return role ? labels[role] : '—';
   }
 
-  navigate(key: string): void {
-    const r = this.route(key);
-    if (r) this.router.navigate([r]);
+  initials(name: string): string {
+    return name.slice(0, 2).toUpperCase();
   }
-
 }

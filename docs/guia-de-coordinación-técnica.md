@@ -767,6 +767,7 @@ Todos requieren rol `ADMIN`. Protegidos con `@PreAuthorize("hasRole('ADMIN')")` 
 | `PUT` | `/api/admin/users/{id}/role` | Cambiar rol. No permite self-demotion. | #82 |
 | `PUT` | `/api/admin/users/{id}/status` | Activar/suspender cuenta. No permite self-suspend. | #82 |
 | `GET` | `/api/admin/stats` | KPIs de la plataforma | #82 |
+| `GET` | `/api/admin/stats/modes` | Reparto de partidas finalizadas por modo de juego | #82 |
 | `GET` | `/api/admin/logs?limit=20` | Últimas N entradas de actividad del sistema (max 100) | #82 |
  
 ### Contrato GET /api/admin/users
@@ -867,6 +868,25 @@ Authorization: Bearer <admin-token>
 > Todos los valores son `long`. `matchesToday` cuenta partidas cuyo `createdAt` es posterior al inicio del día UTC actual.  
 > `activeSpiders` cuenta spiders con estado `RUNNING`. `pendingReports` cuenta reportes con estado `PENDING`.  
 > Errores: `401` · `403`.
+ 
+### Contrato GET /api/admin/stats/modes
+ 
+```json
+GET /api/admin/stats/modes
+Authorization: Bearer <admin-token>
+
+→ 200
+[
+  { "mode": "SURVIVAL",       "count": 120 },
+  { "mode": "PRECISION",      "count": 64  },
+  { "mode": "BINARY_DUEL",    "count": 38  },
+  { "mode": "PRECISION_DUEL", "count": 12  },
+  { "mode": "SABOTAGE",       "count": 9   }
+]
+```
+ 
+> Cuenta sólo partidas con estado `FINISHED`, agrupadas por `mode`.  
+> Devuelve **siempre las 5 modalidades** (`count: 0` cuando no hay partidas), para que el dashboard renderice todas las barras.
  
 ### Contrato GET /api/admin/logs
  

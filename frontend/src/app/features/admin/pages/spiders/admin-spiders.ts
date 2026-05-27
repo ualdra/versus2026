@@ -30,9 +30,6 @@ export class AdminSpiders implements OnInit {
     );
   });
 
-  barData = [12, 18, 24, 9, 6, 4, 32, 78, 90, 64, 22, 18, 14, 11, 9, 16, 28, 34, 42, 36, 28, 22, 18, 14];
-  barMax = Math.max(...[12, 18, 24, 9, 6, 4, 32, 78, 90, 64, 22, 18, 14, 11, 9, 16, 28, 34, 42, 36, 28, 22, 18, 14]);
-
   ngOnInit(): void {
     this.loadSpiders();
   }
