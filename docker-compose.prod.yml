@@ -67,6 +67,10 @@ services:
       R2_BUCKET: ${R2_BUCKET:-versus-media}
       R2_PUBLIC_BASE_URL: ${R2_PUBLIC_BASE_URL:-}
       MEDIA_PUBLIC_BASE_URL: ${MEDIA_PUBLIC_BASE_URL:-}
+    volumes:
+      # JSON normalizado de las cartas de Survival, disponible para el endpoint
+      # POST /api/admin/cards/import (lee /scraper-output/normalized/all.json).
+      - ./scraper/output:/scraper-output:ro
     deploy:
       resources:
         limits:
