@@ -38,7 +38,12 @@ services:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      DDL_AUTO: validate
+      # Forzamos la variable que Spring lee de verdad. NO usar solo DDL_AUTO:
+      # el compose base define SPRING_JPA_HIBERNATE_DDL_AUTO=${DDL_AUTO:-update},
+      # y ese ${DDL_AUTO} se resuelve contra el .env del host (no contra esta
+      # variable de servicio), por lo que en prod llegaba "update" y pisaba al
+      # application-prod.properties. Esta línea sobrescribe la del base al fusionar.
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
       # JWT
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRY: ${JWT_EXPIRY:-900}
