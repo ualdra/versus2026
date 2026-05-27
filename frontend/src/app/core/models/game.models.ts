@@ -20,6 +20,8 @@ export interface QuestionBinary {
   type: 'BINARY';
   text: string;
   category: string;
+  subcategory: string;
+  inverse: boolean;
   options: QuestionOption[];
   scrapedAt: string | null;
 }
@@ -29,6 +31,7 @@ export interface QuestionNumeric {
   type: 'NUMERIC';
   text: string;
   category: string;
+  subcategory: string;
   unit: string | null;
   scrapedAt: string | null;
 }

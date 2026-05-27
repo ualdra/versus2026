@@ -5,12 +5,13 @@ export type CardState = 'idle' | 'correct' | 'wrong';
 export type CardPosition = 'left' | 'right';
 
 export interface CardItem {
-  label: string;
-  sub:   string;
-  value: number;
-  unit:  string;
-  cat:   string;
-  stub:  string;
+  label:  string;
+  sub:    string;
+  value:  number;
+  unit:   string;
+  cat:    string;
+  subcat: string;
+  stub:   string;
 }
 
 @Component({

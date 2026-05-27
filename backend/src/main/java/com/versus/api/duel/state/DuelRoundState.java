@@ -1,5 +1,6 @@
 package com.versus.api.duel.state;
 
+import com.versus.api.duel.engine.CardRoundContext;
 import lombok.Data;
 
 import java.time.Instant;
@@ -17,6 +18,7 @@ public class DuelRoundState {
     private final UUID questionId;
     private final Instant startedAt;
     private final Instant deadline;
+    private volatile CardRoundContext cardContext;
     private final Map<UUID, RawAnswer> answers = new ConcurrentHashMap<>();
     private final Set<UUID> sabotageUsedBy = new HashSet<>();
     /**
