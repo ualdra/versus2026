@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, adminGuard } from './core/guards/auth.guard';
+import { authGuard, adminGuard, moderatorGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'landing', pathMatch: 'full' },
@@ -110,22 +110,31 @@ export const routes: Routes = [
   // ─── Admin ────────────────────────────────────────────────────────────────
   {
     path: 'admin',
-    canActivate: [authGuard, adminGuard],
+    canActivate: [authGuard],
     children: [
       {
         path: 'dashboard',
+        canActivate: [adminGuard],
         loadComponent: () => import('./features/admin/pages/dashboard/admin-dashboard').then(m => m.AdminDashboard),
       },
       {
         path: 'spiders',
+        canActivate: [adminGuard],
         loadComponent: () => import('./features/admin/pages/spiders/admin-spiders').then(m => m.AdminSpiders),
       },
       {
         path: 'reports',
+        canActivate: [moderatorGuard],
         loadComponent: () => import('./features/admin/pages/reports/admin-reports').then(m => m.AdminReports),
       },
       {
+        path: 'proposals',
+        canActivate: [moderatorGuard],
+        loadComponent: () => import('./features/admin/pages/proposals/admin-proposals').then(m => m.AdminProposals),
+      },
+      {
         path: 'users',
+        canActivate: [adminGuard],
         loadComponent: () => import('./features/admin/pages/users/admin-users').then(m => m.AdminUsers),
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },

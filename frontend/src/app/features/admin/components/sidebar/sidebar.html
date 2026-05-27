@@ -31,7 +31,7 @@
     />
     <div style="flex: 1">
       <div style="font-size: 12px; font-weight: 600">{{ auth.user()?.username ?? '—' }}</div>
-      <div style="font-size: 10px; color: var(--vs-text-muted)">Administrador</div>
+      <div style="font-size: 10px; color: var(--vs-text-muted)">{{ auth.user()?.role ?? 'ADMIN' }}</div>
     </div>
   </div>
 </aside>

@@ -7,6 +7,7 @@ export type AdminNavKey =
   | 'dash'
   | 'spiders'
   | 'reports'
+  | 'proposals'
   | 'users'
   | 'quest'
   | 'rank'
@@ -17,6 +18,7 @@ const ROUTES: Partial<Record<AdminNavKey, string>> = {
   dash: '/admin/dashboard',
   spiders: '/admin/spiders',
   reports: '/admin/reports',
+  proposals: '/admin/proposals',
   users: '/admin/users',
 };
 
@@ -32,31 +34,46 @@ export class AdminSidebarComponent {
   private readonly router = inject(Router);
   readonly auth = inject(AuthService);
 
-  sections = [
-    {
-      label: 'SUPERVISIÓN',
-      items: [
-        { key: 'dash', label: 'Resumen' },
-        { key: 'spiders', label: 'Spiders' },
-        { key: 'reports', label: 'Moderación' },
-      ],
-    },
-    {
-      label: 'GESTIÓN',
-      items: [
-        { key: 'users', label: 'Usuarios' },
-        { key: 'quest', label: 'Preguntas' },
-        { key: 'rank', label: 'Rankings' },
-      ],
-    },
-    {
-      label: 'SISTEMA',
-      items: [
-        { key: 'cfg', label: 'Configuración' },
-        { key: 'logs', label: 'Logs' },
-      ],
-    },
-  ];
+  get sections() {
+    if (this.auth.user()?.role === 'MODERATOR') {
+      return [
+        {
+          label: 'SUPERVISION',
+          items: [
+            { key: 'reports', label: 'Reportes' },
+            { key: 'proposals', label: 'Propuestas' },
+          ],
+        },
+      ];
+    }
+
+    return [
+      {
+        label: 'SUPERVISION',
+        items: [
+          { key: 'dash', label: 'Resumen' },
+          { key: 'spiders', label: 'Spiders' },
+          { key: 'reports', label: 'Reportes' },
+          { key: 'proposals', label: 'Propuestas' },
+        ],
+      },
+      {
+        label: 'GESTION',
+        items: [
+          { key: 'users', label: 'Usuarios' },
+          { key: 'quest', label: 'Preguntas' },
+          { key: 'rank', label: 'Rankings' },
+        ],
+      },
+      {
+        label: 'SISTEMA',
+        items: [
+          { key: 'cfg', label: 'Configuracion' },
+          { key: 'logs', label: 'Logs' },
+        ],
+      },
+    ];
+  }
 
   route(key: string): string | null {
     return ROUTES[key as AdminNavKey] ?? null;

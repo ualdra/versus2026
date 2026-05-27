@@ -1,23 +1,31 @@
-# ─────────────────────────────────────────────
-#  STAGE: development
-#  Node + Angular CLI.
-# ─────────────────────────────────────────────
-#  Versión normal para desarrollo (para no limitarnos en herramientas)
-FROM node:24 AS development
+# -----------------------------------------------------------------------------
+# STAGE: development
+# Node + Angular CLI for local development.
+# -----------------------------------------------------------------------------
+# Use Node LTS in dev to avoid npm edge-version crashes on mounted volumes.
+FROM node:22 AS development
 
 WORKDIR /app
 
 EXPOSE 4200
 
-CMD sh -c "[ -f package.json ] && npm install && npm start -- --host 0.0.0.0 --poll 500 || echo 'No hay proyecto Angular todavia.'"
+CMD sh -c "\
+  if [ ! -f package.json ]; then \
+    echo 'No se encontro package.json en /app. Revisa el volumen ./frontend:/app.'; \
+    exit 1; \
+  fi; \
+  if [ ! -x node_modules/.bin/ng ]; then \
+    echo 'Instalando dependencias del frontend...'; \
+    if [ -f package-lock.json ]; then npm ci; else npm install; fi; \
+  fi; \
+  npm start -- --host 0.0.0.0 --poll 1000"
 
 
-# ─────────────────────────────────────────────
-#  STAGE: builder  (solo para producción)
-# ─────────────────────────────────────────────
-# Versión alpine para producción
-FROM node:24-alpine AS builder 
-
+# -----------------------------------------------------------------------------
+# STAGE: builder
+# Production bundle.
+# -----------------------------------------------------------------------------
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -28,10 +36,10 @@ COPY . .
 RUN npm run build -- --configuration production
 
 
-# ─────────────────────────────────────────────
-#  STAGE: production
-#  Nginx sirve el bundle estático.
-# ─────────────────────────────────────────────
+# -----------------------------------------------------------------------------
+# STAGE: production
+# Nginx serves the static bundle.
+# -----------------------------------------------------------------------------
 FROM nginx:alpine AS production
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
