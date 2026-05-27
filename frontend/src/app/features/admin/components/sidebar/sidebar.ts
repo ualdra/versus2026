@@ -23,6 +23,17 @@ const ROUTES: Partial<Record<AdminNavKey, string>> = {
   users: '/admin/users',
 };
 
+interface AdminNavItem {
+  key: AdminNavKey;
+  label: string;
+  route: string | null;
+}
+
+interface AdminNavSection {
+  label: string;
+  items: AdminNavItem[];
+}
+
 @Component({
   selector: 'app-admin-sidebar',
   standalone: true,
@@ -34,14 +45,14 @@ export class AdminSidebarComponent {
 
   readonly auth = inject(AuthService);
 
-  get sections() {
+  get sections(): AdminNavSection[] {
     if (this.auth.user()?.role === 'MODERATOR') {
       return [
         {
           label: 'SUPERVISION',
           items: [
-            { key: 'reports', label: 'Reportes' },
-            { key: 'proposals', label: 'Propuestas' },
+            this.navItem('reports', 'Reportes'),
+            this.navItem('proposals', 'Propuestas'),
           ],
         },
       ];
@@ -51,28 +62,32 @@ export class AdminSidebarComponent {
       {
         label: 'SUPERVISION',
         items: [
-          { key: 'dash', label: 'Resumen' },
-          { key: 'spiders', label: 'Spiders' },
-          { key: 'reports', label: 'Reportes' },
-          { key: 'proposals', label: 'Propuestas' },
+          this.navItem('dash', 'Resumen'),
+          this.navItem('spiders', 'Spiders'),
+          this.navItem('reports', 'Reportes'),
+          this.navItem('proposals', 'Propuestas'),
         ],
       },
       {
         label: 'GESTION',
         items: [
-          { key: 'users', label: 'Usuarios' },
-          { key: 'quest', label: 'Preguntas' },
-          { key: 'rank', label: 'Rankings' },
+          this.navItem('users', 'Usuarios'),
+          this.navItem('quest', 'Preguntas'),
+          this.navItem('rank', 'Rankings'),
         ],
       },
       {
         label: 'SISTEMA',
         items: [
-          { key: 'cfg', label: 'Configuracion' },
-          { key: 'logs', label: 'Logs' },
+          this.navItem('cfg', 'Configuracion'),
+          this.navItem('logs', 'Logs'),
         ],
       },
     ];
+  }
+
+  private navItem(key: AdminNavKey, label: string): AdminNavItem {
+    return { key, label, route: ROUTES[key] ?? null };
   }
 
   roleLabel(role: Role | undefined): string {
