@@ -4,6 +4,8 @@ import java.util.List;
 
 public final class AchievementCatalog {
 
+
+    
     public static final String FIRST_GAME = "first_game";
     public static final String FIRST_WIN = "first_win";
     public static final String STREAK_5 = "streak_5";
