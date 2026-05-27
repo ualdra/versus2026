@@ -15,7 +15,7 @@
     </div>
 
     <!-- Filtros -->
-    <div style="display: flex; gap: 10px; align-items: center">
+    <div class="vs-filter-chips">
       <span class="vs-pill" [class]="filterPillClass('PENDING')"
             style="cursor: pointer"
             (click)="setFilter('PENDING')">
@@ -44,7 +44,7 @@
 
     <!-- Cards de reportes -->
     @if (!loading() && page()) {
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px">
+      <div class="vs-reports-grid">
         @for (r of page()!.content; track r.id) {
           <div class="vs-report-card">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px">
@@ -59,8 +59,19 @@
             @if (r.questionText) {
               <div class="vs-report-card__q">{{ r.questionText }}</div>
             } @else {
-              <div style="font-size: 12px; color: var(--vs-text-muted); font-family: 'IBM Plex Mono', monospace">
-                Pregunta ID: {{ r.questionId | slice:0:8 }}…
+              <div class="vs-report-card__deleted">Pregunta eliminada</div>
+            }
+
+            @if (r.options.length > 0) {
+              <div class="vs-report-card__opts">
+                @for (opt of r.options; track opt.text) {
+                  <div class="vs-report-opt" [class.is-correct]="opt.isCorrect">
+                    <span>{{ opt.text }}</span>
+                    @if (opt.isCorrect) {
+                      <span class="vs-report-opt__num">✓</span>
+                    }
+                  </div>
+                }
               </div>
             }
 
@@ -83,6 +94,19 @@
       @if (page()!.content.length === 0) {
         <div style="color: var(--vs-text-muted); font-size: 13px; padding: 20px 0">
           No hay reportes con este filtro.
+        </div>
+      }
+
+      @if (page()!.totalPages > 1) {
+        <div style="display: flex; gap: 6px; justify-content: center; margin-top: 16px">
+          @for (p of pages; track p) {
+            <button class="btn btn--sm"
+                    [class.btn--primary]="currentPage() === p"
+                    [class.btn--ghost]="currentPage() !== p"
+                    (click)="goToPage(p)">
+              {{ p + 1 }}
+            </button>
+          }
         </div>
       }
     }

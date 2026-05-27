@@ -1,6 +1,7 @@
 package com.versus.api.match.domain;
 
 import com.versus.api.match.GameMode;
+import com.versus.api.match.MatchAccessType;
 import com.versus.api.match.MatchStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,6 +33,10 @@ public class Match {
     @Column(nullable = false, length = 16)
     private MatchStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "access_type", nullable = false, length = 32)
+    private MatchAccessType accessType;
+
     @Column(name = "room_code", length = 16)
     private String roomCode;
 
@@ -47,5 +52,6 @@ public class Match {
     @PrePersist
     void onCreate() {
         if (createdAt == null) createdAt = Instant.now();
+        if (accessType == null) accessType = MatchAccessType.PRIVATE_ROOM;
     }
 }

@@ -260,7 +260,7 @@ $mode-colors: (
   border: 1px solid var(--vs-border-strong);
   flex-shrink: 0;
   color: #fff;
-  overflow: hidden; // clips custom image to circle
+  overflow: visible; // allows achievement overlays outside the circle
 
   // Fills the container and crops the image to the circular shape
   img {
@@ -280,23 +280,20 @@ $mode-colors: (
   position: absolute;
   right: -7px;
   bottom: -7px;
+  z-index: 1;
   background: var(--vs-accent-gold);
   border-radius: 999px;
 }
 ```
 
-**Uso con imagen personalizada** (Cloudflare/URL):
+**Uso con imagen personalizada**:
 ```html
-<div class="vs-avatar">
-  @if (user.avatarUrl) {
-    <img [src]="user.avatarUrl" alt="" />
-  } @else {
-    {{ initials }}
-  }
-</div>
+<vs-avatar [name]="user.username" [avatarUrl]="user.avatarUrl" />
 ```
 
-Si `avatarUrl` es `null`, el componente muestra las iniciales del usuario sobre el fondo de gradiente.
+Usa el componente compartido `shared/components/ui/avatar` en cualquier vista que reciba `avatarUrl`
+(topbar, perfil, ranking, lobby, amigos y admin). Si `avatarUrl` es `null` o la imagen falla,
+el componente muestra las iniciales del usuario sobre el fondo de gradiente.
 
 ### Invite Toasts (pop-up de invitaciones)
 

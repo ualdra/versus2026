@@ -9,6 +9,7 @@ import { Achievement } from '../../../../core/models/achievement.models';
 import { PlayerStats } from '../../../../core/models/game.models';
 import type { NotificationItem } from '../../../../core/models/notification.models';
 import { NotificationCenterService } from '../../../../core/services/notification-center.service';
+import { AvatarComponent } from '../../ui/avatar/avatar.component';
 
 
 export type NavKey = 'home' | 'play' | 'ranking' | 'friends' | 'profile' | 'settings' | 'admin' | 'users' | 'spiders' | 'reports';
@@ -17,7 +18,7 @@ export type TopbarUser = { name: string; xp: number; avatarUrl?: string | null }
 @Component({
   selector: 'app-topbar',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, AvatarComponent],
   templateUrl: './topbar.html',
 })
 export class TopbarComponent implements OnInit {
@@ -81,8 +82,6 @@ export class TopbarComponent implements OnInit {
       xp: this.calculateXp(this.stats()),
     };
   });
-
-  initials = computed(() => this.displayUser().name.slice(0, 2).toUpperCase());
 
   latestAchievement = computed(() => {
     const unlocked = this.achievements().filter((achievement) => achievement.unlocked);

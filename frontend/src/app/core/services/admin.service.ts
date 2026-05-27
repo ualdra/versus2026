@@ -10,6 +10,7 @@ import {
   AdminStats,
   AdminUser,
   AdminUserPage,
+  ModeDistribution,
   PageResponse,
 } from '../models/admin.models';
 
@@ -28,6 +29,10 @@ export class AdminService {
     return this.http.get<AdminLog[]>(`${this.base}/admin/logs`, {
       params: new HttpParams().set('limit', limit),
     });
+  }
+
+  modeDistribution(): Observable<ModeDistribution[]> {
+    return this.http.get<ModeDistribution[]>(`${this.base}/admin/stats/modes`);
   }
 
   // ── Users ──────────────────────────────────────────────────────────────────

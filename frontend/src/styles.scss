@@ -228,7 +228,7 @@ html, body {
   border: 1px solid var(--vs-border-strong);
   flex-shrink: 0;
   color: #fff;
-  overflow: hidden;
+  overflow: visible;
 
   img {
     width: 100%;
@@ -246,6 +246,7 @@ html, body {
   position: absolute;
   right: -7px;
   bottom: -7px;
+  z-index: 1;
   min-width: 18px;
   height: 18px;
   padding: 0 4px;

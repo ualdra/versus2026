@@ -1,69 +1,50 @@
 import { Component, inject, input } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
+import { Role } from '../../../../core/models/auth.models';
+import { AvatarComponent } from '../../../../shared/components/ui/avatar/avatar.component';
 
-export type AdminNavKey =
-  | 'dash'
-  | 'spiders'
-  | 'reports'
-  | 'users'
-  | 'quest'
-  | 'rank'
-  | 'cfg'
-  | 'logs';
+export type AdminNavKey = 'dash' | 'spiders' | 'reports' | 'users';
 
-const ROUTES: Partial<Record<AdminNavKey, string>> = {
-  dash: '/admin/dashboard',
-  spiders: '/admin/spiders',
-  reports: '/admin/reports',
-  users: '/admin/users',
-};
+interface NavItem {
+  key: AdminNavKey;
+  label: string;
+  route: string;
+}
 
 @Component({
   selector: 'app-admin-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, AvatarComponent],
   templateUrl: './sidebar.html',
 })
 export class AdminSidebarComponent {
   active = input<AdminNavKey>('dash');
 
-  private readonly router = inject(Router);
   readonly auth = inject(AuthService);
 
-  sections = [
+  sections: { label: string; items: NavItem[] }[] = [
     {
       label: 'SUPERVISIÓN',
       items: [
-        { key: 'dash', label: 'Resumen' },
-        { key: 'spiders', label: 'Spiders' },
-        { key: 'reports', label: 'Moderación' },
+        { key: 'dash', label: 'Resumen', route: '/admin/dashboard' },
+        { key: 'spiders', label: 'Spiders', route: '/admin/spiders' },
+        { key: 'reports', label: 'Moderación', route: '/admin/reports' },
       ],
     },
     {
       label: 'GESTIÓN',
-      items: [
-        { key: 'users', label: 'Usuarios' },
-        { key: 'quest', label: 'Preguntas' },
-        { key: 'rank', label: 'Rankings' },
-      ],
-    },
-    {
-      label: 'SISTEMA',
-      items: [
-        { key: 'cfg', label: 'Configuración' },
-        { key: 'logs', label: 'Logs' },
-      ],
+      items: [{ key: 'users', label: 'Usuarios', route: '/admin/users' }],
     },
   ];
 
-  route(key: string): string | null {
-    return ROUTES[key as AdminNavKey] ?? null;
-  }
-
-  navigate(key: string): void {
-    const r = this.route(key);
-    if (r) this.router.navigate([r]);
+  roleLabel(role: Role | undefined): string {
+    const labels: Record<Role, string> = {
+      ADMIN: 'Administrador',
+      MODERATOR: 'Moderador',
+      PLAYER: 'Jugador',
+    };
+    return role ? labels[role] : '—';
   }
 
   initials(name: string): string {

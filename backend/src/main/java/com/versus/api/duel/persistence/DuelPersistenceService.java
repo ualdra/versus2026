@@ -6,6 +6,7 @@ import com.versus.api.duel.dto.PlayerRoundOutcome;
 import com.versus.api.duel.state.DuelMatchState;
 import com.versus.api.duel.state.DuelPlayerRuntime;
 import com.versus.api.match.GameMode;
+import com.versus.api.match.MatchAccessType;
 import com.versus.api.match.MatchResult;
 import com.versus.api.match.MatchStatus;
 import com.versus.api.match.domain.Match;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -100,14 +102,18 @@ public class DuelPersistenceService {
             Map<UUID, DuelPlayerRuntime> runtimes,
             Map<UUID, Double> avgDeviationByUser) {
 
+        final boolean[] rankedMatch = {false};
         matches.findById(matchId).ifPresent(m -> {
             m.setStatus(MatchStatus.FINISHED);
             m.setFinishedAt(Instant.now());
+            rankedMatch[0] = m.getAccessType() == MatchAccessType.PUBLIC_MATCHMAKING;
             matches.save(m);
         });
 
-        Map<UUID, EloChangeResponse> eloChanges = rankingService.recordPvpResult(mode, results);
-        java.util.Map<UUID, List<AchievementResponse>> unlocked = new java.util.HashMap<>();
+        Map<UUID, EloChangeResponse> eloChanges = rankedMatch[0]
+                ? rankingService.recordPvpResult(mode, results)
+                : Map.of();
+        Map<UUID, List<AchievementResponse>> unlocked = new HashMap<>();
         runtimes.values().forEach(runtime -> {
             MatchPlayerId id = new MatchPlayerId(matchId, runtime.getUserId());
             MatchPlayer mp = matchPlayers.findById(id).orElse(null);

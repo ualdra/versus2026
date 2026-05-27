@@ -4,6 +4,7 @@ export interface AdminUser {
   id: string;
   username: string;
   email: string;
+  avatarUrl: string | null;
   role: Role;
   isActive: boolean;
   createdAt: string;
@@ -47,6 +48,11 @@ export interface AdminSpider {
   } | null;
 }
 
+export interface ReportOption {
+  text: string;
+  isCorrect: boolean;
+}
+
 export interface AdminReport {
   id: string;
   questionId: string;
@@ -57,6 +63,7 @@ export interface AdminReport {
   createdAt: string;
   resolvedBy: string | null;
   resolvedAt: string | null;
+  options: ReportOption[];
 }
 
 export interface PageResponse<T> {
@@ -64,4 +71,9 @@ export interface PageResponse<T> {
   totalElements: number;
   totalPages: number;
   number: number;
+}
+
+export interface ModeDistribution {
+  mode: string;
+  count: number;
 }

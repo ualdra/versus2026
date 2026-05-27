@@ -163,7 +163,7 @@ Respuesta: `204 No Content`. En frontend se exige doble confirmacion escribiendo
 - Centro de notificaciones: desplegable en el topbar con contador de no leidas, historial local por usuario (`vs.notifications.<userId>`) y acciones de marcar leidas/vaciar.
 - Audio: controles `Efectos de sonido`, `Musica de fondo`, silenciar todo y feedback reducido guardados en `localStorage`.
 - Zona de peligro: borrar cuenta exige escribir el username.
-- Topbar: muestra username/avatar reales y XP calculado desde `/api/stats/me` mientras no exista campo `xp` dedicado.
+- Topbar: muestra username/avatar reales con `shared/components/ui/avatar` y XP calculado desde `/api/stats/me` mientras no exista campo `xp` dedicado.
  
 ---
 
@@ -767,6 +767,7 @@ Todos requieren rol `ADMIN`. Protegidos con `@PreAuthorize("hasRole('ADMIN')")` 
 | `PUT` | `/api/admin/users/{id}/role` | Cambiar rol. No permite self-demotion. | #82 |
 | `PUT` | `/api/admin/users/{id}/status` | Activar/suspender cuenta. No permite self-suspend. | #82 |
 | `GET` | `/api/admin/stats` | KPIs de la plataforma | #82 |
+| `GET` | `/api/admin/stats/modes` | Reparto de partidas finalizadas por modo de juego | #82 |
 | `GET` | `/api/admin/logs?limit=20` | Últimas N entradas de actividad del sistema (max 100) | #82 |
  
 ### Contrato GET /api/admin/users
@@ -782,6 +783,7 @@ Authorization: Bearer <admin-token>
       "id": "bbbb0000-0000-0000-0000-000000000002",
       "username": "alice",
       "email": "alice@versus.com",
+      "avatarUrl": "https://api.dicebear.com/...",
       "role": "PLAYER",
       "isActive": true,
       "createdAt": "2025-03-15T10:00:00Z"
@@ -796,6 +798,7 @@ Authorization: Bearer <admin-token>
  
 > Todos los query params son opcionales. `search` hace coincidencia parcial case-insensitive sobre username y email.  
 > `role` debe ser uno de `PLAYER`, `MODERATOR`, `ADMIN`. Resultados ordenados por `createdAt` descendente.  
+> `avatarUrl` se propaga al panel admin y se renderiza con el mismo componente compartido que topbar, perfil, lobby y amigos.
 > Errores: `401` token inválido · `403` usuario no es ADMIN.
  
 ### Contrato PUT /api/admin/users/{id}/role
@@ -812,6 +815,7 @@ Content-Type: application/json
   "id": "bbbb0000-0000-0000-0000-000000000002",
   "username": "alice",
   "email": "alice@versus.com",
+  "avatarUrl": "https://api.dicebear.com/...",
   "role": "MODERATOR",
   "isActive": true,
   "createdAt": "2025-03-15T10:00:00Z"
@@ -834,6 +838,7 @@ Content-Type: application/json
   "id": "bbbb0000-0000-0000-0000-000000000002",
   "username": "alice",
   "email": "alice@versus.com",
+  "avatarUrl": "https://api.dicebear.com/...",
   "role": "PLAYER",
   "isActive": false,
   "createdAt": "2025-03-15T10:00:00Z"
@@ -863,6 +868,25 @@ Authorization: Bearer <admin-token>
 > Todos los valores son `long`. `matchesToday` cuenta partidas cuyo `createdAt` es posterior al inicio del día UTC actual.  
 > `activeSpiders` cuenta spiders con estado `RUNNING`. `pendingReports` cuenta reportes con estado `PENDING`.  
 > Errores: `401` · `403`.
+ 
+### Contrato GET /api/admin/stats/modes
+ 
+```json
+GET /api/admin/stats/modes
+Authorization: Bearer <admin-token>
+
+→ 200
+[
+  { "mode": "SURVIVAL",       "count": 120 },
+  { "mode": "PRECISION",      "count": 64  },
+  { "mode": "BINARY_DUEL",    "count": 38  },
+  { "mode": "PRECISION_DUEL", "count": 12  },
+  { "mode": "SABOTAGE",       "count": 9   }
+]
+```
+ 
+> Cuenta sólo partidas con estado `FINISHED`, agrupadas por `mode`.  
+> Devuelve **siempre las 5 modalidades** (`count: 0` cuando no hay partidas), para que el dashboard renderice todas las barras.
  
 ### Contrato GET /api/admin/logs
  

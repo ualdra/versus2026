@@ -5,6 +5,7 @@ import com.versus.api.moderation.ReportStatus;
 import com.versus.api.moderation.ResolveAction;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 public record ReportResponse(
@@ -19,5 +20,6 @@ public record ReportResponse(
         Instant createdAt,
         UUID resolvedBy,
         Instant resolvedAt,
-        ResolveAction action
+        ResolveAction action,
+        List<ReportOptionItem> options
 ) {}
