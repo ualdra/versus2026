@@ -1,8 +1,17 @@
 import { defineConfig } from 'vitest/config';
 
-// El builder @angular/build:unit-test gestiona reporters y cobertura a través
-// de las opciones declaradas en angular.json (ver target "test"). Este fichero
-// queda para configuración propia de vitest que el builder sí respeta.
 export default defineConfig({
-  test: {},
+  test: {
+    reporters: process.env['CI']
+      ? ['verbose', ['junit', { outputFile: 'test-results/junit.xml' }]]
+      : ['verbose'],
+    coverage: {
+      reporter: ['text-summary', 'lcov', 'json', 'html'],
+      exclude: [
+        'src/app/**/*.spec.ts',
+        'src/app/**/*.routes.ts',
+        'src/app/**/*.config.ts',
+      ],
+    },
+  },
 });
