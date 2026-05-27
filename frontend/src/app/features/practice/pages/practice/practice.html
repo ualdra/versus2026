@@ -118,6 +118,18 @@
           <button class="btn btn--primary" (click)="submitNumeric()">ENVIAR →</button>
         </div>
       }
+
+      <div class="vs-practice__proposal-link">
+        <button type="button" class="btn btn--ghost btn--sm" (click)="toggleProposalForm()">
+          ¿Conoces un dato mejor? Proponlo
+        </button>
+      </div>
+
+      @if (proposalOpen()) {
+        <div class="vs-practice__proposal-panel">
+          <app-question-proposal-form />
+        </div>
+      }
     }
   }
 

@@ -6,11 +6,17 @@
   @for (section of sections; track section.label) {
     <div class="vs-admin__nav-section">{{ section.label }}</div>
     @for (item of section.items; track item.key) {
-      <a class="vs-admin__nav-item"
-         [routerLink]="item.route"
-         routerLinkActive="active">
-        {{ item.label }}
-      </a>
+      @if (item.route) {
+        <a class="vs-admin__nav-item"
+           [routerLink]="item.route"
+           routerLinkActive="active">
+          {{ item.label }}
+        </a>
+      } @else {
+        <span class="vs-admin__nav-item vs-admin__nav-item--disabled">
+          {{ item.label }}
+        </span>
+      }
     }
   }
 
@@ -25,7 +31,7 @@
     />
     <div style="flex: 1">
       <div style="font-size: 12px; font-weight: 600">{{ auth.user()?.username ?? '—' }}</div>
-      <div style="font-size: 10px; color: var(--vs-text-muted)">{{ roleLabel(auth.user()?.role) }}</div>
+      <div style="font-size: 10px; color: var(--vs-text-muted)">{{ auth.user()?.role ?? 'ADMIN' }}</div>
     </div>
   </div>
 </aside>

@@ -78,6 +78,10 @@ nav:
       - Scraping: backend/modules/scraping.md
       - WebSocket: backend/modules/websocket.md
       - Media: backend/modules/media.md
+  - Frontend:
+    - Arquitectura: frontend/arquitectura.md
+    - Páginas públicas: frontend/paginas-publicas.md
+    - Testing: frontend/testing.md
   - Sprints:
     - Sprint 1-2: backend-mvp-sprint-1-2.md
     - Sprint 3: backend-mvp-sprint-3.md

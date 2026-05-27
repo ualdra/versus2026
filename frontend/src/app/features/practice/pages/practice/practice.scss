@@ -190,3 +190,21 @@
   width: 100%;
   margin: 0 auto;
 }
+
+.vs-practice__proposal-link {
+  display: flex;
+  justify-content: center;
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.vs-practice__proposal-panel {
+  background: var(--vs-bg-surface);
+  border: 1px solid var(--vs-border);
+  border-radius: var(--vs-radius-md);
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 18px;
+}

@@ -1,0 +1,73 @@
+<div class="vs-player-profile-page">
+  <app-topbar active="friends" />
+
+  <div class="vs-player-profile">
+
+    @if (loading()) {
+      <div class="vs-player-profile__loading">
+        <div class="vs-mono" style="color: var(--vs-text-muted); letter-spacing: 0.14em">CARGANDO PERFIL…</div>
+      </div>
+    } @else if (error()) {
+      <div class="vs-player-profile__error">
+        <div class="vs-alert vs-alert--err">{{ error() }}</div>
+        <button type="button" class="btn btn--ghost btn--sm" (click)="goBack()">← VOLVER</button>
+      </div>
+    } @else if (user()) {
+
+      <!-- Cabecera -->
+      <div class="vs-player-profile__head vs-card">
+        <vs-avatar [name]="user()!.username" [avatarUrl]="user()!.avatarUrl" [sizePx]="96" [fontSizePx]="34" />
+        <div style="flex: 1">
+          <div class="vs-display" style="font-size: 38px; line-height: 1">{{ user()!.username }}</div>
+          <div style="color: var(--vs-text-secondary); margin-top: 6px; font-size: 13px">
+            Se unió en {{ joined() }}
+          </div>
+          @if (user()!.role && user()!.role !== 'PLAYER') {
+            <span class="vs-meta-chip" style="margin-top: 8px; display: inline-block">
+              <strong>{{ user()!.role }}</strong>
+            </span>
+          }
+        </div>
+        <button type="button" class="btn btn--ghost btn--sm" (click)="goBack()">← VOLVER</button>
+      </div>
+
+      <!-- Rankings competitivos -->
+      <div>
+        <div class="vs-section-title">Clasificación competitiva</div>
+        @if (competitiveRows().length === 0) {
+          <div class="vs-card">
+            <div class="vs-empty">Este jugador aún no tiene partidas competitivas.</div>
+          </div>
+        } @else {
+          <div class="vs-card" style="padding: 0">
+            <table class="vs-table">
+              <thead>
+                <tr>
+                  <th>Modo</th>
+                  <th>#</th>
+                  <th>ELO</th>
+                  <th>% Victorias</th>
+                  <th>V/D</th>
+                  <th>Racha</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of competitiveRows(); track row.mode) {
+                  <tr>
+                    <td style="font-weight: 600">{{ row.mode }}</td>
+                    <td class="vs-mono" style="color: var(--vs-text-muted)">#{{ row.rank }}</td>
+                    <td class="vs-mono" style="color: var(--vs-accent-gold)">{{ row.rating }}</td>
+                    <td class="vs-mono" style="color: var(--vs-accent-green)">{{ row.winRate }}</td>
+                    <td class="vs-mono">{{ row.record }}</td>
+                    <td class="vs-mono" style="color: var(--vs-accent-blue)">{{ row.winStreak }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+
+    }
+  </div>
+</div>

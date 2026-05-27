@@ -16,15 +16,18 @@ import { UserService } from '../../../../core/services/user.service';
 import { StatsService } from '../../../../core/services/stats.service';
 import { RankingService } from '../../../../core/services/ranking.service';
 import { AchievementService } from '../../../../core/services/achievement.service';
+import { QuestionProposalService } from '../../../../core/services/question-proposal.service';
 import { Achievement } from '../../../../core/models/achievement.models';
 import { UserMe } from '../../../../core/models/auth.models';
 import { RankingSummary } from '../../../../core/models/ranking.models';
+import { QuestionProposal } from '../../../../core/models/question-proposal.models';
 import {
   GameMode,
   MatchHistoryItem,
   PlayerStatsOverview,
 } from '../../../../core/models/game.models';
 import { MatchDetailModal } from './match-detail-modal/match-detail-modal';
+import { QuestionProposalForm } from '../../../questions/components/question-proposal-form/question-proposal-form';
 
 const MODE_LABEL: Record<GameMode, string> = {
   SURVIVAL: 'Supervivencia',
@@ -40,7 +43,7 @@ const MULTIPLAYER_MODES: GameMode[] = ['BINARY_DUEL', 'PRECISION_DUEL', 'SABOTAG
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [RouterLink, TopbarComponent, MatchDetailModal, DatePipe, AvatarComponent],
+  imports: [RouterLink, TopbarComponent, MatchDetailModal, DatePipe, AvatarComponent, QuestionProposalForm],
   templateUrl: './profile.html',
   styleUrl: './profile.scss',
 })
@@ -50,6 +53,7 @@ export class Profile implements OnInit {
   private readonly statsApi = inject(StatsService);
   private readonly rankingApi = inject(RankingService);
   private readonly achievementsApi = inject(AchievementService);
+  private readonly proposalApi = inject(QuestionProposalService);
 
   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
 
@@ -64,6 +68,10 @@ export class Profile implements OnInit {
   readonly achievements = signal<Achievement[]>([]);
   readonly competitiveRankings = signal<RankingSummary[]>([]);
   readonly competitiveLoading = signal(false);
+  readonly proposals = signal<QuestionProposal[]>([]);
+  readonly proposalsPendingCount = signal(0);
+  readonly proposalsPendingLimit = signal(5);
+  readonly proposalsLoading = signal(false);
 
   private chartDrawn = false;
 
@@ -174,7 +182,21 @@ export class Profile implements OnInit {
       next: (list) => this.achievements.set(list ?? []),
       error: () => this.achievements.set([]),
     });
+    this.loadProposals();
     this.loadHistory(0);
+  }
+
+  loadProposals(): void {
+    this.proposalsLoading.set(true);
+    this.proposalApi.mine().subscribe({
+      next: (history) => {
+        this.proposals.set(history.proposals ?? []);
+        this.proposalsPendingCount.set(history.pendingCount);
+        this.proposalsPendingLimit.set(history.pendingLimit);
+        this.proposalsLoading.set(false);
+      },
+      error: () => this.proposalsLoading.set(false),
+    });
   }
 
   private loadCompetitiveRankings(userId: string): void {
@@ -250,6 +272,29 @@ export class Profile implements OnInit {
       month: 'short',
       year: 'numeric',
     });
+  }
+
+  proposalStatusLabel(status: QuestionProposal['status']): string {
+    return (
+      {
+        PENDING: 'Pendiente',
+        APPROVED: 'Aprobada',
+        REJECTED: 'Rechazada',
+      }[status] ?? status
+    );
+  }
+
+  proposalStatusClass(status: QuestionProposal['status']): string {
+    if (status === 'APPROVED') return 'vs-proposal-status vs-proposal-status--approved';
+    if (status === 'REJECTED') return 'vs-proposal-status vs-proposal-status--rejected';
+    return 'vs-proposal-status vs-proposal-status--pending';
+  }
+
+  proposalAnswerLabel(proposal: QuestionProposal): string {
+    if (proposal.type === 'BINARY') {
+      return `${proposal.proposedAnswer} / ${proposal.alternativeAnswer ?? '-'}`;
+    }
+    return proposal.proposedAnswer;
   }
 
   private drawChart(): void {

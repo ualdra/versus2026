@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Role } from '../models/auth.models';
+import { ProposalStatus, QuestionProposal } from '../models/question-proposal.models';
 import {
   AdminLog,
   AdminReport,
@@ -89,6 +90,31 @@ export class AdminService {
     return this.http.put<AdminReport>(
       `${this.base}/moderation/reports/${id}/resolve`,
       { action },
+    );
+  }
+
+  // ── Question proposals ──────────────────────────────────────────────────────
+
+  getProposals(status?: ProposalStatus, page = 0): Observable<PageResponse<QuestionProposal>> {
+    let params = new HttpParams().set('page', page).set('size', 20);
+    if (status) params = params.set('status', status);
+    return this.http.get<PageResponse<QuestionProposal>>(
+      `${this.base}/moderation/proposals`,
+      { params },
+    );
+  }
+
+  approveProposal(id: string): Observable<QuestionProposal> {
+    return this.http.put<QuestionProposal>(
+      `${this.base}/moderation/proposals/${id}/approve`,
+      {},
+    );
+  }
+
+  rejectProposal(id: string, rejectReason: string): Observable<QuestionProposal> {
+    return this.http.put<QuestionProposal>(
+      `${this.base}/moderation/proposals/${id}/reject`,
+      { rejectReason },
     );
   }
 }

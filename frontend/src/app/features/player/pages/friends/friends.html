@@ -32,6 +32,7 @@
                     <strong>{{ request.requester.username }}</strong>
                     <span>Quiere agregarte a amigos.</span>
                   </div>
+                  <a class="btn btn--ghost btn--sm" [routerLink]="['/players', request.requester.userId]">PERFIL</a>
                   <button type="button" class="btn btn--primary btn--sm" (click)="acceptRequest(request)" [disabled]="busy()">ACEPTAR</button>
                   <button type="button" class="btn btn--ghost btn--sm" (click)="declineRequest(request)" [disabled]="busy()">RECHAZAR</button>
                 </div>
@@ -85,6 +86,7 @@
                 <strong>{{ user.username }}</strong>
                 <span>{{ relationLabel(user.relation) }}</span>
               </div>
+              <a class="btn btn--ghost btn--sm" [routerLink]="['/players', user.userId]">PERFIL</a>
               <button
                 type="button"
                 class="btn btn--ghost btn--sm"
@@ -120,6 +122,7 @@
                 <strong>{{ friend.username }}</strong>
                 <span>Disponible para invitacion.</span>
               </div>
+              <a class="btn btn--ghost btn--sm" [routerLink]="['/players', friend.userId]">PERFIL</a>
               <button type="button" class="btn btn--gold btn--sm" (click)="invite(friend)" [disabled]="busy()">INVITAR</button>
             </div>
           } @empty {

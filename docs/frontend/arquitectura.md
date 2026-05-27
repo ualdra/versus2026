@@ -35,7 +35,7 @@ frontend/src/app/
 │   └── pipes/           Pipes compartidos (pendiente)
 │
 └── features/            Un módulo por área funcional
-    ├── landing/         Página pública
+    ├── landing/         Landing y páginas públicas estáticas
     ├── auth/            Login y registro
     ├── player/          Dashboard, perfil, amigos, selección de modo, lobby, resultado
     ├── survival/        Página + componentes del modo Survival
@@ -67,6 +67,15 @@ Guards disponibles:
 |---|---|---|
 | `authGuard` | `AuthService.isAuthenticated()` | `/login` |
 | `adminGuard` | `AuthService.user()?.role === 'ADMIN'` | `/dashboard` |
+
+### Rutas públicas estáticas
+
+| Ruta | Componente | Documentación |
+|---|---|---|
+| `/equipo` | `features/landing/pages/equipo` | Integrantes del proyecto, roles y stack técnico. |
+| `/privacidad` | `features/landing/pages/privacidad` | Política de privacidad, persistencia local y derechos del usuario. |
+
+Estas rutas no tienen guards ni llamadas al backend. Ver [páginas públicas](paginas-publicas.md) para mantenimiento y pruebas manuales.
 
 ## Gestión de estado con Signals
 

@@ -1,0 +1,76 @@
+<div class="vs-page">
+
+  <!-- Topbar -->
+  <div class="vs-topbar vs-page__topbar">
+    <a routerLink="/landing" class="vs-mark">VER<span class="vs-mark__slash">/</span>SUS</a>
+    <nav class="vs-topbar__nav">
+      <a routerLink="/landing">Inicio</a>
+      <a routerLink="/equipo">Equipo</a>
+      <a routerLink="/privacidad" class="active">Privacidad</a>
+    </nav>
+    <div style="display: flex; gap: 10px">
+      <a routerLink="/login" class="btn btn--ghost btn--sm">INICIAR SESIÓN</a>
+      <a routerLink="/register" class="btn btn--danger btn--sm">REGISTRARSE</a>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="vs-page__header">
+    <div class="vs-page__header-bg">
+      <div class="vs-landing__bg-grid"></div>
+    </div>
+    <div class="vs-page__header-inner">
+      <span class="vs-pill vs-pill--mute">ÚLTIMA ACTUALIZACIÓN: {{ lastUpdated }}</span>
+      <h1 class="vs-display vs-page__title">POLÍTICA DE<br>PRIVACIDAD</h1>
+      <p class="vs-page__subtitle">
+        Sin letra pequeña. Proyecto académico, datos mínimos, cero tracking comercial.
+      </p>
+    </div>
+  </header>
+
+  <!-- Contenido -->
+  <div class="vs-privacy__layout">
+
+    <!-- Índice (sidebar) -->
+    <aside class="vs-privacy__toc">
+      <div class="vs-mono vs-privacy__toc-title">ÍNDICE</div>
+      @for (s of sections; track s.id) {
+        <a class="vs-privacy__toc-link" [href]="'#' + s.id">{{ s.title }}</a>
+      }
+    </aside>
+
+    <!-- Secciones -->
+    <main class="vs-privacy__main">
+      @for (s of sections; track s.id) {
+        <section class="vs-privacy__section" [id]="s.id">
+          <h2 class="vs-display vs-privacy__section-title">{{ s.title }}</h2>
+          <p class="vs-privacy__section-body">{{ s.content }}</p>
+        </section>
+      }
+
+      <div class="vs-privacy__footer-note">
+        <span class="vs-pill vs-pill--ok">RGPD COMPATIBLE</span>
+        <p>
+          Este proyecto sigue las directrices del Reglamento General de Protección de Datos (UE) 2016/679.
+          Al ser un proyecto académico sin fines comerciales, su alcance es limitado al entorno de la
+          Universidad de Almería.
+        </p>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="vs-landing__footer">
+    <a routerLink="/landing" class="vs-mark">VER<span class="vs-mark__slash">/</span>SUS</a>
+    <div style="font-size: 11px; color: var(--vs-text-muted); letter-spacing: 0.1em">
+      ELIGE MODO. ELIGE RIVAL. Y QUE GANE EL QUE MENOS DUDE.
+    </div>
+    <div style="display: flex; gap: 18px; font-size: 11px; color: var(--vs-text-muted); text-transform: uppercase; letter-spacing: 0.12em">
+      <a routerLink="/landing">Inicio</a>
+      <a routerLink="/equipo">Equipo</a>
+      <a routerLink="/privacidad">Privacidad</a>
+    </div>
+  </footer>
+
+</div>
