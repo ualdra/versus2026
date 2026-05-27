@@ -7,5 +7,10 @@ import java.util.UUID;
 
 public record CreateMatchInviteRequest(
         @NotNull UUID friendUserId,
-        @NotNull GameMode mode) {
+        @NotNull GameMode mode,
+        UUID matchId) {
+
+    public CreateMatchInviteRequest(UUID friendUserId, GameMode mode) {
+        this(friendUserId, mode, null);
+    }
 }

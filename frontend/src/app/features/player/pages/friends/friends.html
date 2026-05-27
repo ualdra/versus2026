@@ -27,7 +27,7 @@
             <div class="vs-list">
               @for (request of incomingRequests(); track request.id) {
                 <div class="vs-social-row">
-                  <div class="vs-avatar">{{ initials(request.requester.username) }}</div>
+                  <vs-avatar [name]="request.requester.username" [avatarUrl]="request.requester.avatarUrl" />
                   <div class="vs-social-row__body">
                     <strong>{{ request.requester.username }}</strong>
                     <span>Quiere agregarte a amigos.</span>
@@ -48,7 +48,7 @@
             <div class="vs-list">
               @for (invite of incomingInvites(); track invite.id) {
                 <div class="vs-social-row">
-                  <div class="vs-avatar">{{ initials(invite.from.username) }}</div>
+                  <vs-avatar [name]="invite.from.username" [avatarUrl]="invite.from.avatarUrl" />
                   <div class="vs-social-row__body">
                     <strong>{{ invite.from.username }}</strong>
                     <span>{{ modeLabels[invite.mode] }}</span>
@@ -80,7 +80,7 @@
         <div class="vs-list">
           @for (user of searchResults(); track user.userId) {
             <div class="vs-social-row">
-              <div class="vs-avatar">{{ initials(user.username) }}</div>
+              <vs-avatar [name]="user.username" [avatarUrl]="user.avatarUrl" />
               <div class="vs-social-row__body">
                 <strong>{{ user.username }}</strong>
                 <span>{{ relationLabel(user.relation) }}</span>
@@ -115,7 +115,7 @@
         <div class="vs-list">
           @for (friend of friends(); track friend.userId) {
             <div class="vs-social-row">
-              <div class="vs-avatar">{{ initials(friend.username) }}</div>
+              <vs-avatar [name]="friend.username" [avatarUrl]="friend.avatarUrl" />
               <div class="vs-social-row__body">
                 <strong>{{ friend.username }}</strong>
                 <span>Disponible para invitacion.</span>
@@ -137,7 +137,7 @@
           <div class="vs-list">
             @for (request of outgoingRequests(); track request.id) {
               <div class="vs-social-row">
-                <div class="vs-avatar">{{ initials(request.addressee.username) }}</div>
+                <vs-avatar [name]="request.addressee.username" [avatarUrl]="request.addressee.avatarUrl" />
                 <div class="vs-social-row__body">
                   <strong>{{ request.addressee.username }}</strong>
                   <span>Pendiente de respuesta.</span>
@@ -155,7 +155,7 @@
           <div class="vs-list">
             @for (invite of outgoingInvites(); track invite.id) {
               <div class="vs-social-row">
-                <div class="vs-avatar">{{ initials(invite.to.username) }}</div>
+                <vs-avatar [name]="invite.to.username" [avatarUrl]="invite.to.avatarUrl" />
                 <div class="vs-social-row__body">
                   <strong>{{ invite.to.username }}</strong>
                   <span>{{ modeLabels[invite.mode] }} · {{ invite.status }}</span>

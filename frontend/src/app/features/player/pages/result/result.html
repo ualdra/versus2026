@@ -47,6 +47,14 @@
       </div>
     }
 
+    @if (state()?.multiplayer) {
+      <app-elo-change-notice
+        [delta]="state()?.eloDelta"
+        [previousRating]="state()?.previousRating"
+        [currentRating]="state()?.currentRating"
+      />
+    }
+
     <div class="vs-result__actions">
       <a routerLink="/dashboard" class="btn btn--ghost btn--lg">VOLVER AL INICIO</a>
       <a [routerLink]="replayLink()" class="btn btn--danger btn--lg">▶ OTRA PARTIDA</a>

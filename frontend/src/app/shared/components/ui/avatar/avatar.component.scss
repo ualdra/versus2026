@@ -1,0 +1,14 @@
+:host {
+  display: inline-flex;
+  line-height: 0;
+}
+
+.vs-avatar {
+  line-height: 1;
+}
+
+.vs-avatar--sm {
+  width: 28px;
+  height: 28px;
+  font-size: 11px;
+}

@@ -5,6 +5,7 @@ import com.versus.api.achievements.AchievementService;
 import com.versus.api.common.exception.ApiException;
 import com.versus.api.match.GameMode;
 import com.versus.api.match.MatchService;
+import com.versus.api.match.MatchStatus;
 import com.versus.api.match.dto.LobbyStateDto;
 import com.versus.api.match.state.LiveMatchState;
 import com.versus.api.social.domain.FriendRequest;
@@ -195,13 +196,19 @@ public class SocialService {
             throw ApiException.forbidden("Only friends can be invited");
         }
 
-        LiveMatchState state = matchService.createMatch(req.mode(), sender.getId());
-        matchService.addPlayer(state.getMatchId(), sender.getId());
+        LiveMatchState state = req.matchId() == null
+                ? createInviteMatch(req.mode(), sender.getId())
+                : requireInvitableMatch(req.matchId(), req.mode(), sender.getId(), friend.getId());
+        if (matchInvites.existsByMatchIdAndToUserIdAndStatus(
+                state.getMatchId(), friend.getId(), SocialStatus.PENDING)) {
+            throw ApiException.conflict("A pending invite already exists for this match");
+        }
+
         MatchInvite invite = matchInvites.save(MatchInvite.builder()
                 .matchId(state.getMatchId())
                 .fromUserId(sender.getId())
                 .toUserId(friend.getId())
-                .mode(req.mode())
+                .mode(state.getMode())
                 .status(SocialStatus.PENDING)
                 .build());
         achievementService.unlockByKey(sender.getId(), AchievementCatalog.SOCIAL_INVITE);
@@ -212,6 +219,34 @@ public class SocialService {
                         new MatchInviteEvent(invite.getId(), invite.getMatchId(), invite.getMode(),
                                 userSummary(sender, SocialRelation.FRIEND))));
         return toMatchInviteResponse(invite, userId);
+    }
+
+    private LiveMatchState createInviteMatch(GameMode mode, UUID senderId) {
+        LiveMatchState state = matchService.createMatch(mode, senderId);
+        matchService.addPlayer(state.getMatchId(), senderId);
+        return state;
+    }
+
+    private LiveMatchState requireInvitableMatch(UUID matchId, GameMode mode, UUID senderId, UUID friendId) {
+        LiveMatchState state = matchService.requireLive(matchId);
+        synchronized (state) {
+            if (state.getMode() != mode) {
+                throw ApiException.validation("Invite mode does not match the match mode");
+            }
+            if (state.getStatus() != MatchStatus.WAITING) {
+                throw ApiException.conflict("Match is not accepting invites");
+            }
+            if (!state.getPlayers().containsKey(senderId)) {
+                throw ApiException.forbidden("Only match players can invite friends");
+            }
+            if (state.getPlayers().containsKey(friendId)) {
+                throw ApiException.conflict("User is already in this match");
+            }
+            if (state.isFull()) {
+                throw ApiException.conflict("Match is full");
+            }
+        }
+        return state;
     }
 
     @Transactional

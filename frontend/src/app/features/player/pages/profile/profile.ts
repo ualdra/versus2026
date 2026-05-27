@@ -10,12 +10,15 @@ import {
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TopbarComponent } from '../../../../shared/components/layout/topbar/topbar';
+import { AvatarComponent } from '../../../../shared/components/ui/avatar/avatar.component';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserService } from '../../../../core/services/user.service';
 import { StatsService } from '../../../../core/services/stats.service';
+import { RankingService } from '../../../../core/services/ranking.service';
 import { AchievementService } from '../../../../core/services/achievement.service';
 import { Achievement } from '../../../../core/models/achievement.models';
 import { UserMe } from '../../../../core/models/auth.models';
+import { RankingSummary } from '../../../../core/models/ranking.models';
 import {
   GameMode,
   MatchHistoryItem,
@@ -37,7 +40,7 @@ const MULTIPLAYER_MODES: GameMode[] = ['BINARY_DUEL', 'PRECISION_DUEL', 'SABOTAG
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [RouterLink, TopbarComponent, MatchDetailModal, DatePipe],
+  imports: [RouterLink, TopbarComponent, MatchDetailModal, DatePipe, AvatarComponent],
   templateUrl: './profile.html',
   styleUrl: './profile.scss',
 })
@@ -45,6 +48,7 @@ export class Profile implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly users = inject(UserService);
   private readonly statsApi = inject(StatsService);
+  private readonly rankingApi = inject(RankingService);
   private readonly achievementsApi = inject(AchievementService);
 
   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
@@ -58,13 +62,10 @@ export class Profile implements OnInit {
   readonly selectedMatchId = signal<string | null>(null);
   readonly modeFilter = signal<GameMode | undefined>(undefined);
   readonly achievements = signal<Achievement[]>([]);
+  readonly competitiveRankings = signal<RankingSummary[]>([]);
+  readonly competitiveLoading = signal(false);
 
   private chartDrawn = false;
-
-  readonly initials = computed(() => {
-    const u = this.me()?.username ?? this.auth.user()?.username ?? '';
-    return u.slice(0, 2).toUpperCase() || '??';
-  });
 
   readonly username = computed(() => this.me()?.username ?? this.auth.user()?.username ?? '—');
 
@@ -131,6 +132,22 @@ export class Profile implements OnInit {
       }))
   );
 
+  readonly competitiveRows = computed(() =>
+    this.competitiveRankings()
+      .filter((ranking) => MULTIPLAYER_MODES.includes(ranking.mode))
+      .map((ranking) => {
+        const total = ranking.wins + ranking.losses;
+        return {
+          mode: MODE_LABEL[ranking.mode] ?? ranking.mode,
+          rating: ranking.rating,
+          winRate: total === 0 ? '0%' : `${Math.round((ranking.wins / total) * 100)}%`,
+          record: `${ranking.wins}/${ranking.losses}`,
+          winStreak: ranking.winStreak,
+          rank: ranking.rank,
+        };
+      })
+  );
+
   readonly chartScores = computed(() =>
     this.history()
       .slice()
@@ -139,7 +156,16 @@ export class Profile implements OnInit {
   );
 
   ngOnInit(): void {
-    this.users.me().subscribe({ next: (u) => this.me.set(u), error: () => {} });
+    this.users.me().subscribe({
+      next: (u) => {
+        this.me.set(u);
+        this.loadCompetitiveRankings(u.id);
+      },
+      error: () => {
+        const fallbackId = this.auth.user()?.id;
+        if (fallbackId) this.loadCompetitiveRankings(fallbackId);
+      },
+    });
     this.statsApi.mine().subscribe({
       next: (o) => this.overview.set(o),
       error: () => {},
@@ -149,6 +175,17 @@ export class Profile implements OnInit {
       error: () => this.achievements.set([]),
     });
     this.loadHistory(0);
+  }
+
+  private loadCompetitiveRankings(userId: string): void {
+    this.competitiveLoading.set(true);
+    this.rankingApi.userRanking(userId).subscribe({
+      next: (data) => {
+        this.competitiveRankings.set(data.rankings ?? []);
+        this.competitiveLoading.set(false);
+      },
+      error: () => this.competitiveLoading.set(false),
+    });
   }
 
   loadHistory(page: number): void {

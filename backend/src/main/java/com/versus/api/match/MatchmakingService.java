@@ -67,7 +67,7 @@ public class MatchmakingService {
 
     private void pairUp(GameMode mode, List<MatchmakingQueue> entries) {
         UUID owner = entries.get(0).getUserId();
-        LiveMatchState state = matchService.createMatch(mode, owner);
+        LiveMatchState state = matchService.createPublicMatchmakingMatch(mode, owner);
         for (MatchmakingQueue entry : entries) {
             matchService.addPlayer(state.getMatchId(), entry.getUserId());
         }

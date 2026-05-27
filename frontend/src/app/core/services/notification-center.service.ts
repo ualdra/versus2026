@@ -17,6 +17,7 @@ import {
 import type { MatchEvent } from '../models/ws.models';
 import { AuthService } from './auth.service';
 import { AchievementToastService } from './achievement-toast.service';
+import { InviteToastService } from './invite-toast.service';
 import { WebSocketService } from './websocket.service';
 
 const MAX_NOTIFICATIONS = 30;
@@ -26,6 +27,7 @@ export class NotificationCenterService {
   private readonly auth = inject(AuthService);
   private readonly ws = inject(WebSocketService);
   private readonly achievementToasts = inject(AchievementToastService);
+  private readonly inviteToasts = inject(InviteToastService);
 
   private readonly _items = signal<NotificationItem[]>([]);
   private subscriptions = new Subscription();
@@ -91,6 +93,10 @@ export class NotificationCenterService {
     this.updateItems((items) => items.map((item) => ({ ...item, read: true })));
   }
 
+  remove(id: string): void {
+    this.updateItems((items) => items.filter((item) => item.id !== id));
+  }
+
   clear(): void {
     this.updateItems(() => []);
   }
@@ -147,14 +153,19 @@ export class NotificationCenterService {
   private handleMatchInvite(payload: MatchInviteEvent): void {
     if (!this.readPrefs().matchInvites) return;
     const mode = MODE_LABELS[payload.mode] ?? payload.mode;
+    const title = 'Invitación a partida';
+    const message = `${payload.from.username} te invita a ${mode}.`;
     this.add({
       type: 'MATCH_INVITE',
-      title: 'Invitacion a partida',
-      message: `${payload.from.username} te invita a ${mode}.`,
+      title,
+      message,
       tone: 'warning',
       route: '/friends',
       sourceId: `match-invite:${payload.inviteId}`,
+      inviteId: payload.inviteId,
+      matchId: String(payload.matchId),
     });
+    this.inviteToasts.show(title, message, payload.inviteId, String(payload.matchId));
   }
 
   private addAchievement(achievement: Achievement): boolean {

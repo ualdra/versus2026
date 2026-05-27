@@ -127,6 +127,7 @@ public class AdminService {
                 u.getId().toString(),
                 u.getUsername(),
                 u.getEmail(),
+                u.getAvatarUrl(),
                 u.getRole().name(),
                 u.getIsActive(),
                 u.getCreatedAt()

@@ -48,9 +48,7 @@
             <tr>
               <td>
                 <div class="vs-user-cell">
-                  <div class="vs-avatar" style="width: 30px; height: 30px; font-size: 11px">
-                    {{ initials(u.username) }}
-                  </div>
+                  <vs-avatar [name]="u.username" [avatarUrl]="u.avatarUrl" [sizePx]="30" [fontSizePx]="11" />
                   <div style="font-weight: 600; font-size: 13px">{{ u.username }}</div>
                 </div>
               </td>

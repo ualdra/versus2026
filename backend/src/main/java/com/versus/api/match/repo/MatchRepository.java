@@ -15,10 +15,10 @@ public interface MatchRepository extends JpaRepository<Match, UUID> {
 
     Optional<Match> findByRoomCode(String roomCode);
 
-    // Panel de administración
+    // Admin dashboard
     long countByCreatedAtAfter(Instant from);
 
-    // Historial y estadísticas de usuario
+    // User match history and stats
     @Query(value = """
             SELECT m.* FROM matches m
             JOIN match_players mp ON mp.match_id = m.id

@@ -44,16 +44,19 @@
     </div>
 
     <!-- Arena -->
-    <div class="vs-survival__arena vs-binary-arena">
-      @for (opt of q.options; track opt.id) {
-        <button
-          type="button"
-          [class]="optionClass(opt.id)"
-          [disabled]="phase() !== 'idle'"
-          (click)="pick(opt.id)">
-          <span class="vs-bopt__text">{{ opt.text }}</span>
-        </button>
-      }
+    <div class="vs-survival__arena vs-compare-arena">
+      <app-compare-card
+        [item]="cardItem(q.options[0])"
+        [state]="cardState(q.options[0].id)"
+        [revealed]="phase() !== 'idle'"
+        position="left"
+        (picked)="pick(q.options[0].id)" />
+      <app-compare-card
+        [item]="cardItem(q.options[1])"
+        [state]="cardState(q.options[1].id)"
+        [revealed]="phase() !== 'idle'"
+        position="right"
+        (picked)="pick(q.options[1].id)" />
     </div>
   } @else {
     <div class="vs-loading">Cargando pregunta…</div>

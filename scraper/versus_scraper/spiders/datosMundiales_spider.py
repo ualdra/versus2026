@@ -26,7 +26,7 @@ class WorldometersSpider(scrapy.Spider):
         "PLAYWRIGHT_DEFAULT_NAVIGATION_TIMEOUT": 30000,
     }
 
-    def start_requests(self):
+    async def start(self):
         # La home necesita Playwright + esperar a que un contador deje de
         # mostrar el placeholder "retrieving data...".
         yield scrapy.Request(

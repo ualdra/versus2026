@@ -39,7 +39,7 @@ graph TB
     end
 
     subgraph GitHub
-        GH_CI["CI — Tests\n(push a main)"]
+        GH_CI["CI\n(push a main)"]
         GH_Deploy["Deploy\n(tras CI verde)"]
         GHCR["GHCR\nimágenes backend/frontend"]
     end
@@ -73,14 +73,14 @@ El despliegue es **completamente automático**: cualquier push a `main` en el re
 sequenceDiagram
     participant Dev as Desarrollador
     participant GH as GitHub (main)
-    participant CI as CI — Tests
+    participant CI as CI
     participant Deploy as Deploy workflow
     participant GHCR as GHCR
     participant VPS as Servidor VPS
 
     Dev->>GH: git push / merge PR
-    GH->>CI: dispara CI — Tests
-    CI->>CI: test unitarios + integración
+    GH->>CI: dispara CI
+    CI->>CI: backend unit + integración + frontend + build
     alt CI falla
         CI-->>Dev: ❌ notificación
     else CI pasa

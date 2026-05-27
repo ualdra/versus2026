@@ -3,6 +3,7 @@ import { DecimalPipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { TopbarComponent } from '../../../../shared/components/layout/topbar/topbar';
 import { GameMode } from '../../../../core/models/match.models';
+import { EloChangeNoticeComponent } from '../../components/elo-change-notice/elo-change-notice';
 
 interface OpponentRecap {
   username: string;
@@ -27,12 +28,15 @@ export interface ResultState {
   opponent?: OpponentRecap;
   reason?: 'NORMAL' | 'DISCONNECT' | 'MAX_ROUNDS_TIE' | 'NO_QUESTION';
   sabotagesUsed?: number;
+  eloDelta?: number | null;
+  previousRating?: number | null;
+  currentRating?: number | null;
 }
 
 @Component({
   selector: 'app-result',
   standalone: true,
-  imports: [RouterLink, TopbarComponent, DecimalPipe],
+  imports: [RouterLink, TopbarComponent, DecimalPipe, EloChangeNoticeComponent],
   templateUrl: './result.html',
   styleUrl: './result.scss',
 })

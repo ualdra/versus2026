@@ -3,10 +3,11 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { audioService } from './core/services/AudioService';
 import { AchievementToastsComponent } from './shared/components/achievement-toasts/achievement-toasts';
+import { InviteToastsComponent } from './shared/components/invite-toasts/invite-toasts';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, AchievementToastsComponent],
+  imports: [RouterOutlet, AchievementToastsComponent, InviteToastsComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

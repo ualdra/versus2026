@@ -2,6 +2,7 @@ package com.versus.api.moderation;
 
 import com.versus.api.common.exception.ApiException;
 import com.versus.api.moderation.domain.QuestionReport;
+import com.versus.api.moderation.dto.ReportOptionItem;
 import com.versus.api.moderation.dto.ReportRequest;
 import com.versus.api.moderation.dto.ReportResponse;
 import com.versus.api.moderation.dto.ResolveRequest;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -104,6 +106,10 @@ public class ModerationService {
     // ── Mapper ────────────────────────────────────────────────────────────────
 
     private ReportResponse toResponse(QuestionReport report, Question question) {
+        List<ReportOptionItem> opts = question == null ? List.of() :
+                question.getOptions().stream()
+                        .map(o -> new ReportOptionItem(o.getText(), o.getIsCorrect()))
+                        .toList();
         return new ReportResponse(
                 report.getId(),
                 report.getQuestionId(),
@@ -116,7 +122,8 @@ public class ModerationService {
                 report.getCreatedAt(),
                 report.getResolvedBy(),
                 report.getResolvedAt(),
-                report.getAction()
+                report.getAction(),
+                opts
         );
     }
 }

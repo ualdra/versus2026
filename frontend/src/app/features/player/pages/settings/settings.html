@@ -7,13 +7,7 @@
         <div class="vs-section-title">Centro de control</div>
         <h1 class="vs-display">Ajustes</h1>
       </div>
-      <div class="vs-avatar vs-avatar--lg">
-        @if (topbarUser().avatarUrl) {
-          <img [src]="topbarUser().avatarUrl" alt="" />
-        } @else {
-          {{ initials() }}
-        }
-      </div>
+      <vs-avatar size="lg" [name]="topbarUser().name" [avatarUrl]="topbarUser().avatarUrl" />
     </header>
 
     @if (status()) {
@@ -72,9 +66,7 @@
           </div>
           @if (selectedPredefinedAvatar()) {
             <div class="vs-avatar-confirm">
-              <div class="vs-avatar vs-avatar--lg">
-                <img [src]="selectedPredefinedAvatar()" alt="" />
-              </div>
+              <vs-avatar size="lg" name="Avatar seleccionado" [avatarUrl]="selectedPredefinedAvatar()" />
               <div class="vs-avatar-confirm__actions">
                 <button class="btn btn--primary btn--sm" type="button" (click)="confirmSelectedAvatar()">Aceptar</button>
                 <button class="btn btn--ghost btn--sm" type="button" (click)="cancelSelectedAvatar()">Cancelar</button>

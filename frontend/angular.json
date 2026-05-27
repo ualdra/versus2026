@@ -77,7 +77,20 @@
           "defaultConfiguration": "development"
         },
         "test": {
-          "builder": "@angular/build:unit-test"
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "coverageReporters": ["text-summary", "lcovonly", "json", "html"],
+            "coverageExclude": [
+              "src/app/**/*.spec.ts",
+              "src/app/**/*.routes.ts",
+              "src/app/**/*.config.ts"
+            ]
+          },
+          "configurations": {
+            "ci": {
+              "reporters": ["verbose", ["junit", { "outputFile": "test-results/junit.xml" }]]
+            }
+          }
         }
       }
     }
