@@ -87,7 +87,12 @@
             ]
           },
           "configurations": {
-            "ci": {}
+            "ci": {
+              "reporters": [
+                "verbose",
+                ["junit", { "outputFile": "test-results/junit.xml" }]
+              ]
+            }
           }
         }
       }
