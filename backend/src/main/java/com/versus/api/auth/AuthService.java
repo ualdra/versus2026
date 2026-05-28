@@ -76,7 +76,7 @@ public class AuthService {
 
     @Transactional
     public AuthResponse login(LoginRequest req) {
-        User user = users.findByEmail(req.email())
+        User user = users.findByEmailOrUsername(req.identifier(), req.identifier())
                 .orElseThrow(() -> ApiException.unauthorized("Invalid credentials"));
         if (Boolean.FALSE.equals(user.getIsActive())) {
             throw ApiException.unauthorized("Account disabled");

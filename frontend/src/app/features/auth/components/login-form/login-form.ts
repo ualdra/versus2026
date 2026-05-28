@@ -4,10 +4,20 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
+  AbstractControl,
+  ValidationErrors,
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../../../core/services/auth.service';
+
+function emailOrUsernameValidator(ctrl: AbstractControl): ValidationErrors | null {
+  const value: string = ctrl.value ?? '';
+  if (!value) return null;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const usernameRegex = /^[a-zA-Z0-9_.-]{3,50}$/;
+  return emailRegex.test(value) || usernameRegex.test(value) ? null : { emailOrUsername: true };
+}
 
 @Component({
   selector: 'app-login-form',
@@ -28,7 +38,7 @@ export class LoginForm {
 
   constructor(private readonly fb: FormBuilder) {
     this.form = this.fb.group({
-      identifier: ['', [Validators.required, Validators.email]],
+      identifier: ['', [Validators.required, emailOrUsernameValidator]],
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
   }
@@ -41,10 +51,10 @@ export class LoginForm {
   getError(field: string): string | null {
     const ctrl = this.form.get(field);
     if (!ctrl?.errors || !ctrl.touched) return null;
-    const { required, minlength, email } = ctrl.errors;
-    if (required)  return 'Este campo es obligatorio';
-    if (email)     return 'Introduce un correo válido';
-    if (minlength) return `Mínimo ${minlength.requiredLength} caracteres`;
+    const { required, minlength, emailOrUsername } = ctrl.errors;
+    if (required)         return 'Este campo es obligatorio';
+    if (emailOrUsername)  return 'Por favor, introduce un correo o usuario válido';
+    if (minlength)        return `Mínimo ${minlength.requiredLength} caracteres`;
     return null;
   }
 
@@ -60,7 +70,7 @@ export class LoginForm {
     this.loading.set(true);
 
     const { identifier, password } = this.form.value;
-    this.auth.login({ email: identifier, password }).subscribe({
+    this.auth.login({ identifier, password }).subscribe({
       next: (res) => {
         this.loading.set(false);
         const target = res.user.role === 'ADMIN' ? '/admin' : '/dashboard';
