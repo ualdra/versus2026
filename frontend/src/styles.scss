@@ -787,6 +787,33 @@ html, body {
   text-transform: uppercase;
 }
 
+// ─── Q meta (categoría + subcategoría grande) ─────────────────────────────────
+
+.vs-q-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 12px;
+
+  &__cat {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.18em;
+    color: var(--vs-accent-gold);
+    line-height: 1;
+  }
+
+  &__subcat {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--vs-text-secondary);
+    line-height: 1;
+  }
+}
+
 // ─── Run log terminal ─────────────────────────────────────────────────────────
 
 .vs-run-log {

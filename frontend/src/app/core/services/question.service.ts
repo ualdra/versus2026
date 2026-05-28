@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Question, QuestionType } from '../models/game.models';
+import { Question, QuestionBinary, QuestionNumeric, QuestionType } from '../models/game.models';
 
 @Injectable({ providedIn: 'root' })
 export class QuestionService {
@@ -16,8 +16,12 @@ export class QuestionService {
     return this.http.get<Question>(`${this.base}/questions/random`, { params });
   }
 
-  byId(id: string): Observable<Question> {
-    return this.http.get<Question>(`${this.base}/questions/${id}`);
+  randomBinary(category?: string): Observable<QuestionBinary> {
+    return this.random('BINARY', category) as Observable<QuestionBinary>;
+  }
+
+  randomNumeric(category?: string): Observable<QuestionNumeric> {
+    return this.random('NUMERIC', category) as Observable<QuestionNumeric>;
   }
 
   categories(): Observable<string[]> {

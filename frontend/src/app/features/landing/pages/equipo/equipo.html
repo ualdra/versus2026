@@ -1,0 +1,84 @@
+<div class="vs-page">
+
+  <!-- Topbar -->
+  <div class="vs-topbar vs-page__topbar">
+    <a routerLink="/landing" class="vs-mark">VER<span class="vs-mark__slash">/</span>SUS</a>
+    <nav class="vs-topbar__nav">
+      <a routerLink="/landing">Inicio</a>
+      <a routerLink="/equipo" class="active">Equipo</a>
+      <a routerLink="/privacidad">Privacidad</a>
+    </nav>
+    <div style="display: flex; gap: 10px">
+      <a routerLink="/login" class="btn btn--ghost btn--sm">INICIAR SESIÓN</a>
+      <a routerLink="/register" class="btn btn--danger btn--sm">REGISTRARSE</a>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="vs-page__header">
+    <div class="vs-page__header-bg">
+      <div class="vs-landing__bg-grid"></div>
+    </div>
+    <div class="vs-page__header-inner">
+      <span class="vs-pill vs-pill--info">UNIVERSIDAD DE ALMERÍA · DRA</span>
+      <h1 class="vs-display vs-page__title">EL EQUIPO</h1>
+      <p class="vs-page__subtitle">
+        Siete estudiantes. Un proyecto. Demasiadas horas de debug.
+      </p>
+    </div>
+  </header>
+
+  <!-- Grid de miembros -->
+  <section class="vs-team__section">
+    <div class="vs-team__grid">
+      @for (m of members; track m.handle) {
+        <div class="vs-team__card" [style.--member-color]="'var(--vs-accent-' + m.color + ')'">
+          <div class="vs-team__avatar">
+            <img [src]="m.avatarUrl" [alt]="'Avatar de ' + m.name" loading="lazy" />
+          </div>
+          <div class="vs-team__info">
+            <div class="vs-display vs-team__name">{{ m.name }}</div>
+            <a class="vs-mono vs-team__handle" [href]="m.githubUrl" target="_blank" rel="noreferrer">@{{ m.handle }}</a>
+            <span class="vs-pill vs-pill--mute vs-team__role">{{ m.role }}</span>
+            <div class="vs-team__focus">{{ m.focus }}</div>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Contexto académico -->
+  <section class="vs-team__context">
+    <div class="vs-team__context-inner">
+      <div class="vs-q-label">CONTEXTO</div>
+      <h2 class="vs-display" style="font-size: 36px; margin: 8px 0 16px">PROYECTO ACADÉMICO</h2>
+      <p class="vs-landing__lede">
+        Versus nació como proyecto final de la asignatura <strong>Desarrollo de Requisitos y Arquitectura</strong>
+        en la Universidad de Almería. El objetivo: diseñar e implementar desde cero un sistema
+        multijugador completo, con arquitectura real, WebSockets y datos en tiempo real.
+      </p>
+      <div class="vs-team__stack">
+        @for (tech of stack; track tech.label) {
+          <div class="vs-team__stack-item">
+            <span class="vs-mono vs-team__stack-tech">{{ tech.label }}</span>
+            <span class="vs-team__stack-desc">{{ tech.desc }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="vs-landing__footer">
+    <a routerLink="/landing" class="vs-mark">VER<span class="vs-mark__slash">/</span>SUS</a>
+    <div style="font-size: 11px; color: var(--vs-text-muted); letter-spacing: 0.1em">
+      ELIGE MODO. ELIGE RIVAL. Y QUE GANE EL QUE MENOS DUDE.
+    </div>
+    <div style="display: flex; gap: 18px; font-size: 11px; color: var(--vs-text-muted); text-transform: uppercase; letter-spacing: 0.12em">
+      <a routerLink="/landing">Inicio</a>
+      <a routerLink="/equipo">Equipo</a>
+      <a routerLink="/privacidad">Privacidad</a>
+    </div>
+  </footer>
+
+</div>

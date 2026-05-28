@@ -22,5 +22,6 @@ public sealed interface QuestionResponse permits QuestionBinaryResponse, Questio
     QuestionType type();
     String text();
     String category();
+    String subcategory();
     Instant scrapedAt();
 }

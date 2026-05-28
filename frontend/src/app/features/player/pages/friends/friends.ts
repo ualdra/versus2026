@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { GameMode, MODE_LABELS } from '../../../../core/models/match.models';
 import {
   Friend,
@@ -17,7 +17,7 @@ type SocialMode = 'idle' | 'loading' | 'working';
 @Component({
   selector: 'app-friends',
   standalone: true,
-  imports: [TopbarComponent, AvatarComponent],
+  imports: [TopbarComponent, AvatarComponent, RouterLink],
   templateUrl: './friends.html',
   styleUrl: './friends.scss',
 })

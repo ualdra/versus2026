@@ -4,8 +4,10 @@ import com.versus.api.admin.dto.AdminLogResponse;
 import com.versus.api.admin.dto.AdminStatsResponse;
 import com.versus.api.admin.dto.AdminUserPageResponse;
 import com.versus.api.admin.dto.AdminUserResponse;
+import com.versus.api.admin.dto.ModeDistributionResponse;
 import com.versus.api.common.exception.ApiException;
 import com.versus.api.common.exception.ErrorCode;
+import com.versus.api.match.GameMode;
 import com.versus.api.match.repo.MatchRepository;
 import com.versus.api.moderation.ReportReason;
 import com.versus.api.moderation.ReportStatus;
@@ -348,6 +350,46 @@ class AdminServiceTest {
 
             assertThat(logs).hasSize(1);
             assertThat(logs.get(0).level()).isEqualTo("ERR");
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // getModeDistribution
+    // ═══════════════════════════════════════════════════════════════════════
+
+    @DisplayName("getModeDistribution")
+    @Nested
+    class GetModeDistribution {
+
+        @DisplayName("Devuelve todas las modalidades, con 0 para las que no tienen partidas")
+        @Test
+        void devuelveTodasLasModalidades_conCerosCuandoFaltan() {
+            when(matches.countFinishedByMode()).thenReturn(List.of(
+                    new Object[]{GameMode.SURVIVAL, 7L},
+                    new Object[]{GameMode.SABOTAGE, 3L}
+            ));
+
+            List<ModeDistributionResponse> dist = adminService.getModeDistribution();
+
+            assertThat(dist).hasSize(GameMode.values().length);
+            assertThat(dist).extracting(ModeDistributionResponse::mode)
+                    .containsExactlyInAnyOrder("SURVIVAL", "PRECISION", "BINARY_DUEL",
+                            "PRECISION_DUEL", "SABOTAGE");
+            assertThat(dist).filteredOn(d -> d.mode().equals("SURVIVAL"))
+                    .singleElement().extracting(ModeDistributionResponse::count).isEqualTo(7L);
+            assertThat(dist).filteredOn(d -> d.mode().equals("PRECISION"))
+                    .singleElement().extracting(ModeDistributionResponse::count).isEqualTo(0L);
+        }
+
+        @DisplayName("Sin partidas finalizadas devuelve todas las modalidades a 0")
+        @Test
+        void sinPartidas_todasACero() {
+            when(matches.countFinishedByMode()).thenReturn(List.of());
+
+            List<ModeDistributionResponse> dist = adminService.getModeDistribution();
+
+            assertThat(dist).hasSize(GameMode.values().length);
+            assertThat(dist).allSatisfy(d -> assertThat(d.count()).isZero());
         }
     }
 }

@@ -180,6 +180,77 @@
 
 // ─── Mobile breakpoint ─────────────────────────────────────────────────────
 
+.vs-admin-error {
+  border: 1px solid var(--vs-accent-red);
+  background: rgba(230, 57, 70, 0.08);
+  border-radius: var(--vs-radius-sm);
+  color: var(--vs-accent-red);
+  font-size: 13px;
+  padding: 10px 12px;
+}
+
+.vs-proposal-admin__top,
+.vs-proposal-admin__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.vs-proposal-admin__date {
+  color: var(--vs-text-muted);
+  font-size: 11px;
+}
+
+.vs-proposal-admin__numeric {
+  background: var(--vs-bg-input);
+  border: 1px solid var(--vs-border);
+  border-radius: var(--vs-radius-sm);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+
+  span {
+    color: var(--vs-text-muted);
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+
+  strong {
+    color: var(--vs-accent-green);
+    overflow-wrap: anywhere;
+  }
+}
+
+.vs-proposal-admin__source {
+  color: var(--vs-accent-blue);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+}
+
+.vs-proposal-admin__reject {
+  border-left: 2px solid var(--vs-accent-red);
+  color: var(--vs-text-secondary);
+  font-size: 12px;
+  line-height: 1.4;
+  padding-left: 10px;
+}
+
+.vs-proposal-admin__reject-box {
+  display: grid;
+  gap: 10px;
+
+  textarea {
+    min-height: 84px;
+    resize: vertical;
+  }
+}
+
 @media (max-width: 768px) {
   .vs-admin {
     grid-template-columns: 1fr;

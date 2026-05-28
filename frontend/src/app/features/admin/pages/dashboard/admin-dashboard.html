@@ -10,7 +10,6 @@
       </div>
       <div style="display: flex; gap: 8px">
         <button class="btn btn--ghost btn--sm" (click)="reload()">REFRESCAR</button>
-        <button class="btn btn--primary btn--sm">EXPORTAR</button>
       </div>
     </div>
 
@@ -28,9 +27,6 @@
             @if (k.delta) {
               <div class="vs-kpi__delta" [class.up]="k.up" [class.down]="!k.up">{{ k.delta }}</div>
             }
-            <svg class="vs-kpi__spark" viewBox="0 0 80 30" preserveAspectRatio="none">
-              <polyline class="vs-spark-line" [attr.points]="sparkPoints(k.spark)" [style.stroke]="k.color" />
-            </svg>
           </div>
         }
       </div>
@@ -62,18 +58,26 @@
         }
       </div>
 
-      <!-- Distribución por modo -->
+      <!-- Distribución por modo (partidas finalizadas) -->
       <div class="vs-card" style="padding: 18px 20px">
         <div class="vs-section-title">Distribución por modo</div>
-        @for (m of modes; track m.mode) {
-          <div class="vs-cat-row">
-            <div style="flex: 0 0 110px; font-size: 12px">{{ m.mode }}</div>
-            <div style="flex: 1">
-              <div class="vs-progress" style="background: var(--vs-bg-input)">
-                <div class="vs-progress__bar" [style.width]="m.pct + '%'" [style.background]="m.color"></div>
+        @if (totalModeMatches() > 0) {
+          @for (m of modes(); track m.mode) {
+            <div class="vs-cat-row">
+              <div style="flex: 0 0 110px; font-size: 12px">{{ m.label }}</div>
+              <div style="flex: 1">
+                <div class="vs-progress" style="background: var(--vs-bg-input)">
+                  <div class="vs-progress__bar" [style.width]="m.pct + '%'" [style.background]="m.color"></div>
+                </div>
+              </div>
+              <div class="vs-mono" style="flex: 0 0 64px; text-align: right; font-size: 12px">
+                {{ m.count }} · {{ m.pct }}%
               </div>
             </div>
-            <div class="vs-mono" style="flex: 0 0 36px; text-align: right; font-size: 12px">{{ m.pct }}%</div>
+          }
+        } @else {
+          <div style="color: var(--vs-text-muted); font-size: 13px; padding: 8px 0">
+            Sin partidas finalizadas todavía.
           </div>
         }
       </div>

@@ -37,9 +37,9 @@
 
 -   :material-language-typescript: **Frontend**
 
-    Arquitectura Angular, gestión de estado con signals y guía de testing.
+    Arquitectura Angular, páginas públicas, gestión de estado con signals y guía de testing.
 
-    [:octicons-arrow-right-24: Arquitectura](frontend/arquitectura.md) · [Testing](frontend/testing.md)
+    [:octicons-arrow-right-24: Arquitectura](frontend/arquitectura.md) · [Páginas públicas](frontend/paginas-publicas.md) · [Testing](frontend/testing.md)
 
 -   :material-database: **Base de datos**
 
@@ -84,6 +84,9 @@
 
 ## Funcionalidades recientes
 
+- `/equipo`: página pública con tarjetas de cada miembro del equipo y stack tecnológico del proyecto.
+- `/privacidad`: política de privacidad RGPD con índice lateral navegable y secciones de responsable, datos recogidos, finalidad, seguridad, derechos y cookies.
+- Footer de landing actualizado: enlaces a GitHub, `/equipo` y `/privacidad` con `routerLink` funcionales.
 - `/friends`: busqueda de jugadores, solicitudes de amistad, lista de amigos e invitaciones a partidas PvP.
 - Lobby privado: permite invitar amigos disponibles a la sala actual sin compartir manualmente el codigo.
 - Social realtime: eventos privados `FRIEND_REQUEST` y `MATCH_INVITE` en `/user/queue/social`, integrados en el centro de notificaciones.

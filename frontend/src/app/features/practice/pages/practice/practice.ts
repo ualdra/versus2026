@@ -4,6 +4,7 @@ import { UpperCasePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { QuestionService } from '../../../../core/services/question.service';
 import { PracticeService } from '../../../../core/services/practice.service';
+import { QuestionProposalForm } from '../../../questions/components/question-proposal-form/question-proposal-form';
 import {
   Question,
   QuestionBinary,
@@ -17,7 +18,7 @@ type Phase = 'setup' | 'loading' | 'question' | 'feedback';
 @Component({
   selector: 'app-practice',
   standalone: true,
-  imports: [RouterLink, UpperCasePipe, FormsModule],
+  imports: [RouterLink, UpperCasePipe, FormsModule, QuestionProposalForm],
   templateUrl: './practice.html',
   styleUrl: './practice.scss',
 })
@@ -35,6 +36,7 @@ export class Practice implements OnInit {
   enteredValue: number | null = null;
   result = signal<PracticeAnswerResponse | null>(null);
   errorMessage = signal<string | null>(null);
+  proposalOpen = signal(false);
 
   streak = signal(0);
   correctCount = signal(0);
@@ -104,6 +106,11 @@ export class Practice implements OnInit {
     this.question.set(null);
     this.result.set(null);
     this.phase.set('setup');
+    this.proposalOpen.set(false);
+  }
+
+  toggleProposalForm(): void {
+    this.proposalOpen.update((open) => !open);
   }
 
   asBinary(q: Question): QuestionBinary {

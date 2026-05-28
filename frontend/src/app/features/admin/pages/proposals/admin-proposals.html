@@ -1,0 +1,137 @@
+<div class="vs-admin">
+  <app-admin-sidebar active="proposals" />
+
+  <div class="vs-admin__main">
+    <div class="vs-admin__head">
+      <div>
+        <h1>PROPUESTAS DE LA COMUNIDAD</h1>
+        <div class="vs-admin__head-meta">
+          @if (page()) {
+            {{ page()!.totalElements }} propuestas en vista actual
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="vs-filter-chips">
+      <span class="vs-pill" [class]="filterPillClass('PENDING')" style="cursor: pointer" (click)="setFilter('PENDING')">
+        <span class="vs-pill__dot"></span>PENDIENTES
+      </span>
+      <span class="vs-pill" [class]="filterPillClass('APPROVED')" style="cursor: pointer" (click)="setFilter('APPROVED')">
+        APROBADAS
+      </span>
+      <span class="vs-pill" [class]="filterPillClass('REJECTED')" style="cursor: pointer" (click)="setFilter('REJECTED')">
+        RECHAZADAS
+      </span>
+      <span class="vs-pill" [class]="filterPillClass('')" style="cursor: pointer" (click)="setFilter('')">
+        TODAS
+      </span>
+    </div>
+
+    @if (errorMessage(); as err) {
+      <div class="vs-admin-error">{{ err }}</div>
+    }
+
+    @if (loading()) {
+      <div style="color: var(--vs-text-muted); font-size: 13px">Cargando propuestas...</div>
+    }
+
+    @if (!loading() && page()) {
+      <div class="vs-reports-grid">
+        @for (proposal of page()!.content; track proposal.id) {
+          <article class="vs-report-card">
+            <div class="vs-proposal-admin__top">
+              <span [class]="statusPillClass(proposal.status)">
+                <span class="vs-pill__dot"></span>{{ proposal.status }}
+              </span>
+              <div class="vs-proposal-admin__date">
+                {{ proposal.createdAt | date:'dd/MM HH:mm' }}
+              </div>
+            </div>
+
+            <div class="vs-q-label">{{ proposal.type }} · {{ proposal.category }}</div>
+            <div class="vs-report-card__q">{{ proposal.text }}</div>
+
+            @if (proposal.type === 'BINARY') {
+              <div class="vs-report-card__opts">
+                <div class="vs-report-opt is-correct">
+                  <span>{{ proposal.proposedAnswer }}</span>
+                  <span class="vs-report-opt__num">OK</span>
+                </div>
+                <div class="vs-report-opt">
+                  <span>{{ proposal.alternativeAnswer }}</span>
+                </div>
+              </div>
+            } @else {
+              <div class="vs-proposal-admin__numeric">
+                <span>Respuesta</span>
+                <strong class="vs-mono">{{ answerLabel(proposal) }}</strong>
+              </div>
+            }
+
+            @if (proposal.sourceUrl) {
+              <a class="vs-proposal-admin__source" [href]="proposal.sourceUrl" target="_blank" rel="noreferrer">
+                {{ proposal.sourceUrl }}
+              </a>
+            }
+
+            @if (proposal.rejectReason) {
+              <div class="vs-proposal-admin__reject">{{ proposal.rejectReason }}</div>
+            }
+
+            @if (proposal.status === 'PENDING') {
+              <div class="vs-proposal-admin__actions">
+                <button
+                  type="button"
+                  class="btn btn--ghost btn--sm"
+                  [disabled]="actioningId() === proposal.id"
+                  (click)="startReject(proposal.id)"
+                >
+                  RECHAZAR
+                </button>
+                <button
+                  type="button"
+                  class="btn btn--primary btn--sm"
+                  [disabled]="actioningId() === proposal.id"
+                  (click)="approve(proposal.id)"
+                >
+                  APROBAR
+                </button>
+              </div>
+
+              @if (rejectingId() === proposal.id) {
+                <div class="vs-proposal-admin__reject-box">
+                  <textarea
+                    class="vs-input"
+                    name="rejectReason"
+                    maxlength="512"
+                    [(ngModel)]="rejectReason"
+                  ></textarea>
+                  <div class="vs-proposal-admin__actions">
+                    <button type="button" class="btn btn--ghost btn--sm" (click)="startReject(proposal.id)">
+                      CANCELAR
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn--danger btn--sm"
+                      [disabled]="!rejectReason.trim() || actioningId() === proposal.id"
+                      (click)="reject(proposal.id)"
+                    >
+                      CONFIRMAR RECHAZO
+                    </button>
+                  </div>
+                </div>
+              }
+            }
+          </article>
+        }
+      </div>
+
+      @if (page()!.content.length === 0) {
+        <div style="color: var(--vs-text-muted); font-size: 13px; padding: 20px 0">
+          No hay propuestas con este filtro.
+        </div>
+      }
+    }
+  </div>
+</div>

@@ -60,7 +60,10 @@
 
   @if (currentQuestion(); as q) {
     <div class="vs-duel-question">
-      <div class="vs-q-label">CATEGORÍA · {{ q.category | uppercase }}</div>
+      <div class="vs-q-meta">
+        <div class="vs-q-meta__cat">{{ q.category | uppercase }}</div>
+        <div class="vs-q-meta__subcat">{{ q.subcategory | uppercase }}</div>
+      </div>
       <h2 class="vs-q-text vs-display">{{ q.text }}</h2>
     </div>
 

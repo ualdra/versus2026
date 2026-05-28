@@ -22,10 +22,7 @@ import com.versus.api.match.repo.MatchAnswerRepository;
 import com.versus.api.match.repo.MatchPlayerRepository;
 import com.versus.api.match.repo.MatchRepository;
 import com.versus.api.match.repo.MatchRoundRepository;
-import com.versus.api.questions.QuestionType;
-import com.versus.api.questions.dto.QuestionBinaryResponse;
-import com.versus.api.questions.dto.QuestionNumericResponse;
-import com.versus.api.questions.dto.QuestionOptionResponse;
+import com.versus.api.questions.CardQuestionFactory;
 import com.versus.api.questions.dto.QuestionResponse;
 import com.versus.api.stats.StatsService;
 import lombok.RequiredArgsConstructor;
@@ -53,6 +50,7 @@ public class GameService {
     private final MatchRoundRepository matchRounds;
     private final MatchAnswerRepository matchAnswers;
     private final CardService cards;
+    private final CardQuestionFactory cardFactory;
     private final StatsService statsService;
     private final AchievementService achievementService;
 
@@ -313,22 +311,12 @@ public class GameService {
         matches.save(match);
     }
 
-    private QuestionBinaryResponse buildBinaryResponse(UUID roundToken, Card a, Card b) {
-        String text = a.isInverse()
-                ? "¿Cuál tiene el valor MÁS BAJO?"
-                : "¿Cuál tiene el valor MÁS ALTO?";
-        String category = a.getCategoria() + " · " + a.getSubcategoria();
-        List<QuestionOptionResponse> options = List.of(
-                new QuestionOptionResponse(a.getId(), a.getNombre(), null, a.getUnidad()),
-                new QuestionOptionResponse(b.getId(), b.getNombre(), null, b.getUnidad())
-        );
-        return new QuestionBinaryResponse(roundToken, QuestionType.BINARY, text, category, options, a.getScrapedAt());
+    private QuestionResponse buildBinaryResponse(UUID roundToken, Card a, Card b) {
+        return cardFactory.buildBinary(roundToken, a, b);
     }
 
-    private QuestionNumericResponse buildNumericResponse(UUID roundToken, Card card) {
-        String text = "¿Cuál es el valor de " + card.getNombre() + "?";
-        String category = card.getCategoria() + " · " + card.getSubcategoria();
-        return new QuestionNumericResponse(roundToken, QuestionType.NUMERIC, text, category, card.getUnidad(), card.getScrapedAt());
+    private QuestionResponse buildNumericResponse(UUID roundToken, Card card) {
+        return cardFactory.buildNumeric(roundToken, card);
     }
 
     private Double averageDeviation(UUID matchId, UUID userId) {

@@ -1,14 +1,8 @@
 <div [class]="classes" (click)="onClickCard()">
 
-  <div class="vs-compare__category">
-    <span class="vs-pill vs-pill--mute">{{ item().cat }}</span>
-  </div>
-
-  <div class="vs-compare__placeholder">
-    <div class="vs-img-stub">
-      <div class="vs-img-stub__stripes"></div>
-      <div class="vs-img-stub__caption vs-mono">{{ item().stub }}</div>
-    </div>
+  <div class="vs-compare__meta">
+    <div class="vs-compare__cat">{{ item().cat }}</div>
+    <div class="vs-compare__subcat">{{ item().subcat }}</div>
   </div>
 
   <div class="vs-compare__name vs-display">{{ item().label }}</div>
@@ -18,13 +12,7 @@
     @if (showValue) {
       <app-rolling-number [value]="item().value" [prefix]="item().unit === '$' ? '$' : ''" />
     } @else {
-      <div class="vs-compare__cta">
-        <div class="vs-compare__cta-arrow">{{ position() === 'left' ? '↑' : '↓' }}</div>
-        <div class="vs-compare__cta-text">
-          {{ position() === 'left' ? 'MÁS' : 'MENOS' }}
-          <span>que el otro</span>
-        </div>
-      </div>
+      <div class="vs-compare__cta">ELEGIR</div>
     }
   </div>
 

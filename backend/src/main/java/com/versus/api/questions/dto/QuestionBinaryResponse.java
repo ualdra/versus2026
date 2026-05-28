@@ -13,6 +13,8 @@ public record QuestionBinaryResponse(
         QuestionType type,
         String text,
         String category,
+        String subcategory,
+        boolean inverse,
         List<QuestionOptionResponse> options,
         Instant scrapedAt
 ) implements QuestionResponse {

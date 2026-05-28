@@ -7,12 +7,11 @@ import com.versus.api.duel.state.DuelRoundState;
 import com.versus.api.duel.state.RawAnswer;
 import com.versus.api.match.GameMode;
 import com.versus.api.questions.QuestionType;
-import com.versus.api.questions.domain.Question;
-import com.versus.api.questions.domain.QuestionOption;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -27,15 +26,22 @@ class BinaryDuelEngineTest {
     private final UUID A = UUID.randomUUID();
     private final UUID B = UUID.randomUUID();
     private final UUID Q = UUID.randomUUID();
+    // CORRECT_OPT = card con mayor valor; WRONG_OPT = card con menor valor (inverse=false)
     private final UUID CORRECT_OPT = UUID.randomUUID();
-    private final UUID WRONG_OPT = UUID.randomUUID();
+    private final UUID WRONG_OPT   = UUID.randomUUID();
 
-    private Question question() {
-        Question q = Question.builder().id(Q).type(QuestionType.BINARY).text("?")
-                .category("g").build();
-        q.getOptions().add(QuestionOption.builder().id(CORRECT_OPT).text("ok").isCorrect(true).question(q).build());
-        q.getOptions().add(QuestionOption.builder().id(WRONG_OPT).text("nope").isCorrect(false).question(q).build());
-        return q;
+    /** Context binario: CORRECT_OPT tiene valor 10, WRONG_OPT tiene valor 5; inverse=false → gana el mayor */
+    private CardRoundContext context() {
+        return new CardRoundContext(
+                CORRECT_OPT, WRONG_OPT,
+                new BigDecimal("10"), new BigDecimal("5"),
+                false, null);
+    }
+
+    /** Context binario sin correcta identificable (ambos con mismo valor → correctOptionId varía pero no es null) */
+    private CardRoundContext contextSinCorrecta() {
+        // Para simular "sin opción correcta", pasamos context con cardBId=null
+        return new CardRoundContext(WRONG_OPT, null, new BigDecimal("5"), null, false, null);
     }
 
     private DuelMatchState matchWith(int aLives, int aStreak, int bLives, int bStreak) {
@@ -71,7 +77,7 @@ class BinaryDuelEngineTest {
         answer(r, A, CORRECT_OPT);
         answer(r, B, CORRECT_OPT);
 
-        RoundResolution res = engine.resolveRound(s, r, question());
+        RoundResolution res = engine.resolveRound(s, r, context());
 
         assertThat(res.outcomes()).extracting(PlayerRoundOutcome::lifeDelta).containsExactly(0, 0);
         assertThat(res.outcomes()).extracting(PlayerRoundOutcome::isCorrect).containsExactly(true, true);
@@ -87,7 +93,7 @@ class BinaryDuelEngineTest {
         answer(r, A, CORRECT_OPT);
         answer(r, B, WRONG_OPT);
 
-        RoundResolution res = engine.resolveRound(s, r, question());
+        RoundResolution res = engine.resolveRound(s, r, context());
 
         assertThat(outcomeOf(res, A).lifeDelta()).isEqualTo(0);
         assertThat(outcomeOf(res, B).lifeDelta()).isEqualTo(-1);
@@ -101,11 +107,10 @@ class BinaryDuelEngineTest {
         answer(r, A, CORRECT_OPT);
         answer(r, B, WRONG_OPT);
 
-        RoundResolution res = engine.resolveRound(s, r, question());
+        RoundResolution res = engine.resolveRound(s, r, context());
 
         assertThat(outcomeOf(res, A).lifeDelta()).isEqualTo(0);
         assertThat(outcomeOf(res, B).lifeDelta()).isEqualTo(-2);
-        // El streak de A se incrementa pero el bonus se calcula contra el streak PREVIO.
         assertThat(s.getPlayers().get(A).getCurrentStreak()).isEqualTo(3);
         assertThat(s.getPlayers().get(B).getCurrentStreak()).isZero();
     }
@@ -118,7 +123,7 @@ class BinaryDuelEngineTest {
         answer(r, A, WRONG_OPT);
         answer(r, B, WRONG_OPT);
 
-        RoundResolution res = engine.resolveRound(s, r, question());
+        RoundResolution res = engine.resolveRound(s, r, context());
 
         assertThat(outcomeOf(res, A).lifeDelta()).isEqualTo(-1);
         assertThat(outcomeOf(res, B).lifeDelta()).isEqualTo(-1);
@@ -131,7 +136,7 @@ class BinaryDuelEngineTest {
         DuelRoundState r = round();
         answer(r, A, CORRECT_OPT); // B no responde
 
-        RoundResolution res = engine.resolveRound(s, r, question());
+        RoundResolution res = engine.resolveRound(s, r, context());
 
         assertThat(outcomeOf(res, A).lifeDelta()).isEqualTo(0);
         PlayerRoundOutcome bOutcome = outcomeOf(res, B);
@@ -140,21 +145,19 @@ class BinaryDuelEngineTest {
         assertThat(bOutcome.lifeDelta()).isEqualTo(-1);
     }
 
-    @DisplayName("Score acumula racha * 50 al acertar (mismo formula que survival)")
+    @DisplayName("Score acumula racha * 50 al acertar (misma fórmula que survival)")
     @Test
     void scoreScaling() {
         DuelMatchState s = matchWith(3, 0, 3, 0);
         DuelRoundState r1 = round();
         answer(r1, A, CORRECT_OPT);
         answer(r1, B, WRONG_OPT);
-        engine.resolveRound(s, r1, question());
-        // Tras round 1: streak A = 1, score A = 50
+        engine.resolveRound(s, r1, context());
 
         DuelRoundState r2 = new DuelRoundState(2, Q, Instant.now(), Instant.now().plusSeconds(15));
         answer(r2, A, CORRECT_OPT);
         answer(r2, B, WRONG_OPT);
-        engine.resolveRound(s, r2, question());
-        // streak A = 2, score A += 100 → 150 total
+        engine.resolveRound(s, r2, context());
 
         assertThat(s.getPlayers().get(A).getCurrentStreak()).isEqualTo(2);
         assertThat(s.getPlayers().get(A).getScore()).isEqualTo(150);
@@ -168,7 +171,7 @@ class BinaryDuelEngineTest {
         answer(r, A, CORRECT_OPT);
         answer(r, B, WRONG_OPT);
 
-        RoundResolution res = engine.resolveRound(s, r, question());
+        RoundResolution res = engine.resolveRound(s, r, context());
 
         assertThat(res.reveal().correctOptionId()).isEqualTo(CORRECT_OPT);
         assertThat(res.reveal().correctValue()).isNull();
@@ -178,19 +181,15 @@ class BinaryDuelEngineTest {
     @DisplayName("Comportamiento defensivo")
     class Defensive {
 
-        @DisplayName("Pregunta sin opcion correcta marcada → todos fallan")
+        @DisplayName("Context sin cardB (cardBId=null) → correctOptionId null, todos fallan")
         @Test
-        void preguntaSinCorrecta() {
-            Question malformed = Question.builder().id(Q).type(QuestionType.BINARY).text("?")
-                    .category("g").build();
-            malformed.getOptions().add(QuestionOption.builder().id(WRONG_OPT).text("a").isCorrect(false).question(malformed).build());
-
+        void contextSinCardB_correctOptionIdNull() {
             DuelMatchState s = matchWith(3, 0, 3, 0);
             DuelRoundState r = round();
             answer(r, A, WRONG_OPT);
             answer(r, B, WRONG_OPT);
 
-            RoundResolution res = engine.resolveRound(s, r, malformed);
+            RoundResolution res = engine.resolveRound(s, r, contextSinCorrecta());
 
             assertThat(res.outcomes()).extracting(PlayerRoundOutcome::isCorrect).containsExactly(false, false);
             assertThat(res.outcomes()).extracting(PlayerRoundOutcome::lifeDelta).containsExactly(-1, -1);
