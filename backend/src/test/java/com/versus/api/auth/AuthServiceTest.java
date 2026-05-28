@@ -253,7 +253,7 @@ class AuthServiceTest {
         }
 
         private void stubHappyPath(User user) {
-            when(users.findByEmail(EMAIL)).thenReturn(Optional.of(user));
+            when(users.findByEmailOrUsername(EMAIL, EMAIL)).thenReturn(Optional.of(user));
             when(passwordEncoder.matches(PASSWORD, HASHED_PW)).thenReturn(true);
             when(jwt.generateAccessToken(any())).thenReturn(ACCESS_TOKEN);
             when(jwt.generateRefreshToken(any())).thenReturn(REFRESH_TOKEN);
@@ -278,7 +278,7 @@ class AuthServiceTest {
         @DisplayName("Email no registrado lanza UNAUTHORIZED")
         @Test
         void emailNoExiste_lanzaUnauthorized() {
-            when(users.findByEmail(EMAIL)).thenReturn(Optional.empty());
+            when(users.findByEmailOrUsername(EMAIL, EMAIL)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> authService.login(validRequest()))
                     .isInstanceOf(ApiException.class)
@@ -289,7 +289,7 @@ class AuthServiceTest {
         @DisplayName("Contraseña incorrecta lanza UNAUTHORIZED")
         @Test
         void contrasenaIncorrecta_lanzaUnauthorized() {
-            when(users.findByEmail(EMAIL)).thenReturn(Optional.of(activeUser()));
+            when(users.findByEmailOrUsername(EMAIL, EMAIL)).thenReturn(Optional.of(activeUser()));
             when(passwordEncoder.matches(PASSWORD, HASHED_PW)).thenReturn(false);
 
             assertThatThrownBy(() -> authService.login(validRequest()))
@@ -304,7 +304,7 @@ class AuthServiceTest {
             User inactive = User.builder()
                     .id(UUID.randomUUID()).email(EMAIL).passwordHash(HASHED_PW)
                     .role(Role.PLAYER).isActive(false).build();
-            when(users.findByEmail(EMAIL)).thenReturn(Optional.of(inactive));
+            when(users.findByEmailOrUsername(EMAIL, EMAIL)).thenReturn(Optional.of(inactive));
 
             assertThatThrownBy(() -> authService.login(validRequest()))
                     .isInstanceOf(ApiException.class)
@@ -318,7 +318,7 @@ class AuthServiceTest {
             User inactive = User.builder()
                     .id(UUID.randomUUID()).email(EMAIL).passwordHash(HASHED_PW)
                     .role(Role.PLAYER).isActive(false).build();
-            when(users.findByEmail(EMAIL)).thenReturn(Optional.of(inactive));
+            when(users.findByEmailOrUsername(EMAIL, EMAIL)).thenReturn(Optional.of(inactive));
 
             assertThatThrownBy(() -> authService.login(validRequest()))
                     .isInstanceOf(ApiException.class);
@@ -331,7 +331,7 @@ class AuthServiceTest {
         void usuarioDeleted_lanzaUnauthorized() {
             User deleted = activeUser();
             deleted.setStatus(UserStatus.DELETED);
-            when(users.findByEmail(EMAIL)).thenReturn(Optional.of(deleted));
+            when(users.findByEmailOrUsername(EMAIL, EMAIL)).thenReturn(Optional.of(deleted));
 
             assertThatThrownBy(() -> authService.login(validRequest()))
                     .isInstanceOf(ApiException.class)
@@ -347,7 +347,7 @@ class AuthServiceTest {
             User unverified = User.builder()
                     .id(UUID.randomUUID()).email(EMAIL).passwordHash(HASHED_PW)
                     .role(Role.PLAYER).isActive(true).enabled(false).build();
-            when(users.findByEmail(EMAIL)).thenReturn(Optional.of(unverified));
+            when(users.findByEmailOrUsername(EMAIL, EMAIL)).thenReturn(Optional.of(unverified));
 
             assertThatThrownBy(() -> authService.login(validRequest()))
                     .isInstanceOf(ApiException.class)
@@ -384,11 +384,11 @@ class AuthServiceTest {
         @DisplayName("El mensaje de error es igual para email inexistente y contraseña incorrecta")
         @Test
         void mensajeError_emailYContrasena_sonIguales() {
-            when(users.findByEmail(EMAIL)).thenReturn(Optional.empty());
+            when(users.findByEmailOrUsername(EMAIL, EMAIL)).thenReturn(Optional.empty());
             ApiException noEmail = catchThrowableOfType(
                     () -> authService.login(validRequest()), ApiException.class);
 
-            when(users.findByEmail(EMAIL)).thenReturn(Optional.of(activeUser()));
+            when(users.findByEmailOrUsername(EMAIL, EMAIL)).thenReturn(Optional.of(activeUser()));
             when(passwordEncoder.matches(PASSWORD, HASHED_PW)).thenReturn(false);
             ApiException wrongPw = catchThrowableOfType(
                     () -> authService.login(validRequest()), ApiException.class);
