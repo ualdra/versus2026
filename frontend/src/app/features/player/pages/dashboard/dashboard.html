@@ -2,13 +2,13 @@
   <app-topbar active="home" />
 
   <div class="vs-dash__body">
-
     <!-- Hero -->
     <div class="vs-dash__hero">
       <div class="vs-dash__hero-left">
         <div class="vs-q-label">BIENVENIDO DE VUELTA</div>
         <h1 class="vs-display vs-dash__title">
-          {{ (username() || 'JUGADOR') | uppercase }}<span style="color: var(--vs-accent-red)">.</span>
+          {{ username() || 'JUGADOR' | uppercase
+          }}<span style="color: var(--vs-accent-red)">.</span>
         </h1>
         <p style="color: var(--vs-text-secondary); max-width: 360px; margin-top: 4px">
           ¿Listo para otra vuelta? Pulsa jugar y a por todas.
@@ -37,86 +37,100 @@
       <div class="vs-section-title">Modos rápidos</div>
       <div class="vs-mode-row">
         @for (m of modes; track m.name) {
-          <div class="vs-card vs-card--interactive vs-mode-mini" [style.--mode-color]="m.color"
-               style="position: relative">
+          <a
+            class="vs-card vs-card--interactive vs-mode-mini"
+            [routerLink]="m.route"
+            [style.--mode-color]="m.color"
+            [attr.aria-label]="'Jugar a ' + m.name"
+          >
             @if (m.badge) {
-              <span class="vs-pill vs-pill--info"
-                    style="position: absolute; top: 12px; right: 12px; font-size: 9px">
+              <span
+                class="vs-pill vs-pill--info"
+                style="position: absolute; top: 12px; right: 12px; font-size: 9px"
+              >
                 {{ m.badge }}
               </span>
             }
             <div class="vs-mode-mini__bar"></div>
             <div class="vs-display" style="font-size: 24px; margin-top: 8px">{{ m.name }}</div>
-            <div style="color: var(--vs-text-muted); font-size: 12px; margin-top: 4px">{{ m.desc }}</div>
-          </div>
+            <div style="color: var(--vs-text-muted); font-size: 12px; margin-top: 4px">
+              {{ m.desc }}
+            </div>
+          </a>
         }
       </div>
     </div>
 
     <!-- Cols: actividad + ranking -->
     @if (activity.length > 0 || rankings.length > 0) {
-    <div class="vs-dash__cols">
-
-      <div class="vs-section" style="flex: 2">
-        <div class="vs-section-title">Última actividad</div>
-        <div class="vs-card" style="padding: 0">
-          <table class="vs-table">
-            <thead>
-              <tr>
-                <th>Modo</th>
-                <th>Resultado</th>
-                <th>Racha</th>
-                <th>Puntos</th>
-                <th>Cuándo</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (a of activity; track a.mode + a.when) {
+      <div class="vs-dash__cols">
+        <div class="vs-section" style="flex: 2">
+          <div class="vs-section-title">Última actividad</div>
+          <div class="vs-card" style="padding: 0">
+            <table class="vs-table">
+              <thead>
                 <tr>
-                  <td>
-                    <span class="vs-pill" [class]="a.modeClass"
-                          [style.background]="a.mode === 'SABOTAJE' ? 'rgba(123,45,139,0.15)' : null"
-                          [style.color]="a.mode === 'SABOTAJE' ? 'var(--vs-accent-purple)' : null">
-                      <span class="vs-pill__dot"></span>{{ a.mode }}
-                    </span>
-                  </td>
-                  <td>
-                    <span [style.color]="a.resultColor" [style.fontWeight]="a.result === 'VICTORIA' ? 600 : 400">
-                      {{ a.result }}
-                    </span>
-                  </td>
-                  <td class="vs-mono">{{ a.streak }}</td>
-                  <td class="vs-mono">{{ a.pts }}</td>
-                  <td style="color: var(--vs-text-muted)">{{ a.when }}</td>
+                  <th>Modo</th>
+                  <th>Resultado</th>
+                  <th>Racha</th>
+                  <th>Puntos</th>
+                  <th>Cuándo</th>
                 </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="vs-section" style="flex: 1">
-        <div class="vs-section-title">Top semanal</div>
-        <div class="vs-card">
-          @for (r of rankings; track r.pos) {
-            <div class="vs-rank-row" [class.is-you]="r.you">
-              <div class="vs-mono vs-rank-pos">#{{ r.pos }}</div>
-              <div class="vs-avatar" style="width: 28px; height: 28px; font-size: 11px">
-                {{ r.name.slice(0,2).toUpperCase() }}
-              </div>
-              <div style="flex: 1; font-size: 13px" [style.fontWeight]="r.you ? 600 : 400">
-                {{ r.name }}
-                @if (r.you) {
-                  <span style="color: var(--vs-accent-blue); margin-left: 6px; font-size: 11px">TÚ</span>
+              </thead>
+              <tbody>
+                @for (a of activity; track a.mode + a.when) {
+                  <tr>
+                    <td>
+                      <span
+                        class="vs-pill"
+                        [class]="a.modeClass"
+                        [style.background]="a.mode === 'SABOTAJE' ? 'rgba(123,45,139,0.15)' : null"
+                        [style.color]="a.mode === 'SABOTAJE' ? 'var(--vs-accent-purple)' : null"
+                      >
+                        <span class="vs-pill__dot"></span>{{ a.mode }}
+                      </span>
+                    </td>
+                    <td>
+                      <span
+                        [style.color]="a.resultColor"
+                        [style.fontWeight]="a.result === 'VICTORIA' ? 600 : 400"
+                      >
+                        {{ a.result }}
+                      </span>
+                    </td>
+                    <td class="vs-mono">{{ a.streak }}</td>
+                    <td class="vs-mono">{{ a.pts }}</td>
+                    <td style="color: var(--vs-text-muted)">{{ a.when }}</td>
+                  </tr>
                 }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="vs-section" style="flex: 1">
+          <div class="vs-section-title">Top semanal</div>
+          <div class="vs-card">
+            @for (r of rankings; track r.pos) {
+              <div class="vs-rank-row" [class.is-you]="r.you">
+                <div class="vs-mono vs-rank-pos">#{{ r.pos }}</div>
+                <div class="vs-avatar" style="width: 28px; height: 28px; font-size: 11px">
+                  {{ r.name.slice(0, 2).toUpperCase() }}
+                </div>
+                <div style="flex: 1; font-size: 13px" [style.fontWeight]="r.you ? 600 : 400">
+                  {{ r.name }}
+                  @if (r.you) {
+                    <span style="color: var(--vs-accent-blue); margin-left: 6px; font-size: 11px"
+                      >TÚ</span
+                    >
+                  }
+                </div>
+                <div class="vs-mono" style="font-size: 13px">{{ formatScore(r.score) }}</div>
               </div>
-              <div class="vs-mono" style="font-size: 13px">{{ formatScore(r.score) }}</div>
-            </div>
-          }
+            }
+          </div>
         </div>
       </div>
-
-    </div>
     }
   </div>
 </div>

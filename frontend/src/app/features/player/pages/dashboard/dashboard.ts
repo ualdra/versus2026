@@ -7,6 +7,14 @@ import { StatsService } from '../../../../core/services/stats.service';
 import { PlayerStats } from '../../../../core/models/game.models';
 import { EloWidgetComponent } from '../../components/elo-widget/elo-widget';
 
+type QuickMode = {
+  name: string;
+  color: string;
+  desc: string;
+  route: string;
+  badge?: string;
+};
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -27,26 +35,55 @@ export class Dashboard implements OnInit {
   readonly stats = computed(() => {
     const list = this.statsList();
     const totalGames = list.reduce((s, x) => s + x.gamesPlayed, 0);
-    const totalWins  = list.reduce((s, x) => s + x.gamesWon, 0);
+    const totalWins = list.reduce((s, x) => s + x.gamesWon, 0);
     const winRate = totalGames === 0 ? 0 : Math.round((totalWins / totalGames) * 100);
     const bestStreak = list.reduce((m, x) => Math.max(m, x.bestStreak), 0);
     return [
       { num: String(totalGames), label: 'Partidas' },
-      { num: `${winRate}%`,      label: 'Victorias',     accent: 'var(--vs-accent-green)' },
-      { num: String(bestStreak), label: 'Mejor racha',   accent: 'var(--vs-accent-gold)' },
-      { num: '—',                label: 'Ranking global', accent: 'var(--vs-accent-blue)' },
+      { num: `${winRate}%`, label: 'Victorias', accent: 'var(--vs-accent-green)' },
+      { num: String(bestStreak), label: 'Mejor racha', accent: 'var(--vs-accent-gold)' },
+      { num: '—', label: 'Ranking global', accent: 'var(--vs-accent-blue)' },
     ];
   });
 
-  modes = [
-    { name: 'Supervivencia', color: 'var(--vs-accent-red)',    desc: '3 vidas. Cero piedad.', badge: 'Más jugado' },
-    { name: 'Precisión',     color: 'var(--vs-accent-blue)',   desc: 'Adivina el número' },
-    { name: 'Duelo binario', color: 'var(--vs-accent-gold)',   desc: '2 jugadores' },
-    { name: 'Sabotaje',      color: 'var(--vs-accent-purple)', desc: 'Quítale vida al rival' },
+  modes: QuickMode[] = [
+    {
+      name: 'Supervivencia',
+      color: 'var(--vs-accent-red)',
+      desc: '3 vidas. Cero piedad.',
+      route: '/play/survival',
+      badge: 'Más jugado',
+    },
+    {
+      name: 'Precisión',
+      color: 'var(--vs-accent-blue)',
+      desc: 'Adivina el número',
+      route: '/play/precision',
+    },
+    {
+      name: 'Duelo binario',
+      color: 'var(--vs-accent-gold)',
+      desc: '2 jugadores',
+      route: '/play/queue/binary',
+    },
+    {
+      name: 'Sabotaje',
+      color: 'var(--vs-accent-purple)',
+      desc: 'Quítale vida al rival',
+      route: '/play/queue/sabotage',
+    },
   ];
 
   // Activity + rankings: real endpoints land in Sprint 3 (history) and ranking phases.
-  activity: { mode: string; modeClass: string; result: string; resultColor: string; streak: number; pts: string; when: string }[] = [];
+  activity: {
+    mode: string;
+    modeClass: string;
+    result: string;
+    resultColor: string;
+    streak: number;
+    pts: string;
+    when: string;
+  }[] = [];
   rankings: { pos: number; name: string; score: number; you: boolean }[] = [];
 
   ngOnInit(): void {
