@@ -1,6 +1,10 @@
 import { Component, computed, input, signal } from '@angular/core';
+import { environment } from '../../../../../environments/environment';
 
 export type AvatarSize = 'sm' | 'md' | 'lg' | 'xl';
+
+const ABSOLUTE_AVATAR_URL = /^(?:https?:|data:|blob:)/i;
+const HOST_LIKE_AVATAR_URL = /^[a-z0-9.-]+\.[a-z]{2,}(?::\d+)?(?:[/?#]|$)/i;
 
 @Component({
   selector: 'vs-avatar',
@@ -20,7 +24,7 @@ export class AvatarComponent {
   private readonly failedUrl = signal<string | null>(null);
 
   readonly imageUrl = computed(() => {
-    const url = this.avatarUrl();
+    const url = this.normalizedAvatarUrl(this.avatarUrl());
     if (!url || this.failedUrl() === url) return null;
     return url;
   });
@@ -37,5 +41,25 @@ export class AvatarComponent {
 
   markImageFailed(url: string): void {
     this.failedUrl.set(url);
+  }
+
+  private normalizedAvatarUrl(value: string | null | undefined): string | null {
+    const url = value?.trim();
+    if (!url) return null;
+    if (ABSOLUTE_AVATAR_URL.test(url)) return url;
+    if (url.startsWith('//')) return `https:${url}`;
+    if (url.startsWith('/media-files/')) return this.resolveFromApiOrigin(url);
+    if (url.startsWith('/')) return url;
+    if (HOST_LIKE_AVATAR_URL.test(url)) return `https://${url}`;
+    return url;
+  }
+
+  private resolveFromApiOrigin(path: string): string {
+    const fallbackOrigin = globalThis.location?.origin ?? 'http://localhost';
+    try {
+      return new URL(path, new URL(environment.apiBaseUrl, fallbackOrigin).origin).href;
+    } catch {
+      return path;
+    }
   }
 }

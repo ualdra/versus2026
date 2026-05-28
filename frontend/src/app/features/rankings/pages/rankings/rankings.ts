@@ -3,8 +3,9 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { RankingService } from '../../../../core/services/ranking.service';
 import { GameMode } from '../../../../core/models/game.models';
-import { RankingEntry, RankingPage } from '../../../../core/models/ranking.models';
+import { RankingPage } from '../../../../core/models/ranking.models';
 import { TopbarComponent } from '../../../../shared/components/layout/topbar/topbar';
+import { AvatarComponent } from '../../../../shared/components/ui/avatar/avatar.component';
 
 const MODES: { mode: GameMode; label: string }[] = [
   { mode: 'BINARY_DUEL', label: 'Duelo binario' },
@@ -15,7 +16,7 @@ const MODES: { mode: GameMode; label: string }[] = [
 @Component({
   selector: 'app-rankings',
   standalone: true,
-  imports: [RouterLink, TopbarComponent],
+  imports: [RouterLink, TopbarComponent, AvatarComponent],
   templateUrl: './rankings.html',
   styleUrl: './rankings.scss',
 })
@@ -57,10 +58,6 @@ export class Rankings implements OnInit {
     if (!this.canGoBack()) return;
     this.page.update((page) => page - 1);
     this.load();
-  }
-
-  initials(entry: RankingEntry): string {
-    return entry.username.slice(0, 2).toUpperCase();
   }
 
   signed(delta: number): string {

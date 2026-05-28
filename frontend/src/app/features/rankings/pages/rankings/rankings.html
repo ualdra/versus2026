@@ -65,13 +65,7 @@
                 <td class="vs-mono vs-rankings__rank">#{{ entry.rank }}</td>
                 <td>
                   <div class="vs-user-cell">
-                    <div class="vs-avatar">
-                      @if (entry.avatarUrl) {
-                        <img [src]="entry.avatarUrl" alt="" />
-                      } @else {
-                        {{ initials(entry) }}
-                      }
-                    </div>
+                    <vs-avatar [name]="entry.username" [avatarUrl]="entry.avatarUrl" />
                     <div>
                       <div class="vs-rankings__name">
                         {{ entry.username }}
@@ -99,11 +93,21 @@
     </section>
 
     <footer class="vs-rankings__pager">
-      <button type="button" class="btn btn--ghost btn--sm" [disabled]="!canGoBack()" (click)="previousPage()">
+      <button
+        type="button"
+        class="btn btn--ghost btn--sm"
+        [disabled]="!canGoBack()"
+        (click)="previousPage()"
+      >
         ANTERIOR
       </button>
       <span class="vs-mono">Pagina {{ page() + 1 }} / {{ totalPages() || 1 }}</span>
-      <button type="button" class="btn btn--ghost btn--sm" [disabled]="!canGoNext()" (click)="nextPage()">
+      <button
+        type="button"
+        class="btn btn--ghost btn--sm"
+        [disabled]="!canGoNext()"
+        (click)="nextPage()"
+      >
         SIGUIENTE
       </button>
     </footer>

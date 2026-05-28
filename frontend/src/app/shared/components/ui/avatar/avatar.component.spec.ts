@@ -24,6 +24,22 @@ describe('AvatarComponent', () => {
     expect(fixture.nativeElement.textContent.trim()).toBe('');
   });
 
+  it('normalizes public avatar URLs missing a protocol', () => {
+    fixture.componentRef.setInput('avatarUrl', 'assets.vrsus.online/image/avatar.png');
+    fixture.detectChanges();
+
+    const img = fixture.nativeElement.querySelector('.vs-avatar img') as HTMLImageElement | null;
+    expect(img?.getAttribute('src')).toBe('https://assets.vrsus.online/image/avatar.png');
+  });
+
+  it('resolves local media avatar URLs against the API origin', () => {
+    fixture.componentRef.setInput('avatarUrl', '/media-files/image/avatar.png');
+    fixture.detectChanges();
+
+    const img = fixture.nativeElement.querySelector('.vs-avatar img') as HTMLImageElement | null;
+    expect(img?.getAttribute('src')).toBe('http://localhost:8080/media-files/image/avatar.png');
+  });
+
   it('falls back to initials when avatarUrl is missing', () => {
     fixture.componentRef.setInput('name', 'Ada Lovelace');
     fixture.componentRef.setInput('avatarUrl', null);
