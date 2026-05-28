@@ -140,7 +140,7 @@ class UserProfileIT extends AbstractIT {
                     .statusCode(204);
 
             http.req()
-                    .body(Map.of("email", u.getEmail(), "password", Factories.DEFAULT_PASSWORD))
+                    .body(Map.of("identifier", u.getEmail(), "password", Factories.DEFAULT_PASSWORD))
                     .post("/api/auth/login")
                     .then()
                     .statusCode(401);

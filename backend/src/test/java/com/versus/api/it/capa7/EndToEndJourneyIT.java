@@ -112,7 +112,7 @@ class EndToEndJourneyIT extends AbstractIT {
 
         // Login
         String accessToken = http.req()
-                .body(Map.of("email", "journey@versus.test", "password", "Password1!"))
+                .body(Map.of("identifier", "journey@versus.test", "password", "Password1!"))
                 .post("/api/auth/login")
                 .then().statusCode(200)
                 .extract().jsonPath().getString("accessToken");
@@ -299,7 +299,7 @@ class EndToEndJourneyIT extends AbstractIT {
 
         // Get valid refresh token via login
         String refreshToken = http.req()
-                .body(Map.of("email", u.getEmail(), "password", com.versus.api.it.support.Factories.DEFAULT_PASSWORD))
+                .body(Map.of("identifier", u.getEmail(), "password", com.versus.api.it.support.Factories.DEFAULT_PASSWORD))
                 .post("/api/auth/login")
                 .then().statusCode(200)
                 .extract().jsonPath().getString("refreshToken");

@@ -28,7 +28,7 @@ class AuthFlowIT extends AbstractIT {
 
     private ValidatableResponse login(String email, String password) {
         return http.req()
-                .body(Map.of("email", email, "password", password))
+                .body(Map.of("identifier", email, "password", password))
                 .post("/api/auth/login")
                 .then();
     }
