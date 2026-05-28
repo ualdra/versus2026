@@ -1,0 +1,33 @@
+.vs-player-profile-page {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--vs-bg-base);
+  display: flex;
+  flex-direction: column;
+}
+
+.vs-player-profile {
+  padding: 36px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.vs-player-profile__head {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 28px;
+}
+
+.vs-player-profile__loading,
+.vs-player-profile__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 80px 0;
+}

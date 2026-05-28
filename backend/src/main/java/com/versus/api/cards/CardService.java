@@ -30,6 +30,11 @@ public class CardService {
     }
 
     @Transactional(readOnly = true)
+    public java.util.List<String> getCategories() {
+        return cards.findDistinctCategorias();
+    }
+
+    @Transactional(readOnly = true)
     public CardPair getRandomPairForSurvival() {
         for (int i = 0; i < PAIR_MAX_RETRIES; i++) {
             Card a = cards.findRandomActiveEligibleForSurvival()

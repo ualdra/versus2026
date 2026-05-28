@@ -1,0 +1,150 @@
+<form class="vs-proposal-form" (ngSubmit)="submit()">
+  <div class="vs-proposal-form__top">
+    <div>
+      <div class="vs-section-title">Contribuir</div>
+      <div class="vs-proposal-form__meta">
+        {{ pendingCount() }}/{{ pendingLimit() }} pendientes
+      </div>
+    </div>
+
+    <div class="vs-proposal-form__type" role="group" aria-label="Tipo de pregunta">
+      <button
+        type="button"
+        class="vs-chip"
+        [class.vs-chip--active]="type === 'BINARY'"
+        (click)="setType('BINARY')"
+      >
+        BINARIA
+      </button>
+      <button
+        type="button"
+        class="vs-chip"
+        [class.vs-chip--active]="type === 'NUMERIC'"
+        (click)="setType('NUMERIC')"
+      >
+        NUMERICA
+      </button>
+    </div>
+  </div>
+
+  @if (pendingLimitReached) {
+    <div class="vs-proposal-form__alert">
+      Ya tienes 5 propuestas pendientes.
+    </div>
+  }
+
+  @if (errorMessage(); as err) {
+    <div class="vs-proposal-form__alert vs-proposal-form__alert--error">{{ err }}</div>
+  }
+
+  @if (successMessage(); as ok) {
+    <div class="vs-proposal-form__alert vs-proposal-form__alert--ok">{{ ok }}</div>
+  }
+
+  <div class="vs-proposal-form__grid">
+    <label class="vs-proposal-field vs-proposal-field--wide">
+      <span>Pregunta</span>
+      <textarea
+        class="vs-input vs-proposal-form__textarea"
+        name="proposalText"
+        maxlength="2000"
+        [(ngModel)]="text"
+        [disabled]="pendingLimitReached || submitting()"
+        required
+      ></textarea>
+    </label>
+
+    <label class="vs-proposal-field">
+      <span>Respuesta correcta</span>
+      @if (type === 'BINARY') {
+        <input
+          class="vs-input"
+          name="proposalAnswer"
+          maxlength="512"
+          [ngModel]="proposedAnswerText"
+          (ngModelChange)="setProposedAnswer($event)"
+          [disabled]="pendingLimitReached || submitting()"
+          required
+        />
+      } @else {
+        <input
+          class="vs-input"
+          name="proposalAnswer"
+          type="number"
+          step="any"
+          [ngModel]="proposedAnswerText"
+          (ngModelChange)="setProposedAnswer($event)"
+          [disabled]="pendingLimitReached || submitting()"
+          required
+        />
+      }
+    </label>
+
+    @if (type === 'BINARY') {
+      <label class="vs-proposal-field">
+        <span>Otra respuesta</span>
+        <input
+          class="vs-input"
+          name="proposalAlternativeAnswer"
+          maxlength="512"
+          [(ngModel)]="alternativeAnswer"
+          [disabled]="pendingLimitReached || submitting()"
+          required
+        />
+      </label>
+    }
+
+    <label class="vs-proposal-field">
+      <span>Categoria</span>
+      <input
+        class="vs-input"
+        name="proposalCategory"
+        maxlength="64"
+        [(ngModel)]="category"
+        [disabled]="pendingLimitReached || submitting()"
+        required
+      />
+    </label>
+
+    <label class="vs-proposal-field vs-proposal-field--wide">
+      <span>Fuente</span>
+      <input
+        class="vs-input"
+        name="proposalSource"
+        maxlength="1024"
+        type="url"
+        [(ngModel)]="sourceUrl"
+        [disabled]="pendingLimitReached || submitting()"
+      />
+    </label>
+  </div>
+
+  <div class="vs-proposal-preview">
+    <div class="vs-q-label">PREVIEW</div>
+    <h3 class="vs-display">{{ text.trim() || 'Tu pregunta aparecera aqui' }}</h3>
+    <div class="vs-proposal-preview__cat">{{ category.trim() || 'categoria' }}</div>
+
+    @if (type === 'BINARY') {
+      <div class="vs-proposal-preview__binary">
+        <div class="vs-proposal-preview__option is-correct">
+          {{ proposedAnswerText || 'Respuesta correcta' }}
+        </div>
+        <div class="vs-proposal-preview__option">
+          {{ alternativeAnswerText || 'Otra respuesta' }}
+        </div>
+      </div>
+    } @else {
+      <div class="vs-proposal-preview__numeric vs-mono">{{ numericAnswerPreview }}</div>
+    }
+  </div>
+
+  <div class="vs-proposal-form__actions">
+    <button
+      type="submit"
+      class="btn btn--primary btn--sm"
+      [disabled]="!canSubmit"
+    >
+      {{ submitting() ? 'ENVIANDO...' : 'ENVIAR PROPUESTA' }}
+    </button>
+  </div>
+</form>

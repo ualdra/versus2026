@@ -10,41 +10,14 @@ import com.versus.api.duel.state.RawAnswer;
 import com.versus.api.duel.state.SabotageType;
 import com.versus.api.match.GameMode;
 import com.versus.api.questions.QuestionType;
-import com.versus.api.questions.domain.Question;
-import com.versus.api.questions.domain.QuestionOption;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
-/**
- * Engine de Sabotaje (#93): mecanica binaria + capa de efectos.
- *
- * Extiende la logica de BinaryDuelEngine:
- *  - Score y streak igual que binario.
- *  - Cada 3 aciertos consecutivos un jugador gana 1 sabotageToken.
- *  - LIFE_STEAL (efecto aplicado por el atacante en el round anterior):
- *      si el target FALLA este round, el atacante recupera +1 vida (max 3).
- *
- * TIME_BOMB y OBFUSCATION se aplican antes del round (timer reducido,
- * opcion ocultada) — eso lo gestiona el orchestrator en `startNextRound`.
- * Este engine sólo necesita registrar LIFE_STEAL para reaccionar al fallo.
- *
- * NOTA: el orchestrator ya consumio y limpio `incomingEffects` para construir
- * el round (snapshot en `round.effectsApplied`). Aqui leemos
- * `round.effectsApplied` para detectar LIFE_STEAL contra cada jugador y
- * recuperamos el atacante via la lista de eventos sabotaje emitidos
- * (almacenados implicitamente: usamos un mapa `sabotageActivatorByTarget`
- * dentro del state, pasamos la informacion por effectsApplied).
- *
- * Implementacion simplificada para el alcance del issue: si el target tiene
- * un efecto LIFE_STEAL aplicado y falla, el rival (unico otro jugador en 1v1)
- * recupera +1 vida.
- */
 @Component
 public class SabotageEngine implements DuelEngine {
 
@@ -62,13 +35,12 @@ public class SabotageEngine implements DuelEngine {
     }
 
     @Override
-    public RoundResolution resolveRound(DuelMatchState state, DuelRoundState round, Question question) {
-        UUID correctOptionId = correctOptionId(question);
+    public RoundResolution resolveRound(DuelMatchState state, DuelRoundState round, CardRoundContext context) {
+        UUID correctOptionId = context.correctOptionId();
         Map<UUID, Integer> streakBefore = new HashMap<>();
         Map<UUID, Boolean> correctness = new HashMap<>();
         state.getPlayers().forEach((uid, rt) -> streakBefore.put(uid, rt.getCurrentStreak()));
 
-        // 1ª pasada: marcar correctness, actualizar score/streak/tokens.
         for (DuelPlayerRuntime rt : state.getPlayers().values()) {
             RawAnswer raw = round.getAnswers().get(rt.getUserId());
             if (raw == null) {
@@ -84,7 +56,6 @@ public class SabotageEngine implements DuelEngine {
                 rt.setCurrentStreak(rt.getCurrentStreak() + 1);
                 rt.setBestStreakInMatch(Math.max(rt.getBestStreakInMatch(), rt.getCurrentStreak()));
                 rt.setScore(rt.getScore() + rt.getCurrentStreak() * 50);
-                // Ganar token al alcanzar multiplo de TOKEN_THRESHOLD (3, 6, 9…).
                 if (rt.getCurrentStreak() % TOKEN_THRESHOLD == 0) {
                     rt.setSabotageTokens(rt.getSabotageTokens() + 1);
                 }
@@ -93,14 +64,13 @@ public class SabotageEngine implements DuelEngine {
             }
         }
 
-        // 2ª pasada: lifeDeltas con bonus binario + LIFE_STEAL si aplica.
         List<PlayerRoundOutcome> outcomes = new ArrayList<>();
         for (DuelPlayerRuntime rt : state.getPlayers().values()) {
             Boolean correct = correctness.get(rt.getUserId());
             RawAnswer raw = round.getAnswers().get(rt.getUserId());
             int lifeDelta = 0;
             if (correct == null) {
-                lifeDelta = -1; // timeout
+                lifeDelta = -1;
             } else if (!correct) {
                 lifeDelta = -1;
                 if (rivalHadStreakBonus(state, rt.getUserId(), streakBefore, correctness)) {
@@ -117,7 +87,6 @@ public class SabotageEngine implements DuelEngine {
                     lifeDelta));
         }
 
-        // 3ª pasada: aplicar LIFE_STEAL. Si target tenia efecto y fallo, el rival recupera +1 vida.
         applyLifeSteal(state, round, correctness);
 
         return new RoundResolution(outcomes, new RoundResultPayload.Reveal(correctOptionId, null));
@@ -129,8 +98,7 @@ public class SabotageEngine implements DuelEngine {
         round.getEffectsApplied().forEach((target, type) -> {
             if (type != SabotageType.LIFE_STEAL) return;
             Boolean targetCorrect = correctness.get(target);
-            if (!Boolean.FALSE.equals(targetCorrect)) return; // solo si fallo (no timeout, no acierto)
-            // En 1v1 el atacante es el unico otro jugador.
+            if (!Boolean.FALSE.equals(targetCorrect)) return;
             for (DuelPlayerRuntime other : state.getPlayers().values()) {
                 if (other.getUserId().equals(target)) continue;
                 int newLives = Math.min(MAX_LIVES, other.getLivesRemaining() + 1);
@@ -152,14 +120,6 @@ public class SabotageEngine implements DuelEngine {
         return false;
     }
 
-    private UUID correctOptionId(Question question) {
-        Optional<QuestionOption> correct = question.getOptions().stream()
-                .filter(o -> Boolean.TRUE.equals(o.getIsCorrect()))
-                .findFirst();
-        return correct.map(QuestionOption::getId).orElse(null);
-    }
-
-    // Helper publico para que los tests puedan ejercitar la asignacion de tokens.
     public static int tokenThreshold() {
         return TOKEN_THRESHOLD;
     }

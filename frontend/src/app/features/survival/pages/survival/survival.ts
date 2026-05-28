@@ -60,12 +60,13 @@ export class Survival implements OnInit, OnDestroy {
   cardItem(opt: QuestionOption): CardItem {
     const q = this.question();
     return {
-      label: opt.text,
-      sub: opt.sub ?? '',
-      value: this.revealedValues()[opt.id] ?? 0,
-      unit: opt.unit ?? '',
-      cat: q?.category ?? '',
-      stub: '',
+      label:  opt.text,
+      sub:    opt.sub ?? '',
+      value:  this.revealedValues()[opt.id] ?? 0,
+      unit:   opt.unit ?? '',
+      cat:    q?.category ?? '',
+      subcat: q?.subcategory ?? '',
+      stub:   '',
     };
   }
 

@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, UpperCasePipe } from '@angular/common';
 import { GameService } from '../../../../core/services/game.service';
 import { AchievementToastService } from '../../../../core/services/achievement-toast.service';
 import { NotificationCenterService } from '../../../../core/services/notification-center.service';
@@ -16,7 +16,7 @@ type Phase = 'idle' | 'feedback' | 'loading';
 @Component({
   selector: 'app-precision',
   standalone: true,
-  imports: [RouterLink, DecimalPipe, NumericInputComponent],
+  imports: [RouterLink, DecimalPipe, UpperCasePipe, NumericInputComponent],
   templateUrl: './precision.html',
   styleUrl: './precision.scss',
 })

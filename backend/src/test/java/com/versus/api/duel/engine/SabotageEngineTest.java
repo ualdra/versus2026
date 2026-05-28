@@ -1,6 +1,5 @@
 package com.versus.api.duel.engine;
 
-import com.versus.api.duel.dto.PlayerRoundOutcome;
 import com.versus.api.duel.state.DuelMatchState;
 import com.versus.api.duel.state.DuelPlayerRuntime;
 import com.versus.api.duel.state.DuelRoundState;
@@ -8,11 +7,10 @@ import com.versus.api.duel.state.RawAnswer;
 import com.versus.api.duel.state.SabotageType;
 import com.versus.api.match.GameMode;
 import com.versus.api.questions.QuestionType;
-import com.versus.api.questions.domain.Question;
-import com.versus.api.questions.domain.QuestionOption;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -27,14 +25,14 @@ class SabotageEngineTest {
     private final UUID B = UUID.randomUUID();
     private final UUID Q = UUID.randomUUID();
     private final UUID CORRECT_OPT = UUID.randomUUID();
-    private final UUID WRONG_OPT = UUID.randomUUID();
+    private final UUID WRONG_OPT   = UUID.randomUUID();
 
-    private Question question() {
-        Question q = Question.builder().id(Q).type(QuestionType.BINARY).text("?")
-                .category("g").build();
-        q.getOptions().add(QuestionOption.builder().id(CORRECT_OPT).text("ok").isCorrect(true).question(q).build());
-        q.getOptions().add(QuestionOption.builder().id(WRONG_OPT).text("no").isCorrect(false).question(q).build());
-        return q;
+    /** CORRECT_OPT tiene valor 10 (mayor), WRONG_OPT tiene valor 5; inverse=false → gana el mayor */
+    private CardRoundContext context() {
+        return new CardRoundContext(
+                CORRECT_OPT, WRONG_OPT,
+                new BigDecimal("10"), new BigDecimal("5"),
+                false, null);
     }
 
     private DuelMatchState match() {
@@ -68,7 +66,7 @@ class SabotageEngineTest {
             DuelRoundState r = new DuelRoundState(i, Q, Instant.now(), Instant.now().plusSeconds(15));
             answer(r, A, CORRECT_OPT);
             answer(r, B, WRONG_OPT);
-            engine.resolveRound(s, r, question());
+            engine.resolveRound(s, r, context());
         }
         assertThat(s.getPlayers().get(A).getSabotageTokens()).isEqualTo(1);
         assertThat(s.getPlayers().get(A).getCurrentStreak()).isEqualTo(3);
@@ -82,7 +80,7 @@ class SabotageEngineTest {
             DuelRoundState r = new DuelRoundState(i, Q, Instant.now(), Instant.now().plusSeconds(15));
             answer(r, A, CORRECT_OPT);
             answer(r, B, WRONG_OPT);
-            engine.resolveRound(s, r, question());
+            engine.resolveRound(s, r, context());
         }
         assertThat(s.getPlayers().get(A).getSabotageTokens()).isEqualTo(2);
     }
@@ -91,20 +89,18 @@ class SabotageEngineTest {
     @Test
     void tokenResetAlFallar() {
         DuelMatchState s = match();
-        // round 1+2: A acierta (streak 2, sin token aun)
         for (int i = 1; i <= 2; i++) {
             DuelRoundState r = new DuelRoundState(i, Q, Instant.now(), Instant.now().plusSeconds(15));
             answer(r, A, CORRECT_OPT);
             answer(r, B, WRONG_OPT);
-            engine.resolveRound(s, r, question());
+            engine.resolveRound(s, r, context());
         }
         assertThat(s.getPlayers().get(A).getCurrentStreak()).isEqualTo(2);
         assertThat(s.getPlayers().get(A).getSabotageTokens()).isZero();
-        // round 3: A falla (streak vuelve a 0; ningun token nuevo)
         DuelRoundState r3 = new DuelRoundState(3, Q, Instant.now(), Instant.now().plusSeconds(15));
         answer(r3, A, WRONG_OPT);
         answer(r3, B, CORRECT_OPT);
-        engine.resolveRound(s, r3, question());
+        engine.resolveRound(s, r3, context());
         assertThat(s.getPlayers().get(A).getCurrentStreak()).isZero();
         assertThat(s.getPlayers().get(A).getSabotageTokens()).isZero();
     }
@@ -113,17 +109,14 @@ class SabotageEngineTest {
     @Test
     void lifeStealRecuperaVida() {
         DuelMatchState s = match();
-        // A previamente perdio 1 vida (1/3); B tiene 3/3 y le aplicó LIFE_STEAL a A.
         s.getPlayers().get(A).setLivesRemaining(1);
         DuelRoundState r = round();
-        r.getEffectsApplied().put(A, SabotageType.LIFE_STEAL); // target=A, atacante=B
-        answer(r, A, WRONG_OPT);    // A falla → activa el robo
+        r.getEffectsApplied().put(A, SabotageType.LIFE_STEAL);
+        answer(r, A, WRONG_OPT);
         answer(r, B, CORRECT_OPT);
-        engine.resolveRound(s, r, question());
-        // A pierde su vida normal (-1) + B recupera +1 (capa al MAX_LIVES=3, ya estaba en 3)
+        engine.resolveRound(s, r, context());
         assertThat(s.getPlayers().get(B).getLivesRemaining()).isEqualTo(3);
-        // El delta de A en outcome es -1 (la mecanica binaria es independiente)
-        var outcomes = engine.resolveRound(s, round(), question()).outcomes();
+        var outcomes = engine.resolveRound(s, round(), context()).outcomes();
         assertThat(outcomes).isNotEmpty();
     }
 
@@ -134,22 +127,22 @@ class SabotageEngineTest {
         s.getPlayers().get(B).setLivesRemaining(2);
         DuelRoundState r = round();
         r.getEffectsApplied().put(A, SabotageType.LIFE_STEAL);
-        answer(r, A, CORRECT_OPT);  // A acierta → no se activa LIFE_STEAL
+        answer(r, A, CORRECT_OPT);
         answer(r, B, WRONG_OPT);
-        engine.resolveRound(s, r, question());
-        assertThat(s.getPlayers().get(B).getLivesRemaining()).isEqualTo(2); // sin cambio
+        engine.resolveRound(s, r, context());
+        assertThat(s.getPlayers().get(B).getLivesRemaining()).isEqualTo(2);
     }
 
     @DisplayName("LIFE_STEAL respeta el cap de vidas (MAX_LIVES=3)")
     @Test
     void lifeStealRespetaCap() {
-        DuelMatchState s = match(); // B en 3/3
+        DuelMatchState s = match();
         DuelRoundState r = round();
         r.getEffectsApplied().put(A, SabotageType.LIFE_STEAL);
         answer(r, A, WRONG_OPT);
         answer(r, B, CORRECT_OPT);
-        engine.resolveRound(s, r, question());
-        assertThat(s.getPlayers().get(B).getLivesRemaining()).isEqualTo(3); // no pasa de 3
+        engine.resolveRound(s, r, context());
+        assertThat(s.getPlayers().get(B).getLivesRemaining()).isEqualTo(3);
     }
 
     @DisplayName("Mecanica binaria base sigue funcionando: bonus de racha del rival")
@@ -160,9 +153,9 @@ class SabotageEngineTest {
         DuelRoundState r = round();
         answer(r, A, CORRECT_OPT);
         answer(r, B, WRONG_OPT);
-        var outcomes = engine.resolveRound(s, r, question()).outcomes();
+        var outcomes = engine.resolveRound(s, r, context()).outcomes();
         var bOutcome = outcomes.stream().filter(o -> o.userId().equals(B)).findFirst().orElseThrow();
-        assertThat(bOutcome.lifeDelta()).isEqualTo(-2); // -1 base + -1 bonus
+        assertThat(bOutcome.lifeDelta()).isEqualTo(-2);
     }
 
     @DisplayName("tokenThreshold() expone el threshold (3) para clientes externos")

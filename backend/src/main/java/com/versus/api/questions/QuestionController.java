@@ -47,18 +47,6 @@ public class QuestionController {
         return questionService.getRandom(type, category);
     }
 
-    @Operation(summary = "Get a question by ID",
-            security = @SecurityRequirement(name = "bearerAuth"),
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Question returned"),
-                    @ApiResponse(responseCode = "404", description = "Question not found",
-                            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-            })
-    @GetMapping("/{id}")
-    public QuestionResponse byId(@PathVariable UUID id) {
-        return questionService.getById(id);
-    }
-
     @Operation(summary = "List all available category slugs (public)",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Category list returned")

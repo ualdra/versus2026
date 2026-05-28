@@ -62,6 +62,7 @@ services:
     volumes:
       - ./frontend:/app        # Monta el código fuente del host
       - node_modules:/app/node_modules  # Evita sobreescribir node_modules con el volumen del host
+      - npm_cache:/root/.npm   # Cache de npm entre reinicios
     environment:
       NODE_ENV: development
 
@@ -106,5 +107,6 @@ services:
 volumes:
   maven_cache:
   node_modules:
+  npm_cache:
   scraper_output:
   pgadmin_data:

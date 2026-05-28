@@ -1,7 +1,8 @@
 package com.versus.api.duel;
 
+import com.versus.api.cards.CardService;
+import com.versus.api.cards.domain.Card;
 import com.versus.api.common.exception.ApiException;
-import com.versus.api.common.exception.ErrorCode;
 import com.versus.api.duel.dto.AnswerMessage;
 import com.versus.api.duel.dto.AnswerResultPayload;
 import com.versus.api.duel.dto.EffectAppliedPayload;
@@ -14,6 +15,7 @@ import com.versus.api.duel.dto.RoundResultPayload;
 import com.versus.api.duel.dto.SabotageActivatedPayload;
 import com.versus.api.duel.dto.SabotageMessage;
 import com.versus.api.duel.dto.SabotageRejectedPayload;
+import com.versus.api.duel.engine.CardRoundContext;
 import com.versus.api.duel.engine.DuelEngine;
 import com.versus.api.duel.engine.RoundResolution;
 import com.versus.api.duel.persistence.DuelFinalizationResult;
@@ -28,11 +30,11 @@ import com.versus.api.duel.state.SabotageType;
 import com.versus.api.match.GameMode;
 import com.versus.api.match.MatchResult;
 import com.versus.api.match.state.LiveMatchState;
-import com.versus.api.match.state.LivePlayerState;
-import com.versus.api.questions.QuestionService;
-import com.versus.api.questions.domain.Question;
+import com.versus.api.questions.CardQuestionFactory;
+import com.versus.api.questions.QuestionType;
 import com.versus.api.questions.dto.QuestionBinaryResponse;
 import com.versus.api.questions.dto.QuestionOptionResponse;
+import com.versus.api.questions.dto.QuestionResponse;
 import com.versus.api.stats.dto.EloChangeResponse;
 import com.versus.api.websocket.MatchEventEnvelope;
 import lombok.extern.slf4j.Slf4j;
@@ -52,14 +54,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Orquesta el ciclo de vida de una partida de duelo (#91 #92 #93).
- * Escucha {@link MatchStartedEvent} publicado por MatchService cuando ambos jugadores
- * marcaron ready y arrancan: crea {@link DuelMatchState}, programa primer round, etc.
- *
- * Estado in-memory: las partidas se pierden si reinicia el backend (limitación
- * conocida; futuro upgrade a Redis fuera de scope).
- */
 @Component
 @Slf4j
 public class DuelOrchestrator {
@@ -73,19 +67,22 @@ public class DuelOrchestrator {
     private static final long DISCONNECT_GRACE_MS = 10_000;
 
     private final SimpMessagingTemplate broker;
-    private final QuestionService questions;
+    private final CardService cards;
+    private final CardQuestionFactory cardFactory;
     private final DuelPersistenceService persistence;
     private final ScheduledExecutorService scheduler;
     private final Map<GameMode, DuelEngine> engines;
     private final Map<UUID, DuelMatchState> duels = new ConcurrentHashMap<>();
 
     public DuelOrchestrator(SimpMessagingTemplate broker,
-                            QuestionService questions,
+                            CardService cards,
+                            CardQuestionFactory cardFactory,
                             DuelPersistenceService persistence,
                             @Qualifier("duelScheduler") ScheduledExecutorService scheduler,
                             List<DuelEngine> engineList) {
         this.broker = broker;
-        this.questions = questions;
+        this.cards = cards;
+        this.cardFactory = cardFactory;
         this.persistence = persistence;
         this.scheduler = scheduler;
         Map<GameMode, DuelEngine> map = new LinkedHashMap<>();
@@ -142,26 +139,34 @@ public class DuelOrchestrator {
                 return;
             }
 
-            Question question;
+            CardRoundContext context;
+            QuestionResponse questionResponse;
+            UUID roundToken = UUID.randomUUID();
             try {
-                question = questions.findRandomActiveQuestion(engine.questionType(), null);
-            } catch (ApiException ex) {
-                if (ex.getCode() == ErrorCode.NOT_FOUND) {
-                    log.warn("Match {} ending early: no active question of type {} available",
-                            matchId, engine.questionType());
-                    endMatchNoQuestion(duel);
-                    return;
+                if (engine.questionType() == QuestionType.BINARY) {
+                    CardService.CardPair pair = cards.getRandomPairForSurvival();
+                    context = CardRoundContext.binary(pair.a(), pair.b());
+                    questionResponse = cardFactory.buildBinary(roundToken, pair.a(), pair.b());
+                } else {
+                    Card card = cards.getRandomCard();
+                    context = CardRoundContext.numeric(card);
+                    questionResponse = cardFactory.buildNumeric(roundToken, card);
                 }
-                throw ex;
+            } catch (ApiException ex) {
+                log.warn("Match {} ending early: no active card of type {} available",
+                        matchId, engine.questionType());
+                endMatchNoQuestion(duel);
+                return;
             }
-            Instant now = Instant.now();
 
-            DuelRoundState round = new DuelRoundState(n, question.getId(), now, computeDeadline(duel, now));
+            Instant now = Instant.now();
+            DuelRoundState round = new DuelRoundState(n, roundToken, now, computeDeadline(duel, now));
+            round.setCardContext(context);
             consumeIncomingEffectsForRound(duel, round);
             duel.setCurrentRound(round);
             duel.setPhase(DuelPhase.ROUND_OPEN);
 
-            Map<UUID, QuestionPayload> personalPayloads = buildPersonalPayloads(duel, round, question);
+            Map<UUID, QuestionPayload> personalPayloads = buildPersonalPayloads(duel, round, questionResponse);
             personalPayloads.forEach((userId, payload) -> sendToUser(userId, "QUESTION", matchId, payload));
             round.getEffectsApplied().forEach((target, type) -> broadcast(matchId, "EFFECT_APPLIED",
                     new EffectAppliedPayload(type, target, n)));
@@ -175,13 +180,11 @@ public class DuelOrchestrator {
                     timerSeconds, TimeUnit.SECONDS));
 
             log.info("Match {} round {} started (questionId={}, timer={}s, effects={})",
-                    matchId, n, question.getId(), timerSeconds, round.getEffectsApplied());
+                    matchId, n, roundToken, timerSeconds, round.getEffectsApplied());
         }
     }
 
     private Instant computeDeadline(DuelMatchState duel, Instant now) {
-        // El deadline real será el MAYOR de los deadlines por jugador (el más permisivo)
-        // para que el scheduler sólo dispare cuando ambos seguro están fuera de tiempo.
         int max = DEFAULT_TIMER_SECONDS;
         for (DuelPlayerRuntime rt : duel.getPlayers().values()) {
             int seconds = rt.getIncomingEffects().stream()
@@ -196,7 +199,6 @@ public class DuelOrchestrator {
     private void consumeIncomingEffectsForRound(DuelMatchState duel, DuelRoundState round) {
         duel.getPlayers().forEach((userId, rt) -> {
             if (rt.getIncomingEffects().isEmpty()) return;
-            // 1 efecto activo por jugador por round (el más reciente).
             PendingEffect effect = rt.getIncomingEffects().get(rt.getIncomingEffects().size() - 1);
             round.getEffectsApplied().put(userId, effect.type());
             rt.getIncomingEffects().clear();
@@ -205,19 +207,17 @@ public class DuelOrchestrator {
 
     private Map<UUID, QuestionPayload> buildPersonalPayloads(DuelMatchState duel,
                                                               DuelRoundState round,
-                                                              Question question) {
+                                                              QuestionResponse questionResponse) {
         Instant now = Instant.now();
         Map<UUID, QuestionPayload> map = new LinkedHashMap<>();
         for (DuelPlayerRuntime rt : duel.getPlayers().values()) {
             SabotageType effect = round.getEffectsApplied().get(rt.getUserId());
             int timerSeconds = effect == SabotageType.TIME_BOMB ? TIME_BOMB_TIMER_SECONDS : DEFAULT_TIMER_SECONDS;
             Instant deadline = now.plusSeconds(timerSeconds);
-            var response = questions.toResponse(question);
-            // Ofuscación: si la pregunta es binaria y el target sufre OBFUSCATION, eliminamos
-            // una opción incorrecta del payload enviado a ese jugador. Server-side se sigue
-            // evaluando la respuesta real contra el catálogo completo.
+            QuestionResponse response = questionResponse;
+            // Obfuscation: si es binaria, eliminar una opción incorrecta del payload para ese jugador.
             if (effect == SabotageType.OBFUSCATION && response instanceof QuestionBinaryResponse bin) {
-                response = applyObfuscation(bin, question);
+                response = applyObfuscation(bin, round.getCardContext());
             }
             map.put(rt.getUserId(), new QuestionPayload(
                     round.getRoundNumber(), response, now, deadline, timerSeconds,
@@ -226,12 +226,8 @@ public class DuelOrchestrator {
         return map;
     }
 
-    private QuestionBinaryResponse applyObfuscation(QuestionBinaryResponse bin, Question source) {
-        UUID correctId = source.getOptions().stream()
-                .filter(o -> Boolean.TRUE.equals(o.getIsCorrect()))
-                .map(o -> o.getId())
-                .findFirst()
-                .orElse(null);
+    private QuestionBinaryResponse applyObfuscation(QuestionBinaryResponse bin, CardRoundContext context) {
+        UUID correctId = context == null ? null : context.correctOptionId();
         if (correctId == null) return bin;
         List<QuestionOptionResponse> filtered = new ArrayList<>();
         boolean removed = false;
@@ -243,7 +239,7 @@ public class DuelOrchestrator {
             filtered.add(opt);
         }
         return new QuestionBinaryResponse(bin.id(), bin.type(), bin.text(), bin.category(),
-                filtered, bin.scrapedAt());
+                bin.subcategory(), bin.inverse(), filtered, bin.scrapedAt());
     }
 
     public AnswerResultPayload submitAnswer(UUID userId, AnswerMessage msg) {
@@ -276,10 +272,8 @@ public class DuelOrchestrator {
         }
 
         if (round.getAnswers().size() >= duel.getPlayers().size()) {
-            // Cancelamos el timeout y cerramos el round inmediatamente.
             var task = round.getTimeoutTask();
             if (task != null) task.cancel(false);
-            // Ejecutamos en el scheduler para no bloquear el thread WS con persistencia.
             scheduler.submit(() -> safeCloseRound(duel.getMatchId(), round.getRoundNumber()));
         }
         return AnswerResultPayload.accepted(null, null);
@@ -298,17 +292,16 @@ public class DuelOrchestrator {
         if (duel == null || duel.isEnded()) return;
         DuelRoundState round = duel.getCurrentRound();
         if (round == null || round.getRoundNumber() != roundNumber) return;
-        if (!round.getClosed().compareAndSet(false, true)) return; // idempotente
+        if (!round.getClosed().compareAndSet(false, true)) return;
 
         DuelEngine engine = engines.get(duel.getMode());
         if (engine == null) return;
-        Question question = questions.findActiveQuestion(round.getQuestionId(), engine.questionType());
+        CardRoundContext context = round.getCardContext();
 
         RoundResolution resolution;
         synchronized (duel) {
             duel.setPhase(DuelPhase.BETWEEN_ROUNDS);
-            resolution = engine.resolveRound(duel, round, question);
-            // Apply life deltas and stats:
+            resolution = engine.resolveRound(duel, round, context);
             for (PlayerRoundOutcome outcome : resolution.outcomes()) {
                 DuelPlayerRuntime rt = duel.getPlayers().get(outcome.userId());
                 if (rt == null) continue;
@@ -317,7 +310,6 @@ public class DuelOrchestrator {
             }
         }
 
-        // Persistir async respecto del próximo round.
         scheduler.submit(() -> persistence.recordRound(matchId, round.getQuestionId(),
                 round.getRoundNumber(), resolution.outcomes()));
 
@@ -397,7 +389,6 @@ public class DuelOrchestrator {
     }
 
     private void endMatchDisconnect(DuelMatchState duel, UUID disconnectedUserId) {
-        // Forzar al desconectado a 0 vidas para que el otro sea winner por reglas estándar.
         DuelPlayerRuntime rt = duel.getPlayers().get(disconnectedUserId);
         if (rt != null) rt.setLivesRemaining(0);
         finalize(duel, MatchEndPayload.REASON_DISCONNECT);
@@ -419,7 +410,6 @@ public class DuelOrchestrator {
 
         Map<UUID, Double> avgDeviationByUser = new HashMap<>();
         if (duel.getMode() == GameMode.PRECISION_DUEL) {
-            // PrecisionDuelEngine acumula deviationSum/deviationCount en cada runtime.
             duel.getPlayers().values().forEach(rt -> {
                 if (rt.getDeviationCount() > 0) {
                     avgDeviationByUser.put(rt.getUserId(),
@@ -466,7 +456,6 @@ public class DuelOrchestrator {
                 .toList();
         if (alive.size() == 1) return alive.get(0).getUserId();
         if (alive.isEmpty()) return null;
-        // Empate por vidas → mayor score; si sigue empate → DRAW.
         DuelPlayerRuntime top = alive.get(0);
         boolean tied = false;
         for (int i = 1; i < alive.size(); i++) {

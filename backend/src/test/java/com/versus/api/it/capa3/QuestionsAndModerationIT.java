@@ -34,9 +34,9 @@ class QuestionsAndModerationIT extends AbstractIT {
         class RandomQuestion {
 
                 @Test
-                @DisplayName("Q1 — Devuelve una pregunta ACTIVE")
+                @DisplayName("Q1 — Devuelve una pregunta BINARY desde cards")
                 void devuelvePreguntaActiva() {
-                        factories.binaryQuestion();
+                        factories.binaryCardPair();
                         User u = factories.user();
 
                         http.reqAs(u)
@@ -49,7 +49,7 @@ class QuestionsAndModerationIT extends AbstractIT {
                 @Test
                 @DisplayName("Q2 — Pregunta BINARY no expone isCorrect en las opciones")
                 void binaryNoExponeCorrecto() {
-                        factories.binaryQuestion();
+                        factories.binaryCardPair();
                         User u = factories.user();
 
                         http.reqAs(u)
@@ -63,7 +63,7 @@ class QuestionsAndModerationIT extends AbstractIT {
                 @Test
                 @DisplayName("Q3 — Pregunta NUMERIC no expone correctValue ni tolerancePercent")
                 void numericNoExponeCorrecto() {
-                        factories.numericQuestion();
+                        factories.numericCard();
                         User u = factories.user();
 
                         http.reqAs(u)
@@ -76,10 +76,9 @@ class QuestionsAndModerationIT extends AbstractIT {
                 }
 
                 @Test
-                @DisplayName("Q4 — ?type=BINARY filtra correctamente")
+                @DisplayName("Q4 — ?type=BINARY devuelve type=BINARY")
                 void filtrarPorTipoBinary() {
-                        factories.binaryQuestion();
-                        factories.numericQuestion();
+                        factories.binaryCardPair();
                         User u = factories.user();
 
                         http.reqAs(u)
@@ -90,12 +89,9 @@ class QuestionsAndModerationIT extends AbstractIT {
                 }
 
                 @Test
-                @DisplayName("Q5 — Preguntas INACTIVE/PENDING_REVIEW/FLAGGED no se devuelven")
+                @DisplayName("Q5 — Sin cards activas → 404")
                 void preguntasNoActivasExcluidas() {
-                        Question inactive = factories.binaryQuestion();
-                        inactive.setStatus(QuestionStatus.INACTIVE);
-                        questionRepo.save(inactive);
-
+                        // No se crea ninguna card → CardService lanzará NOT_FOUND
                         User u = factories.user();
                         http.reqAs(u)
                                         .get("/api/questions/random")
@@ -109,9 +105,9 @@ class QuestionsAndModerationIT extends AbstractIT {
         class Categories {
 
                 @Test
-                @DisplayName("Q6 — Endpoint público devuelve categorías de preguntas ACTIVE")
+                @DisplayName("Q6 — Endpoint público devuelve categorías de cards ACTIVE")
                 void devuelveCategorias() {
-                        factories.binaryQuestion();
+                        factories.binaryCardPair();
 
                         http.req()
                                         .get("/api/questions/categories")

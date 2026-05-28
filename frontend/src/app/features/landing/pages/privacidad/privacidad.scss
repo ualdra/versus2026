@@ -1,0 +1,221 @@
+.vs-page {
+  width: 100%;
+  background:
+    radial-gradient(ellipse at 80% 0%, rgba(67,97,238,0.08), transparent 60%),
+    radial-gradient(ellipse at 0% 100%, rgba(230,57,70,0.06), transparent 60%),
+    var(--vs-bg-base);
+  color: var(--vs-text-primary);
+  min-height: 100vh;
+}
+
+.vs-page__topbar {
+  background: rgba(13,13,15,0.7);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--vs-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  a { text-decoration: none; }
+}
+
+// ─── Header ──────────────────────────────────────────────────────────────────
+
+.vs-page__header {
+  position: relative;
+  padding: 72px 56px 64px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--vs-border);
+  text-align: center;
+}
+
+.vs-page__header-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.vs-landing__bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--vs-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--vs-border) 1px, transparent 1px);
+  background-size: 64px 64px;
+  opacity: 0.18;
+  mask-image: radial-gradient(ellipse at 50% 30%, #000 35%, transparent 75%);
+}
+
+.vs-page__header-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.vs-page__title {
+  font-size: 72px;
+  line-height: 0.92;
+  letter-spacing: 0.04em;
+}
+
+.vs-page__subtitle {
+  font-size: 17px;
+  color: var(--vs-text-secondary);
+  line-height: 1.55;
+  max-width: 520px;
+}
+
+// ─── Layout ──────────────────────────────────────────────────────────────────
+
+.vs-privacy__layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 56px 56px 80px;
+  align-items: flex-start;
+}
+
+// ─── TOC ─────────────────────────────────────────────────────────────────────
+
+.vs-privacy__toc {
+  position: sticky;
+  top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-right: 32px;
+}
+
+.vs-privacy__toc-title {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--vs-text-muted);
+  margin-bottom: 10px;
+}
+
+.vs-privacy__toc-link {
+  font-size: 12px;
+  color: var(--vs-text-secondary);
+  text-decoration: none;
+  padding: 5px 8px;
+  border-radius: var(--vs-radius-sm);
+  border-left: 2px solid transparent;
+  transition: color var(--vs-transition), border-color var(--vs-transition), background var(--vs-transition);
+  line-height: 1.4;
+
+  &:hover {
+    color: var(--vs-text-primary);
+    border-left-color: var(--vs-accent-blue);
+    background: var(--vs-bg-surface);
+  }
+}
+
+// ─── Sections ────────────────────────────────────────────────────────────────
+
+.vs-privacy__main {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  padding-left: 32px;
+  border-left: 1px solid var(--vs-border);
+}
+
+.vs-privacy__section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  scroll-margin-top: 100px;
+}
+
+.vs-privacy__section-title {
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  color: var(--vs-text-primary);
+  position: relative;
+  padding-left: 16px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 4px;
+    bottom: 4px;
+    width: 3px;
+    background: var(--vs-accent-blue);
+    border-radius: 2px;
+  }
+}
+
+.vs-privacy__section-body {
+  font-size: 15px;
+  color: var(--vs-text-secondary);
+  line-height: 1.7;
+}
+
+.vs-privacy__footer-note {
+  background: var(--vs-bg-surface);
+  border: 1px solid var(--vs-border);
+  border-radius: var(--vs-radius-md);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  p {
+    font-size: 13px;
+    color: var(--vs-text-muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .vs-page__header {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .vs-page__title {
+    font-size: 52px;
+  }
+
+  .vs-privacy__layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 36px 20px 56px;
+  }
+
+  .vs-privacy__toc {
+    position: static;
+    padding-right: 0;
+  }
+
+  .vs-privacy__toc-link {
+    padding-left: 0;
+  }
+
+  .vs-privacy__main {
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .vs-page__topbar {
+    gap: 12px;
+  }
+
+  .vs-page__title {
+    font-size: 42px;
+  }
+
+  .vs-privacy__section-title {
+    font-size: 20px;
+  }
+}

@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { AdminSidebarComponent } from '../../components/sidebar/sidebar';
 import { AdminService } from '../../../../core/services/admin.service';
 import { AdminLog, AdminSpider, AdminStats } from '../../../../core/models/admin.models';
@@ -10,13 +11,20 @@ interface KpiCard {
   delta: string;
   up: boolean;
   color: string;
-  spark: number[];
+}
+
+interface ModeBar {
+  mode: string;
+  label: string;
+  count: number;
+  pct: number;
+  color: string;
 }
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [AdminSidebarComponent, DatePipe],
+  imports: [AdminSidebarComponent, DatePipe, RouterLink],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.scss',
 })
@@ -26,17 +34,18 @@ export class AdminDashboard implements OnInit {
   kpis = signal<KpiCard[]>([]);
   spiders = signal<AdminSpider[]>([]);
   logs = signal<AdminLog[]>([]);
+  modes = signal<ModeBar[]>([]);
+  totalModeMatches = signal(0);
   loading = signal(true);
   readonly today = new Date();
 
-  // TODO: depende de Stats avanzado por modo
-  modes = [
-    { mode: 'Supervivencia',   pct: 42, color: 'var(--vs-accent-red)'    },
-    { mode: 'Precisión',       pct: 24, color: 'var(--vs-accent-blue)'   },
-    { mode: 'Duelo binario',   pct: 16, color: 'var(--vs-accent-gold)'   },
-    { mode: 'Sabotaje',        pct: 12, color: 'var(--vs-accent-purple)' },
-    { mode: 'Duelo precisión', pct:  6, color: 'var(--vs-accent-green)'  },
-  ];
+  private readonly modeMeta: Record<string, { label: string; color: string }> = {
+    SURVIVAL:       { label: 'Supervivencia',   color: 'var(--vs-accent-red)'    },
+    PRECISION:      { label: 'Precisión',       color: 'var(--vs-accent-blue)'   },
+    BINARY_DUEL:    { label: 'Duelo binario',   color: 'var(--vs-accent-gold)'   },
+    PRECISION_DUEL: { label: 'Duelo precisión', color: 'var(--vs-accent-green)'  },
+    SABOTAGE:       { label: 'Sabotaje',        color: 'var(--vs-accent-purple)' },
+  };
 
   ngOnInit(): void {
     this.loadData();
@@ -61,6 +70,24 @@ export class AdminDashboard implements OnInit {
     this.adminService.logs(20).subscribe({
       next: (entries) => this.logs.set(entries),
     });
+    this.adminService.modeDistribution().subscribe({
+      next: (dist) => {
+        const total = dist.reduce((sum, d) => sum + d.count, 0);
+        this.totalModeMatches.set(total);
+        this.modes.set(
+          dist.map((d) => {
+            const meta = this.modeMeta[d.mode] ?? { label: d.mode, color: 'var(--vs-accent-blue)' };
+            return {
+              mode: d.mode,
+              label: meta.label,
+              count: d.count,
+              pct: total > 0 ? Math.round((d.count / total) * 100) : 0,
+              color: meta.color,
+            };
+          }),
+        );
+      },
+    });
   }
 
   private buildKpis(s: AdminStats): KpiCard[] {
@@ -71,7 +98,6 @@ export class AdminDashboard implements OnInit {
         delta: `de ${s.totalUsers.toLocaleString('es-ES')} totales`,
         up: true,
         color: 'var(--vs-accent-green)',
-        spark: [10, 12, 11, 14, 13, 17, 19, 18, 22, 24],
       },
       {
         label: 'Partidas hoy',
@@ -79,7 +105,6 @@ export class AdminDashboard implements OnInit {
         delta: 'partidas hoy',
         up: true,
         color: 'var(--vs-accent-blue)',
-        spark: [40, 38, 52, 49, 61, 58, 73],
       },
       {
         label: 'Preguntas en BD',
@@ -87,7 +112,6 @@ export class AdminDashboard implements OnInit {
         delta: 'preguntas activas',
         up: true,
         color: 'var(--vs-accent-gold)',
-        spark: [20, 22, 24, 26, 28, 30, 33],
       },
       {
         label: 'Reportes pendientes',
@@ -95,16 +119,8 @@ export class AdminDashboard implements OnInit {
         delta: s.pendingReports > 0 ? 'requieren revisión' : 'sin reportes',
         up: s.pendingReports === 0,
         color: 'var(--vs-accent-red)',
-        spark: [3, 5, 4, 8, 12, 18, s.pendingReports],
       },
     ];
-  }
-
-  sparkPoints(data: number[]): string {
-    const max = Math.max(...data), min = Math.min(...data), range = max - min || 1;
-    return data
-      .map((v, i) => `${(i / (data.length - 1)) * 80},${30 - ((v - min) / range) * 26 - 2}`)
-      .join(' ');
   }
 
   pillClass(status: string): string {

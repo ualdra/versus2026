@@ -86,18 +86,5 @@
       }
     </div>
 
-    <!-- Barras por hora -->
-    <div class="vs-card" style="max-width: 600px">
-      <div class="vs-section-title">Actividad relativa · últimas 24h</div>
-      <div style="display: flex; align-items: flex-end; gap: 3px; height: 90px; margin-top: 8px">
-        @for (v of barData; track $index) {
-          <div style="flex: 1; border-radius: 2px 2px 0 0; transition: all 200ms"
-               [style.height]="(v / barMax * 100) + '%'"
-               [style.background]="$index === 8 ? 'var(--vs-accent-gold)' : 'var(--vs-accent-blue)'"
-               [style.opacity]="$index === 8 ? 1 : 0.7"></div>
-        }
-      </div>
-    </div>
-
   </div>
 </div>

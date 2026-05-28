@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,6 +18,15 @@ public interface MatchRepository extends JpaRepository<Match, UUID> {
 
     // Admin dashboard
     long countByCreatedAtAfter(Instant from);
+
+    // Admin dashboard — finished matches grouped by game mode
+    @Query("""
+            SELECT m.mode AS mode, COUNT(m) AS count
+            FROM Match m
+            WHERE m.status = com.versus.api.match.MatchStatus.FINISHED
+            GROUP BY m.mode
+            """)
+    List<Object[]> countFinishedByMode();
 
     // User match history and stats
     @Query(value = """

@@ -5,6 +5,7 @@ import com.versus.api.cards.CardService;
 import com.versus.api.cards.CardStatus;
 import com.versus.api.cards.domain.Card;
 import com.versus.api.common.exception.ApiException;
+import com.versus.api.questions.CardQuestionFactory;
 import com.versus.api.common.exception.ErrorCode;
 import com.versus.api.game.dto.PrecisionAnswerRequest;
 import com.versus.api.game.dto.PrecisionAnswerResponse;
@@ -50,6 +51,7 @@ class GameServiceTest {
     @Mock MatchRoundRepository matchRounds;
     @Mock MatchAnswerRepository matchAnswers;
     @Mock CardService cards;
+    @Mock CardQuestionFactory cardFactory;
     @Mock StatsService statsService;
     @Mock AchievementService achievementService;
 
@@ -111,6 +113,10 @@ class GameServiceTest {
     private void stubStartCommon() {
         when(matches.save(any())).thenAnswer(inv -> { Match m = inv.getArgument(0); m.setId(SESSION_ID); return m; });
         when(matchPlayers.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        lenient().when(cardFactory.buildBinary(any(), any(), any()))
+                .thenReturn(mock(com.versus.api.questions.dto.QuestionBinaryResponse.class));
+        lenient().when(cardFactory.buildNumeric(any(), any()))
+                .thenReturn(mock(com.versus.api.questions.dto.QuestionNumericResponse.class));
     }
 
     /**
@@ -140,11 +146,16 @@ class GameServiceTest {
     }
 
     private void stubNextSurvivalPair() {
-        when(cards.getRandomPairForSurvival()).thenReturn(survivalPair());
+        CardService.CardPair pair = survivalPair();
+        when(cards.getRandomPairForSurvival()).thenReturn(pair);
+        lenient().when(cardFactory.buildBinary(any(), any(), any()))
+                .thenReturn(mock(com.versus.api.questions.dto.QuestionBinaryResponse.class));
     }
 
     private void stubNextPrecisionCard() {
         when(cards.getRandomCard()).thenReturn(precisionCard(new BigDecimal("100")));
+        lenient().when(cardFactory.buildNumeric(any(), any()))
+                .thenReturn(mock(com.versus.api.questions.dto.QuestionNumericResponse.class));
     }
 
     private SurvivalAnswerRequest survivalReq(UUID optionId) {

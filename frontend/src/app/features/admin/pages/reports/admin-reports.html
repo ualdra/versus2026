@@ -96,6 +96,19 @@
           No hay reportes con este filtro.
         </div>
       }
+
+      @if (page()!.totalPages > 1) {
+        <div style="display: flex; gap: 6px; justify-content: center; margin-top: 16px">
+          @for (p of pages; track p) {
+            <button class="btn btn--sm"
+                    [class.btn--primary]="currentPage() === p"
+                    [class.btn--ghost]="currentPage() !== p"
+                    (click)="goToPage(p)">
+              {{ p + 1 }}
+            </button>
+          }
+        </div>
+      }
     }
 
   </div>

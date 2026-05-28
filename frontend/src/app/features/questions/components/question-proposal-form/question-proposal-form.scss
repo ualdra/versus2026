@@ -1,0 +1,182 @@
+.vs-proposal-form {
+  display: grid;
+  gap: 16px;
+}
+
+.vs-proposal-form__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.vs-proposal-form__meta {
+  color: var(--vs-text-muted);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.vs-proposal-form__type,
+.vs-proposal-form__binary-answer {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.vs-chip {
+  border: 1px solid var(--vs-border);
+  border-radius: var(--vs-radius-sm);
+  background: transparent;
+  color: var(--vs-text-muted);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 7px 11px;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+
+  &:hover:not(:disabled) {
+    border-color: var(--vs-accent-blue);
+    color: var(--vs-text-primary);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+}
+
+.vs-chip--active {
+  border-color: var(--vs-accent-blue);
+  background: rgba(67, 97, 238, 0.12);
+  color: var(--vs-accent-blue);
+}
+
+.vs-proposal-form__alert {
+  border: 1px solid var(--vs-accent-gold);
+  background: rgba(244, 197, 66, 0.08);
+  border-radius: var(--vs-radius-sm);
+  color: var(--vs-accent-gold);
+  font-size: 12px;
+  padding: 9px 12px;
+}
+
+.vs-proposal-form__alert--error {
+  border-color: var(--vs-accent-red);
+  background: rgba(230, 57, 70, 0.08);
+  color: var(--vs-accent-red);
+}
+
+.vs-proposal-form__alert--ok {
+  border-color: var(--vs-accent-green);
+  background: rgba(46, 196, 182, 0.08);
+  color: var(--vs-accent-green);
+}
+
+.vs-proposal-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.vs-proposal-field {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+
+  span {
+    color: var(--vs-text-muted);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+}
+
+.vs-proposal-field--wide {
+  grid-column: 1 / -1;
+}
+
+.vs-proposal-form__textarea {
+  min-height: 92px;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.vs-proposal-preview {
+  border: 1px solid var(--vs-border);
+  border-radius: var(--vs-radius-md);
+  background: var(--vs-bg-input);
+  padding: 16px;
+  display: grid;
+  gap: 10px;
+
+  h3 {
+    font-size: 28px;
+    line-height: 1.05;
+    overflow-wrap: anywhere;
+  }
+}
+
+.vs-proposal-preview__cat {
+  color: var(--vs-text-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.vs-proposal-preview__binary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.vs-proposal-preview__option {
+  border: 1px solid var(--vs-border);
+  border-radius: var(--vs-radius-sm);
+  color: var(--vs-text-secondary);
+  font-weight: 700;
+  min-height: 58px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+
+  &.is-correct {
+    border-color: var(--vs-accent-green);
+    background: rgba(46, 196, 182, 0.1);
+    color: var(--vs-accent-green);
+  }
+}
+
+.vs-proposal-preview__numeric {
+  border: 1px solid var(--vs-accent-green);
+  background: rgba(46, 196, 182, 0.08);
+  border-radius: var(--vs-radius-sm);
+  color: var(--vs-accent-green);
+  font-size: 24px;
+  font-weight: 800;
+  padding: 14px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.vs-proposal-form__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 720px) {
+  .vs-proposal-form__top,
+  .vs-proposal-form__actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .vs-proposal-form__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vs-proposal-preview__binary {
+    grid-template-columns: 1fr;
+  }
+}

@@ -12,6 +12,7 @@ public record QuestionNumericResponse(
         QuestionType type,
         String text,
         String category,
+        String subcategory,
         String unit,
         Instant scrapedAt
 ) implements QuestionResponse {

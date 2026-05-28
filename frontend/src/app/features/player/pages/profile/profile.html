@@ -140,6 +140,52 @@
           </div>
         }
 
+        <!-- Contribuir -->
+        <div>
+          <div class="vs-section-title" style="display: flex; align-items: center; justify-content: space-between">
+            <span>Contribuir</span>
+            <span class="vs-proposal-count vs-mono">
+              {{ proposalsPendingCount() }}/{{ proposalsPendingLimit() }}
+            </span>
+          </div>
+
+          <div class="vs-card vs-contribute-card">
+            <app-question-proposal-form (submitted)="loadProposals()" />
+
+            <div class="vs-proposal-history">
+              <div class="vs-proposal-history__title">Historial de propuestas</div>
+
+              @if (proposalsLoading()) {
+                <div class="vs-proposal-history__empty">Cargando propuestas...</div>
+              } @else if (proposals().length === 0) {
+                <div class="vs-proposal-history__empty">Aún no has enviado propuestas.</div>
+              } @else {
+                <div class="vs-proposal-history__list">
+                  @for (proposal of proposals(); track proposal.id) {
+                    <article class="vs-proposal-row">
+                      <div class="vs-proposal-row__top">
+                        <span class="vs-proposal-status" [class]="proposalStatusClass(proposal.status)">
+                          {{ proposalStatusLabel(proposal.status) }}
+                        </span>
+                        <span class="vs-proposal-row__date vs-mono">
+                          {{ proposal.createdAt | date:'dd/MM/yy HH:mm' }}
+                        </span>
+                      </div>
+                      <div class="vs-proposal-row__question">{{ proposal.text }}</div>
+                      <div class="vs-proposal-row__meta">
+                        {{ proposal.type }} · {{ proposal.category }} · {{ proposalAnswerLabel(proposal) }}
+                      </div>
+                      @if (proposal.rejectReason) {
+                        <div class="vs-proposal-row__reject">{{ proposal.rejectReason }}</div>
+                      }
+                    </article>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
         <!-- Historial de partidas -->
         <div>
           <div class="vs-section-title" style="display: flex; align-items: center; justify-content: space-between">
